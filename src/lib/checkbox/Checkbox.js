@@ -11,11 +11,16 @@ import {
   CheckboxLayout,
   CheckboxRoot,
 } from './styles/index';
+import {ButtonToggleRoot} from '../button-toggle/styles';
 
 class Checkbox extends React.Component {
   constructor() {
     super();
     this.DEFAULT_ID = _.uniqueId('sui-checkbox:');
+
+    this.state = {
+      focusOrigin: null,
+    };
   }
   
   /**
@@ -56,12 +61,6 @@ class Checkbox extends React.Component {
   getAriaChecked = () => {
     if (this.props.checked) return 'true';
     return this.props.indeterminate ? 'mixed' : 'false';
-  };
-  
-  /** Get the focus origin according to the focus monitor */
-  getFocusMonitorStatus = () => {
-    if (!this.CHECKBOX_ROOT) return {};
-    return this.props.__focusMonitor.getInfo(this.CHECKBOX_ROOT) || {};
   };
   
   /**
@@ -109,16 +108,15 @@ class Checkbox extends React.Component {
       'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledBy,
       __focusMonitor, onTouched, ...restProps,
     } = this.props;
-    
-    const monitor = this.getFocusMonitorStatus();
+
     return (
       <CheckboxRoot
         {...restProps}
         innerRef={this.getCheckboxRoot}
         id={this.getId()}
         tabIndex={null}
-        data-focused={monitor.focused}
-        data-focus-origin={monitor.origin}
+        data-focused={!!this.state.focusOrigin}
+        data-focus-origin={this.state.focusOrigin}
         data-label-position={labelPosition}
         data-disabled={disabled.toString()}
         data-checked={this.getAriaChecked()}
@@ -235,6 +233,7 @@ export default MonitoredCheckbox;
  * Private methods
  */
 function monitorFocus(origin) {
+  this.setState({ focusOrigin: origin });
   if (!origin) {
     // When a focused element becomes disabled, the browser *immediately* fires a blur event.
     // To work around this, we defer telling the form control it

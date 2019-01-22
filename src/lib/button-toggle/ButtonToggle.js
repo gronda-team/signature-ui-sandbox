@@ -21,6 +21,10 @@ class ButtonToggle extends React.Component {
     super();
     
     this.DEFAULT_ID = _.uniqueId('sui-button-toggle:');
+
+    this.state = {
+      focusOrigin: null,
+    };
   }
   /**
    * Lifecycle
@@ -39,6 +43,9 @@ class ButtonToggle extends React.Component {
       this.props.__focusMonitor.monitor({
         element: buttonToggleButton,
         checkChildren: true,
+        callback: (origin) => {
+          this.setState({ focusOrigin: origin });
+        },
       });
     }
   };
@@ -70,12 +77,6 @@ class ButtonToggle extends React.Component {
   
   /** Whether the button is disabled. */
   isDisabled = () => this.props.disabled || _.get(this.props.__buttonToggleGroup, 'disabled');
-  
-  /** Get the focus origin according to the focus monitor */
-  getFocusMonitorStatus = () => {
-    if (!this.NATIVE_BUTTON) return {};
-    return this.props.__focusMonitor.getInfo(this.NATIVE_BUTTON) || {};
-  };
   
   /**
    * Actions
@@ -111,7 +112,6 @@ class ButtonToggle extends React.Component {
     } = this.props;
     const disabledStatus = this.isDisabled();
     const checkedStatus = this.isChecked();
-    const monitor = this.getFocusMonitorStatus();
     return (
       <ButtonToggleRoot
         {...restProps}
@@ -121,8 +121,8 @@ class ButtonToggle extends React.Component {
         data-disabled={disabledStatus}
         data-checked={checkedStatus}
         data-standalone={!this.props.__buttonToggleGroup}
-        data-focused={monitor.focused}
-        data-focus-origin={monitor.origin}
+        data-focused={!!this.state.focusOrigin}
+        data-focus-origin={this.state.focusOrigin}
       >
         <ButtonToggleButton
           type="button"

@@ -12,6 +12,10 @@ class Button extends React.Component {
     super(props);
     
     this.BUTTON_ROOT = ButtonRoot.withComponent(props.is);
+
+    this.state = {
+      focusOrigin: null,
+    };
   }
   
   /**
@@ -29,7 +33,13 @@ class Button extends React.Component {
     this.BUTTON = button;
     _.defer(() => {
       if (button) {
-        this.props.__focusMonitor.monitor({ element: button, checkChildren: true });
+        this.props.__focusMonitor.monitor({
+          element: button,
+          checkChildren: true,
+          callback: (origin) => {
+            this.setState({ focusOrigin: origin });
+          },
+        });
       }
     });
   };
@@ -46,11 +56,6 @@ class Button extends React.Component {
         'aria-disabled': disabled.toString(),
         tabIndex: disabled ? -1 : (this.props.tabIndex || 0),
       };
-  };
-  
-  getFocusOrigin = () => {
-    if (!this.BUTTON) return null;
-    return _.get(this.props.__focusMonitor.getInfo(this.BUTTON), 'origin');
   };
   
   /**
@@ -81,7 +86,7 @@ class Button extends React.Component {
         data-sui-type={'button'}
         data-variant={appearance}
         data-color={color}
-        data-focus-origin={this.getFocusOrigin()}
+        data-focus-origin={this.state.focusOrigin}
         onClick={this.onClick}
       >
         <ButtonWrapper>{ this.props.children }</ButtonWrapper>

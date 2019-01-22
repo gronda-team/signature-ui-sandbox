@@ -11,12 +11,17 @@ import {
   RadioOuterCircle,
 } from './styles/index';
 import { withRadioGroupConsumer } from './context';
+import {ButtonToggleRoot} from '../button-toggle/styles';
 
 class RadioButton extends React.Component {
   constructor() {
     super();
     
     this.DEFAULT_ID = _.uniqueId('sui-radio:');
+
+    this.state = {
+      focusOrigin: null,
+    };
   }
   
   /**
@@ -85,12 +90,6 @@ class RadioButton extends React.Component {
     return this.props.required || radioGroupRequired;
   };
   
-  /** Get the focus origin according to the focus monitor */
-  getFocusMonitorStatus = () => {
-    if (!this.RADIO_ROOT) return null;
-    return this.props.__focusMonitor.getInfo(this.RADIO_ROOT) || {};
-  };
-  
   /**
    * Actions
    */
@@ -146,7 +145,6 @@ class RadioButton extends React.Component {
     
     const checked = this.getChecked();
     const disabled = this.getDisabled();
-    const monitor = this.getFocusMonitorStatus();
     
     return (
       <RadioButtonRoot
@@ -154,8 +152,8 @@ class RadioButton extends React.Component {
         className={className}
         id={this.getId()}
         tabIndex={null}
-        data-focused={monitor.focused}
-        data-focus-origin={monitor.origin}
+        data-focused={!!this.state.focusOrigin}
+        data-focus-origin={this.state.focusOrigin}
         data-disabled={disabled}
         data-checked={checked}
         onFocus={this.onFocus}
@@ -257,6 +255,7 @@ StackedRadioButton.defaultProps = RadioButtonDefaultProps;
  * Private methods
  */
 function touchRadioGroupFromMonitor(origin) {
+  this.setState({ focusOrigin: origin });
   if (!origin && this.props.__radioGroup) {
     this.props.__radioGroup.touch();
   }
