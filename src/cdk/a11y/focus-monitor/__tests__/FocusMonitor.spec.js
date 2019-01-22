@@ -48,19 +48,13 @@ describe('FocusMonitor', () => {
     monitorSpy = jest.spyOn(focusMonitor.instance(), 'monitor');
     stopMonitoringSpy = jest.spyOn(focusMonitor.instance(), 'stopMonitoring');
 
-    changeHandlerSpy = jest.spyOn(
-      wrapper.find('PlainButton').instance(),
-      'setFocusOrigin'
-    );
-
     buttonElement = wrapper.find('button');
     buttonElementNode = buttonElement.getDOMNode();
   });
 
   afterEach(() => {
-    if (monitorSpy) { monitorSpy.mockRestore(); }
-    if (stopMonitoringSpy) { stopMonitoringSpy.mockRestore(); }
-    if (changeHandlerSpy) { changeHandlerSpy.mockRestore(); }
+    wrapper.unmount();
+    jest.resetAllMocks();
   });
 
   it('should handle focus for monitored elements', () => {
