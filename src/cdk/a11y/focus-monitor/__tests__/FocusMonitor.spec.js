@@ -18,6 +18,7 @@ describe('FocusMonitor smoke test', () => {
 });
 
 describe('FocusMonitor', () => {
+  let root; // root DIV to attach to document.body
   let wrapper;
   let focusMonitor;
   let buttonElement;
@@ -26,15 +27,21 @@ describe('FocusMonitor', () => {
   let stopMonitoringSpy;
   let changeHandlerSpy;
 
-  beforeEach(() => {
+  beforeAll(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
     wrapper = mount(
       <Platform>
         <FocusMonitor>
           <FocusMonitorPlainButton />
         </FocusMonitor>
-      </Platform>
+      </Platform>,
+      { attachTo: root },
     );
+  });
 
+  beforeEach(() => {
+    wrapper.mount();
     // Must use name because <FocusMonitor /> is a HOC
     focusMonitor = wrapper.find('FocusMonitor');
 
