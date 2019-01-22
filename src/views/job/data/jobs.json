@@ -1,0 +1,503 @@
+[
+  {
+    "id": 2565,
+    "company_id": 2028,
+    "author_id": 53038,
+    "status": "active",
+    "activated_at": "2018-09-15",
+    "name": "K\u00fcchenchef",
+    "public_url": "546792565",
+    "role_id": 1,
+    "description": "Zur Verst\u00e4rkung unseres Teams suchen wir eine(n) flexible(n), belastbare(n) und zuverl\u00e4ssige(n) Mitarbeiter(in), der (die) es gewohnt ist als Vorbild zu arbeiten. Wir stellen uns eine engagierte Pers\u00f6nlichkeit vor, die sich in der F\u00fchrung unserer Mannschaft verwirklichen m\u00f6chte. \n\nDas Aufgabengebiet \/ Your challenge:\n\nVerantwortung f\u00fcr den gesamten K\u00fcchenbereich auch auf die HACCP-Verordnung\nGestaltung eines abwechslungsreichen, attraktiven Verkaufsangebot bester Qualit\u00e4t\nPreiskalkulation und Wareneinsatzkontrolle, Einhaltung der budgetierten Kosten\nEinkauf aller K\u00fcchenprodukte nach unseren Vorgaben\nEinarbeitung und Kontrolle der Mitarbeiter\/innen und Auszubildenden\n\nDie F\u00e4higkeiten \/ Your skills:\n\nabgeschlossene Berufsausbildung als Koch\/K\u00f6chin\nmehrj\u00e4hrige Berufserfahrung in leitender Position im K\u00fcchenbereich\nsehr gute betriebswirtschaftliche Kenntnisse\nstarke Belastbarkeit\numfangreiche Kenntnisse im Bereich Mitarbeiterf\u00fchrung\ngute Sozialkompetenz\nOrganisationstalent, Kreativit\u00e4t\n\n\nNeben umfangreichen Sozialleistungen, einer perfekten Wohnm\u00f6glichkeit erwartet Dich f\u00fcr diese wichtige Position zudem ein \u00fcberdurchschnittliches Gehalt. Der angef\u00fchrte Buttogehalt gilt als Richtwert, je nach Vereinbarung (Arbeitszeit, bzw. Stunden und Qualifikation) sind wir zur \u00dcberzahlung bereit.\n\nStartdatum:  nach Vereinbarung\nDauer:   Winter, gerne nat\u00fcrlich auch Ganzj\u00e4hrig",
+    "max_level": 100,
+    "position_id": 0,
+    "req_position": false,
+    "req_position_id": 0,
+    "req_experience": 0,
+    "experience": 0,
+    "working_time_id": 3,
+    "season_id": 1,
+    "story_id": 23774,
+    "req_language": false,
+    "salary": 3800,
+    "asap": 0,
+    "start_at": "2018-12-15",
+    "last_algorithm_at": "2018-09-15 08:59:37",
+    "deleted_at": null,
+    "created_at": "2018-09-15 10:59:37",
+    "updated_at": "2018-09-15 11:16:54",
+    "company": {
+      "id": 2028,
+      "name": "Hotel Hanneshof",
+      "type_id": 1,
+      "category_id": 3,
+      "profile_img": "https:\/\/gronda.eu\/media\/hotel-hanneshof\/profile\/2028_1124886150023305_902898791759576915437516270065494487.jpeg",
+      "country_id": 1,
+      "region_id": null,
+      "locality_id": 2923,
+      "public_url": "hotel-hanneshof",
+      "questions": {
+        "companyQuestions": [
+          "Unser famili\u00e4r gef\u00fchrtes 4 Sterne Hotel setzt auf hohe Qualit\u00e4t und dazu daf\u00fcr motivierte und engagierte Mitarbeiter.",
+          "Vielseitige Herausforderungen und Aufgaben bieten eine tolle M\u00f6glcihkeit st\u00e4ndig etwas neues zu erlernen. ",
+          "Unser famili\u00e4r gef\u00fchrtes 4 Sterne Hotel setzt auf hohe Qualit\u00e4t und dazu daf\u00fcr motivierte und engagierte Mitarbeiter. Der gemeinsame Weg mit einem starken Team, f\u00fchrt zu starken Ergebnissen."
+        ],
+        "teamQuestions": [
+          "Junges, dynamisches Team, in famili\u00e4rer Atmosph\u00e4re (3. Generation)",
+          "Ein starkes Team f\u00fchrt zu starken Ergebnissen.\nStarkes Teambuilding - Ideen sind wichtig f\u00fcr die Firma.\n",
+          "Je nach Jahreszeit ! \nUnsere Mitarbeiter sind sehr Outdoor Aktiv. \nSkifahren, Rodeln, Wandern, MTB, Badeseen in der Umgebung, ...... uvm."
+        ]
+      },
+      "fires_count": 7,
+      "followers_count": 17,
+      "country": {
+        "id": 1,
+        "code": "AT",
+        "value": "\u00d6sterreich"
+      },
+      "region": null,
+      "locality": {
+        "id": 2923,
+        "place_id": "ChIJ9-IXmIEtcUcR3etW-9h88qw",
+        "place_type": "street_address",
+        "country_code": "AT",
+        "administrative_area_level_1": "Salzburg",
+        "default_name": "Filzmoos 126, 5532 Filzmoos, Austria",
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            13.5214932,
+            47.434243199999997
+          ]
+        },
+        "created_at": "2018-09-06 14:25:24",
+        "updated_at": "2018-09-06 14:25:24",
+        "name": "Filzmoos, Salzburg, \u00d6sterreich"
+      },
+      "company_slider": {
+        "slider_images": [
+          "https:\/\/gronda.eu\/media\/hotel-hanneshof\/profile\/2028_1256222761993689_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/hotel-hanneshof\/profile\/2028_5186613443061922_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/hotel-hanneshof\/profile\/2028_2078489104296393_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/hotel-hanneshof\/profile\/2028_4880069574318002_902898791759576915437516270065494487.jpeg"
+        ]
+      }
+    },
+    "dream_connection": {
+      "id": 6259568,
+      "status": "active",
+      "user_id": 7,
+      "job_id": 2565,
+      "level_user": 80,
+      "level_company": 70,
+      "seen_user": false,
+      "seen_company": false,
+      "created_at": "2018-10-19 08:58:29",
+      "updated_at": "2018-10-19 08:58:29"
+    }
+  },
+  {
+    "id": 2484,
+    "company_id": 1581,
+    "author_id": 45246,
+    "status": "active",
+    "activated_at": "2018-09-05",
+    "name": "K\u00fcchenchef",
+    "public_url": "522332484",
+    "role_id": 1,
+    "description": "Ich suche einen modernen , kreativen K\u00fcchenchef. Der das Team motivieren kann und Freude am Kochen hat.\n",
+    "max_level": 100,
+    "position_id": 0,
+    "req_position": false,
+    "req_position_id": 0,
+    "req_experience": 0,
+    "experience": 0,
+    "working_time_id": 3,
+    "season_id": 1,
+    "story_id": null,
+    "req_language": false,
+    "salary": 4500,
+    "asap": 1,
+    "start_at": "2018-09-04",
+    "last_algorithm_at": "2018-09-05 13:16:32",
+    "deleted_at": null,
+    "created_at": "2018-09-05 15:16:32",
+    "updated_at": "2018-09-05 15:16:41",
+    "company": {
+      "id": 1581,
+      "name": "Hotel Der Rindererhof****",
+      "type_id": 1,
+      "category_id": 2,
+      "profile_img": "https:\/\/gronda.eu\/media\/hotel-der-rindererhof\/profile\/1581_3753362378963400_902898791759576915437516270065494487.jpg",
+      "country_id": 1,
+      "region_id": 2,
+      "locality_id": 938,
+      "public_url": "hotel-der-rindererhof",
+      "questions": {
+        "companyQuestions": [
+          "Was f\u00fcr unsere G\u00e4ste gilt, gilt auch f\u00fcr unsere Mitarbeiter:\nDer Rindererhof soll ein Ort sein, an dem man gerne ist und eine angenehme Zeit hat.\nLangj\u00e4hrige Mitarbeiter und ein tolles Team zeigen uns, dass wir den richtigen Weg genommen haben.",
+          "Unseren Mitarbeitern bieten wir freie Kost & Logie, Ben\u00fctzung des Wellnessbereiches (zu bestimmen Zeiten) sowie eine leistungsgerechte Entlohnung! Wir erwarten Freude am Beruf, Einsatzbereitschaft und Loyalit\u00e4t.\n\nVom praktisch eingerichteten Zimmern \u00fcber eine Vielzahl an Sportm\u00f6glichkeiten an Ihren freien Tagen bis hin zu einem positiven und angenehmen Arbeitsklima und verschiedene Verg\u00fcnstigungen.",
+          "Inmitten dem romantischen Bergtal - am Fu\u00dfe des Hintertuxer Gletschers verspricht das familiengef\u00fchrte Hotel \"Der Rindererhof\" einen Urlaub zum Wohlf\u00fchlen. Lassen Sie sich von der Gastlichkeit Tirols in unserem Hotel anstecken und erleben Sie unvergessliche Urlaubstage inmitten der Alpenszene Hintertux."
+        ],
+        "teamQuestions": [
+          "",
+          "",
+          "Gemeinsame Aktivit\u00e4ten"
+        ]
+      },
+      "fires_count": 87,
+      "followers_count": 109,
+      "country": {
+        "id": 1,
+        "code": "AT",
+        "value": "\u00d6sterreich"
+      },
+      "region": {
+        "id": 2,
+        "country_id": 1,
+        "value": "Tirol"
+      },
+      "locality": {
+        "id": 938,
+        "place_id": "ChIJWRa41f7gd0cRoJjmLVeXAAQ",
+        "place_type": "locality",
+        "country_code": "AT",
+        "administrative_area_level_1": "tyrol",
+        "default_name": "Tux, Austria",
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            47.156740600000013,
+            11.728700999999999
+          ]
+        },
+        "created_at": null,
+        "updated_at": null,
+        "name": "Tux, Tirol, \u00d6sterreich"
+      },
+      "company_slider": {
+        "slider_images": [
+          "https:\/\/gronda.eu\/media\/hotel-der-rindererhof\/profile\/1581_4989837860729986_902898791759576915437516270065494487.jpg",
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    "dream_connection": {
+      "id": 6259569,
+      "status": "active",
+      "user_id": 7,
+      "job_id": 2484,
+      "level_user": 80,
+      "level_company": 70,
+      "seen_user": false,
+      "seen_company": false,
+      "created_at": "2018-10-19 08:58:29",
+      "updated_at": "2018-10-19 08:58:29"
+    }
+  },
+  {
+    "id": 2170,
+    "company_id": 1522,
+    "author_id": 43496,
+    "status": "active",
+    "activated_at": "2018-08-14",
+    "name": "K\u00fcchenchef",
+    "public_url": "116492170",
+    "role_id": 1,
+    "description": "Das Mondschein ist seit jeher f\u00fcr seine ausgezeichnete K\u00fcche bekannt. Mondschein's K\u00fcche steht f\u00fcr Regionalit\u00e4t und Qualit\u00e4t. Das t\u00e4glich frische Hausbrot aus der eigenen Brotbackstube, der luftgetrockneter Jungrinderschinken, Hirschw\u00fcrste, Schmalz, Marmelade, Zirbelar-Eis und vieles mehr sind die Dinge, die unsere G\u00e4ste gl\u00fccklich und unsere K\u00fcche unverwechselbar machen.\nSchon seit einigen Jahren sind wir Mitglied der \u201eSlow Food\u201c Bewegung.\n\nWir suchen einen leidenschaftlichen Koch, der die Philosophie der Mondschein K\u00fcche lebt und weiterentwickelt. Und bieten einen interessanten und abwechselungreichen Arbeitsplatz in einem kleinen und motivierten Team.",
+    "max_level": 100,
+    "position_id": 0,
+    "req_position": false,
+    "req_position_id": 3,
+    "req_experience": 1,
+    "experience": 2,
+    "working_time_id": 3,
+    "season_id": 3,
+    "story_id": null,
+    "req_language": true,
+    "salary": 0,
+    "asap": 0,
+    "start_at": "2018-11-15",
+    "last_algorithm_at": "2018-07-03 20:51:12",
+    "deleted_at": null,
+    "created_at": "2018-07-03 22:51:12",
+    "updated_at": "2018-08-14 13:31:19",
+    "company": {
+      "id": 1522,
+      "name": "Hotel Gaststube Bar Terrasse Mondschein",
+      "type_id": 1,
+      "category_id": 3,
+      "profile_img": "https:\/\/gronda.eu\/media\/hotel-gaststube-bar-terrasse-m\/profile\/1522_2677137756339249_902898791759576915437516270065494487.jpg",
+      "country_id": 1,
+      "region_id": 3,
+      "locality_id": 1432,
+      "public_url": "hotel-gaststube-bar-terrasse-m",
+      "questions": {
+        "companyQuestions": [
+          "Das Hotel \u201eMondschein\u201c z\u00e4hlt zu den sehr guten Adressen am Arlberg. Dieser Standard kann nur mit talentierten und leistungshungrigen Mitarbeitern erbracht werden. Um auch in Zukunft unseren G\u00e4sten \u201edas Beste\u201c bieten zu k\u00f6nnen, suchen wir herzliche, aufmerksame und wache Menschen, die auch gerne im Team arbeiten.\nWir leben im Mondschein in einer gro\u00dfen Familie, denken l\u00f6sungsorientiert und unterst\u00fctzen uns gegenseitig.",
+          "Bei uns hat jeder die Chance sich weiterzuentwicklen und die Karriereleiter hinaufzuklettern, der die Liebe und Leidenschaft f\u00fcr den Beruf in der Hotellerie mitbringt. Wir sind gut vernetzt und bieten dir die M\u00f6glichkeit in unseren Partnerhotels am Bodensee oder Vietnam im Sommer zu arbeiten. Wir unterst\u00fctzen dich gerne! \n\n",
+          "Das Mondschein \u2013 1739 erstmals als Herberge erw\u00e4hnt - wurde im klima:aktiv GOLD Standard ausgebaut und ist ein privat gef\u00fchrtes Hotel am Arlberg. Das Haus steht f\u00fcr hervorragenden Service in einem exklusiven Ambiente mit \u00f6sterreichischem Charme. Unsere internationalen G\u00e4ste sind leidenschaftliche Skifahrer und genie\u00dfen unsere ausgezeichnete K\u00fcche und unsere Liebe zum Wein. Das neue Mondschein Chalet und die Kaltenbergh\u00fctte runden unser Angebot perfekt ab. "
+        ],
+        "teamQuestions": [
+          "Wir sind ein Team, das einander hilft. Jeder einzelne tr\u00e4gt zum gemeinsamen Erfolg bei und ist jederzeit eingeladen sich einzubringen mit Verbesserungsvorschl\u00e4gen und Tipps - nur so k\u00f6nnen wir uns weiterentwicklen. ",
+          "Wir begeistern unsere G\u00e4ste! Wir legen gro\u00dfen Wert darauf, dass sich unsere G\u00e4ste rundherum wohlf\u00fchlen und geben jeden Tag unser Bestes. \n",
+          "Das Angebot ist gro\u00df - Skifahren im besten Skigebiet der Welt mit erm\u00e4\u00dfigtem Skipass. Oder s\u00e4mtliche Verg\u00fcnstigungen der Starcard (https:\/\/deinestarcard.at) nutzen, die Auswahl ist gro\u00df. Usere Mitarbeiter sind auch gern gesehene G\u00e4ste in der Gaststube oder in der Mondschein-Bar.\nAm Abend darf auch das Hallenbad und die Sauna ben\u00fctzt werden. "
+        ]
+      },
+      "fires_count": 0,
+      "followers_count": 11,
+      "country": {
+        "id": 1,
+        "code": "AT",
+        "value": "\u00d6sterreich"
+      },
+      "region": {
+        "id": 3,
+        "country_id": 1,
+        "value": "Vorarlberg"
+      },
+      "locality": {
+        "id": 1432,
+        "place_id": "ChIJex0f0kavnEcRPO-WE7-e5do",
+        "place_type": "locality",
+        "country_code": "AT",
+        "administrative_area_level_1": "vorarlberg",
+        "default_name": "6762 Stuben am Arlberg, Austria",
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            47.139629999999997,
+            10.158049999999999
+          ]
+        },
+        "created_at": null,
+        "updated_at": null,
+        "name": "Stuben, Vorarlberg, \u00d6sterreich"
+      },
+      "company_slider": {
+        "slider_images": [
+          "https:\/\/gronda.eu\/media\/hotel-gaststube-bar-terrasse-m\/profile\/1522_1114570213882597_902898791759576915437516270065494487.jpg",
+          "https:\/\/gronda.eu\/media\/hotel-gaststube-bar-terrasse-m\/profile\/1522_1130165465320824_902898791759576915437516270065494487.jpg",
+          "https:\/\/gronda.eu\/media\/hotel-gaststube-bar-terrasse-m\/profile\/1522_1169402858135600_902898791759576915437516270065494487.jpg",
+          "https:\/\/gronda.eu\/media\/hotel-gaststube-bar-terrasse-m\/profile\/1522_5918443153194168_902898791759576915437516270065494487.jpg"
+        ]
+      }
+    },
+    "dream_connection": {
+      "id": 6259570,
+      "status": "active",
+      "user_id": 7,
+      "job_id": 2170,
+      "level_user": 80,
+      "level_company": 70,
+      "seen_user": false,
+      "seen_company": false,
+      "created_at": "2018-10-19 08:58:29",
+      "updated_at": "2018-10-19 08:58:29"
+    }
+  },
+  {
+    "id": 2385,
+    "company_id": 439,
+    "author_id": 41606,
+    "status": "active",
+    "activated_at": "2018-08-15",
+    "name": "K\u00fcchenchef m\/w",
+    "public_url": "140592385",
+    "role_id": 1,
+    "description": "Mit Beginn der Wintersaison 2018\/19 er\u00f6ffnen wir in Gaschurn die \u201eAlte Talstation\u201c.\n\nDer Name t\u00e4uscht: In einem brandneuen, architektonisch ansprechenden Geb\u00e4ude bieten wir unseren G\u00e4sten ein exquisites Apr\u00e8s-Ski-Erlebnis auf zwei Etagen, einer acht Meter langen Sky Bar, einem offenem Gastraum und einer Terrasse mit Traumblick auf den Gipfel der Vall\u00fcla.\n\nWenn du voller Motivation f\u00fcr Neues bist, von Anfang an bei einem neuen Projekt mitgestalten und Teil des Teams sein willst, freuen wir uns auf deine Bewerbung!\n\nLade deine Bewerbung bitte auf silvretta-montafon.at\/jobs hoch oder sende sie an bewerbungen@silvretta-montafon.at.\nF\u00fcr deine Fragen steht dir unser Personalleiter Daniel Witzani unter +43 5557 6300-143 gerne zur Verf\u00fcgung.",
+    "max_level": 100,
+    "position_id": 0,
+    "req_position": false,
+    "req_position_id": 1,
+    "req_experience": 0,
+    "experience": 1,
+    "working_time_id": 3,
+    "season_id": 1,
+    "story_id": 21665,
+    "req_language": false,
+    "salary": 0,
+    "asap": 0,
+    "start_at": "2018-11-01",
+    "last_algorithm_at": "2018-08-13 17:05:21",
+    "deleted_at": null,
+    "created_at": "2018-08-13 19:05:21",
+    "updated_at": "2018-08-15 15:39:01",
+    "company": {
+      "id": 439,
+      "name": "Silvretta Montafon GmbH",
+      "type_id": 2,
+      "category_id": 2,
+      "profile_img": "https:\/\/gronda.eu\/media\/silvretta-montafon\/profile\/439_6022603916544586_902898791759576915437516270065494487.jpeg",
+      "country_id": 1,
+      "region_id": 3,
+      "locality_id": 3,
+      "public_url": "silvretta-montafon",
+      "questions": {
+        "companyQuestions": [
+          "Als touristischer Gesamtdienstleister ist die Silvretta Montafon verantwortlich f\u00fcr Bahn, Piste, Berggastronomie, Hotellerie, Skischule und Skiservice \u2013 und somit f\u00fcr das perfekte Bergerlebnis. Unser Team freut sich auf jeden, f\u00fcr den Professionalit\u00e4t und Engagement selbstverst\u00e4ndlich sind.",
+          "Arbeiten in der Gruppe Silvretta Montafon bietet unterschiedliche Benefits, spannende und abwechslungsreiche Arbeitspl\u00e4tze und die M\u00f6glichkeit dich in die verschiedensten Richtungen weiter zu entwickeln.",
+          ""
+        ],
+        "teamQuestions": [
+          "Die einzigartige Umgebung in den Montafoner Bergen. ",
+          "",
+          "Im Winter Skifahren oder Snowboarden. Im Sommer gibt es viele verschiedene M\u00f6glichkeiten die Berge zu erleben."
+        ]
+      },
+      "fires_count": 42,
+      "followers_count": 110,
+      "country": {
+        "id": 1,
+        "code": "AT",
+        "value": "\u00d6sterreich"
+      },
+      "region": {
+        "id": 3,
+        "country_id": 1,
+        "value": "Vorarlberg"
+      },
+      "locality": {
+        "id": 3,
+        "place_id": "ChIJRQmqIqESm0cRTZpV9Z8FT4Q",
+        "place_type": "administrative_area_level_1",
+        "country_code": "AT",
+        "administrative_area_level_1": null,
+        "default_name": "Vorarlberg, Austria",
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            9.9797373,
+            47.249742699999999
+          ]
+        },
+        "created_at": "2018-05-14 05:09:29",
+        "updated_at": "2018-05-14 05:09:29",
+        "name": "Vorarlberg, \u00d6sterreich"
+      },
+      "company_slider": {
+        "slider_images": [
+          "https:\/\/gronda.eu\/media\/silvretta-montafon\/profile\/439_1297276523707849_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/silvretta-montafon\/profile\/439_2252162107104312_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/silvretta-montafon\/profile\/439_1258857433844634_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/silvretta-montafon\/profile\/439_9935298028036006_902898791759576915437516270065494487.jpeg"
+        ]
+      }
+    },
+    "dream_connection": {
+      "id": 6259571,
+      "status": "active",
+      "user_id": 7,
+      "job_id": 2385,
+      "level_user": 80,
+      "level_company": 70,
+      "seen_user": false,
+      "seen_company": false,
+      "created_at": "2018-10-19 08:58:29",
+      "updated_at": "2018-10-19 08:58:29"
+    }
+  },
+  {
+    "id": 2259,
+    "company_id": 45,
+    "author_id": 7071,
+    "status": "active",
+    "activated_at": "2018-10-22",
+    "name": "K\u00fcchenchef\/in ",
+    "public_url": "625172259",
+    "role_id": 1,
+    "description": "Werde unser\/e K\u00fcchenchef\/in auf der Umbr\u00fcggler Alm und arbeite in einem motivierten K\u00fcchenteam hoch \u00fcber Innsbruck!\n\nUnser K\u00fcchenteam produziert regionale und qualitativ hochwertige Gerichte in einer einzigartigen Lage. Wir suchen eine K\u00f6chin oder einen Koch, der dieses Team f\u00fchrt und das Maximum aus dem Team und allen Gerichten herausholen kann. \n\nWas uns einzigartig macht, ist unser Team. Wir arbeiten zwar in einer atemberaubenden Lage hoch \u00fcber Innsbruck und doch ganz nah an der Stadt, in einem einzigartigen neuen Bauprojekt, aber ohne die Motivation und Leidenschaft des gesamten Teams, w\u00e4re das nur halb soviel wert. Gemeinsam schaffen wir ein einzigartiges Erlebnis f\u00fcr unsere G\u00e4ste.\n\nWir suchen dich, um das auch in Zukunft gemeinsam sicherzustellen.\nDu bist:\n\ud83d\udc49ein organisatorisches Genie,\n\ud83d\udc49selbstst\u00e4ndig und ein echtes Vorbild f\u00fcr dein K\u00fcchenteam,\n\ud83d\udc49erfahren und kreativ bei der Auswahl der Produkte,\n\ud83d\udc49motiviert und einfallsreich bei der Erstellung der Men\u00fcs,\n\ndann ist das der perfekte Job f\u00fcr dich! Wir freuen uns auf deine Bewerbung!\n\nAuch wenn du nicht jede Anforderung unserer Stellenausschreibung erf\u00fcllst, m\u00f6chten wir dich vielleicht doch kennenlernen!\n\n\u2755\u2755 Um einen ersten Eindruck zu bekommen, wie es ist mit uns gemeinsam auf der Umbr\u00fcggler Alm zu arbeiten, sieh dir unsere Stories an!",
+    "max_level": 100,
+    "position_id": 0,
+    "req_position": false,
+    "req_position_id": 2,
+    "req_experience": 1,
+    "experience": 3,
+    "working_time_id": 3,
+    "season_id": 1,
+    "story_id": 4358,
+    "req_language": true,
+    "salary": 3200,
+    "asap": 1,
+    "start_at": "2018-07-19",
+    "last_algorithm_at": "2018-07-19 08:27:24",
+    "deleted_at": null,
+    "created_at": "2018-07-19 10:27:24",
+    "updated_at": "2018-10-22 08:29:38",
+    "company": {
+      "id": 45,
+      "name": "Umbr\u00fcggler Alm",
+      "type_id": 2,
+      "category_id": 2,
+      "profile_img": "https:\/\/gronda.eu\/media\/umbrueggler-alm\/profile\/45_7604884561861813_902898791759576915437516270065494487.jpg",
+      "country_id": 1,
+      "region_id": 2,
+      "locality_id": 217,
+      "public_url": "umbrueggler-alm",
+      "questions": {
+        "companyQuestions": [
+          "Du liebst das Arbeiten mit hochwertigen Produkten und suchst eine Anstellung die dich fordert und dir die Chance gibt deine Leidenschaft zu leben?  Noch dazu bieten wir die perfekte Location \u00fcber den Wolken von Innsbruck und sind doch extrem nah am Puls der Alpenmetropole Innsbruck.",
+          "Alle! Von A wie Aufstiegsm\u00f6glichen und B wie Baristaschulung bis hin zu Z wie Zusatzausbildungen. Bei uns lernt man t\u00e4glich Neues.",
+          "Die Umbr\u00fcggler Alm ist eine einzigartige Mischung aus Alm und modernem Restaurant. Unsere Vision ist es einen Ort zu schaffen, in dem wir mit hochklassigen, regionalen Waren arbeiten, qualitatives Essen produzieren und unsere G\u00e4ste begeistern."
+        ],
+        "teamQuestions": [
+          "Mittlerweile haben wir ein zusammengeschwei\u00dftes, internationales Team aufgebaut. Die meisten von uns haben mehrj\u00e4hrige Erfahrung in der Gastronomie. Deshalb pushen wir uns gegenseitig ans Limit und unterst\u00fctzen uns, wenn es mal schwieriger wird. Harmonie und Zusammenhalt im Team sind uns extrem wichtig.",
+          "Gemeinsam mit unserem Team wollen wir unsere Leidenschaft ausleben und Spa\u00df dabei haben, hochwertige Produkte zu kreieren. Vielleicht auch bald mit dir gemeinsam?",
+          "Unsere Team wohnt haupts\u00e4chlich in Innsbruck und Umgebung. Dadurch k\u00f6nnen sie in einzigartiger Lage \u00fcber Innsbruck arbeiten und an ihren 2 freien Tagen pro Woche, die Vorteile einer Stadt genie\u00dfen. Innsbruck bietet nicht nur zahllose Party- und Freizeitm\u00f6glichkeiten, sondern ist auch extrem Familienfreundlich. Am Vormittag shoppen in der Maria-Theresien-Stra\u00dfe und am Nachmittag auf der Piste der zahllosen Skigebiete in der N\u00e4he oder im Sommer relaxen an einem wundersch\u00f6nen Gebirgssee.\r\n"
+        ]
+      },
+      "fires_count": 431,
+      "followers_count": 198,
+      "country": {
+        "id": 1,
+        "code": "AT",
+        "value": "\u00d6sterreich"
+      },
+      "region": {
+        "id": 2,
+        "country_id": 1,
+        "value": "Tirol"
+      },
+      "locality": {
+        "id": 217,
+        "place_id": "ChIJc8r44c9unUcRDZsdKH0cIJ0",
+        "place_type": "locality",
+        "country_code": "AT",
+        "administrative_area_level_1": "Tirol",
+        "default_name": "Innsbruck, Austria",
+        "location": {
+          "type": "Point",
+          "coordinates": [
+            11.404102399999999,
+            47.269212400000001
+          ]
+        },
+        "created_at": "2018-05-28 19:54:14",
+        "updated_at": "2018-05-28 19:54:14",
+        "name": "Innsbruck, Tirol, \u00d6sterreich"
+      },
+      "company_slider": {
+        "slider_images": [
+          "https:\/\/gronda.eu\/media\/umbrueggler-alm\/profile\/45_3153408855642006_902898791759576915437516270065494487.jpg",
+          "https:\/\/gronda.eu\/media\/umbrueggler-alm\/profile\/45_6989809308529187_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/umbrueggler-alm\/profile\/45_7605662215469178_902898791759576915437516270065494487.jpeg",
+          "https:\/\/gronda.eu\/media\/umbrueggler-alm\/profile\/45_1374874683633880_902898791759576915437516270065494487.jpeg"
+        ]
+      }
+    },
+    "dream_connection": {
+      "id": 6387264,
+      "status": "active",
+      "user_id": 7,
+      "job_id": 2259,
+      "level_user": 75,
+      "level_company": 71,
+      "seen_user": false,
+      "seen_company": false,
+      "created_at": "2018-10-22 08:29:40",
+      "updated_at": "2018-10-22 08:29:40"
+    }
+  }
+]
