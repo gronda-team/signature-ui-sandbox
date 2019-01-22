@@ -116,10 +116,10 @@ class FocusMonitor extends React.Component {
   
   /**
    * Stops monitoring an element and removes all focus classes.
-   * @param id The element ID to stop monitoring.
+   * @param element The element to stop monitoring.
    */
-  stopMonitoring = (id) => {
-    const index = _.findIndex(this.state.elementInfo, { id });
+  stopMonitoring = (element) => {
+    const index = _.findIndex(this.state.elementInfo, { element });
     
     if (index > -1) {
       const elementInfo = this.state.elementInfo[index];
