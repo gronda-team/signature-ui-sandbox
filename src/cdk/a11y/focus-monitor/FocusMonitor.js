@@ -83,7 +83,7 @@ class FocusMonitor extends React.Component {
     if (!this.props.__platform.is('browser')) return;
   
     // Check if we're already monitoring this element.
-    if (this.state.elementInfo.indexOf(id) > -1) return;
+    if (_.find(this.state.elementInfo, { element }) > -1) return;
     
     // Create monitored element info.
     const defaultId = id || _.uniqueId('sui-focus-monitor:');
