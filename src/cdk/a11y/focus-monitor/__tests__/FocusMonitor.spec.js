@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { mount } from 'enzyme';
-import { FocusMonitor, withFocusMonitor } from '../exports';
+import {FocusMonitor, TOUCH_BUFFER_MS, withFocusMonitor} from '../exports';
 import {Platform} from '../../../platform';
+import {TAB} from '../../../../components/core/keys';
 
 describe('FocusMonitor smoke test', () => {
   it('should render without problems', () => {
@@ -65,6 +66,45 @@ describe('FocusMonitor', () => {
      */
     buttonElementNode.dispatchEvent(new Event('focus'));
     expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+  });
+
+  it('should detect focus via keyboard', () => {
+    // Simulate focus via tabbing and then focusing
+    document.dispatchEvent(new KeyboardEvent('keydown', {
+      key: TAB,
+    }));
+    buttonElementNode.dispatchEvent(new Event('focus'));
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('keyboard');
+  });
+
+  it('should detect focus via mouse', () => {
+    // Simulate focus via clicking on mouse and then focusing
+    buttonElementNode.dispatchEvent(new Event('mousedown', {
+      bubbles: true,
+      cancelable: true,
+    }));
+    buttonElementNode.dispatchEvent(new Event('focus'));
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('mouse');
+  });
+
+  it('should detect focus via touch', () => {
+    // Simulate focus via touch event on mobile
+    jest.useFakeTimers();
+    const touchEvent = document.createEvent('TouchEvent');
+
+    touchEvent.initEvent('touchstart', true, true);
+
+    buttonElementNode.dispatchEvent(touchEvent);
+    buttonElementNode.dispatchEvent(new Event('focus'));
+    jest.runTimersToTime(TOUCH_BUFFER_MS);
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('touch');
+    jest.useRealTimers();
   });
 });
 
