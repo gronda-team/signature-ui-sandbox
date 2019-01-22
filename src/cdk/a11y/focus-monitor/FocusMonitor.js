@@ -249,12 +249,10 @@ function registerGlobalListeners() {
   
   // Note: we listen to events in the capture phase so we can detect them even if the user stops
   // propagation.
-  _.defer(() => {
-    document.addEventListener('keydown', documentKeydownListener, captureEventListenerOptions);
-    document.addEventListener('mousedown', documentMousedownListener, captureEventListenerOptions);
-    document.addEventListener('touchstart', documentTouchstartListener, captureEventListenerOptions);
-    window.addEventListener('focus', windowFocusListener);
-  });
+  document.addEventListener('keydown', documentKeydownListener, captureEventListenerOptions);
+  document.addEventListener('mousedown', documentMousedownListener, captureEventListenerOptions);
+  document.addEventListener('touchstart', documentTouchstartListener, captureEventListenerOptions);
+  window.addEventListener('focus', windowFocusListener);
   
   this.UNREGISTER = () => {
     document.removeEventListener('keydown', documentKeydownListener, captureEventListenerOptions);
