@@ -14,14 +14,12 @@ const FocusMonitorPropTypes = PropTypes.shape({
   focusVia: PropTypes.func,
   monitor: PropTypes.func,
   stopMonitoring: PropTypes.func,
-  getInfo: PropTypes.func,
 });
 
 const FocusMonitorDefaultProps = {
   focusVia: _.noop,
   monitor: _.noop,
   stopMonitoring: _.noop,
-  getInfo: _.noop,
 };
 
 const { Provider: FocusMonitorProvider, Consumer: FocusMonitorConsumer } = React.createContext(
@@ -41,23 +39,18 @@ class FocusMonitor extends React.Component {
       windowFocusTimeoutId: null,
       originTimeoutId: null,
       // where we key the monitoring information
-      allIds: [],
+      elementInfo: [],
     };
-    /*
-    this takes the place of byId because we are keying by
-    elements rather than strings.
-     */
-    this.ELEMENT_INFO = new Map();
   }
   
   /**
    * Lifecycle
    */
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.allIds.length === 1 && prevState.allIds.length === 0) {
+    if (this.state.elementInfo.length === 1 && prevState.elementInfo.length === 0) {
       // if we're incrementing the state from zero to one
       registerGlobalListeners.call(this);
-    } else if (this.state.allIds.length === 0 && prevState.allIds.length === 1) {
+    } else if (this.state.elementInfo.length === 0 && prevState.elementInfo.length === 1) {
       // if we're decrementing from one to zero
       this.UNREGISTER.call(this);
       this.UNREGISTER = () => {};
@@ -65,8 +58,8 @@ class FocusMonitor extends React.Component {
   }
   
   componentWillUnmount() {
-    this.ELEMENT_INFO.forEach((info, element) => {
-      this.stopMonitoring(element);
+    this.state.elementInfo.forEach((info) => {
+      this.stopMonitoring(info.id);
     });
   }
   
@@ -77,7 +70,6 @@ class FocusMonitor extends React.Component {
     monitor: this.monitor,
     stopMonitoring: this.stopMonitoring,
     focusVia: this.focusVia,
-    getInfo: element => this.ELEMENT_INFO.get(element),
   });
   
   /**
@@ -87,11 +79,11 @@ class FocusMonitor extends React.Component {
    * @param callback The callback to call whenever the element receives a blur event
    * @param id The id that is required to associate this component with the focus monitor
    */
-  monitor = ({ element, checkChildren = false, callback = _.noop, id }) => {
+  monitor = ({ element, id, checkChildren = false, callback = _.noop }) => {
     if (!this.props.__platform.is('browser')) return;
   
     // Check if we're already monitoring this element.
-    if (this.ELEMENT_INFO.has(element)) return;
+    if (this.state.elementInfo.indexOf(id) > -1) return;
     
     // Create monitored element info.
     const defaultId = id || _.uniqueId('sui-focus-monitor:');
@@ -100,8 +92,6 @@ class FocusMonitor extends React.Component {
       element,
       checkChildren,
       callback,
-      focused: false,
-      origin: null,
       unlisten: () => {
         element.removeEventListener('focus', focusListener, true);
         element.removeEventListener('blur', blurListener, true);
@@ -115,10 +105,9 @@ class FocusMonitor extends React.Component {
     this.setState((state) => {
       // add the information to the state
       return {
-        allIds: [...state.allIds, defaultId],
+        elementInfo: [...state.elementInfo, info],
       };
     }, () => {
-      this.ELEMENT_INFO.set(element, info);
       // add the event listeners on the next tick
       element.addEventListener('focus', focusListener, true);
       element.addEventListener('blur', blurListener, true);
@@ -127,19 +116,18 @@ class FocusMonitor extends React.Component {
   
   /**
    * Stops monitoring an element and removes all focus classes.
-   * @param element The element to stop monitoring.
+   * @param id The element ID to stop monitoring.
    */
-  stopMonitoring = (element) => {
-    const elementInfo = this.ELEMENT_INFO.get(element);
+  stopMonitoring = (id) => {
+    const index = _.findIndex(this.state.elementInfo, { id });
     
-    if (elementInfo) {
+    if (index > -1) {
+      const elementInfo = this.state.elementInfo[index];
       elementInfo.unlisten();
-      
-      setElementFocusState.call(this, element);
+
       this.setState((state) => {
-        const id = elementInfo.id;
         return {
-          allIds: _.without(state.allIds, id),
+          elementInfo: [...state.elementInfo].splice(0, index, 1),
         };
       });
     }
@@ -281,35 +269,6 @@ function registerGlobalListeners() {
   };
 }
 
-function setFocusType(element, options = {}) {
-  const info = this.ELEMENT_INFO.get(element);
-  if (info) {
-    this.ELEMENT_INFO.set(element, {
-      ...info,
-      // set the options, namely focused and origin
-      ...options,
-    });
-    // must call this because Maps are not reactive
-    this.forceUpdate();
-  }
-}
-
-/**
- * Sets the focus classes on the element based on the given focus origin.
- * @param element The element to update the classes on.
- * @param origin The focus origin.
- */
-function setElementFocusState(element, origin) {
-  const info = this.ELEMENT_INFO.get(element);
-  
-  if (info) {
-    setFocusType.call(this, element, {
-      origin,
-      focused: !!origin,
-    });
-  }
-}
-
 /**
  * Sets the origin and schedules an async function to clear it at the end of the event queue.
  * @param origin The origin to set.
@@ -367,7 +326,7 @@ function onFocus(event, element) {
   
   // If we are not counting child-element-focus as focused, make sure that the event target is the
   // monitored element itself.
-  const elementInfo = this.ELEMENT_INFO.get(element);
+  const elementInfo = _.find(this.state.elementInfo, { element });
   if (!elementInfo || (!elementInfo.checkChildren && element !== event.target)) {
     return;
   }
@@ -388,8 +347,7 @@ function onFocus(event, element) {
       origin = 'program';
     }
   }
-  
-  setElementFocusState.call(this, element, origin);
+
   // call the callback
   elementInfo.callback(origin);
   this.setState({ lastFocusOrigin: origin });
@@ -403,16 +361,15 @@ function onFocus(event, element) {
 function onBlur(event, element) {
   // If we are counting child-element-focus as focused, make sure that we aren't just blurring in
   // order to focus another child of the monitored element.
-  const elementInfo = this.ELEMENT_INFO.get(element);
-  
+  const elementInfo = _.find(this.state.elementInfo, { element });
+
   if (
     !elementInfo
     || (elementInfo.checkChildren && event.relatedTarget instanceof Node && element.contains(event.relatedTarget))
   ) {
     return;
   }
-  
-  setElementFocusState.call(this, element);
+
   // call the callback
   elementInfo.callback(null);
 }
