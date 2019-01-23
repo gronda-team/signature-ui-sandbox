@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { GREY, CYAN } from '../../../../components/core/theme/colors';
+import { GREY, CYAN } from '../../../../cdk/theme/colors';
 
 const optionThemeThunk = () => {
   return css`

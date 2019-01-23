@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, TAB } from '../../../components/core/keys';
+import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, TAB } from '../../keycodes/keys';
 
 export const ListKeyManagerPropTypes = PropTypes.shape({
   activeItemIndex: PropTypes.number,

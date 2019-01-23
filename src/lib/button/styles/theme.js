@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { GREEN, GREY } from '../../../components/core/theme/colors';
+import { GREEN, GREY } from '../../../cdk/theme/colors';
 
 const primary = GREEN[500];
 const primaryText = 'white';

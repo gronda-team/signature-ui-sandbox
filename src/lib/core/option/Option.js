@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { OptionRoot, OptionText } from './styles/index';
-import { ENTER, SPACE, SPACEBAR } from '../../../components/core/keys';
+import { ENTER, SPACE, SPACEBAR } from '../../../cdk/keycodes/keys';
 
 class Option extends React.Component {
   constructor() {

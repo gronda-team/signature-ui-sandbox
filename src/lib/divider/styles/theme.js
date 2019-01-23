@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { GREY } from '../../../components/core/theme/colors';
+import { GREY } from '../../../cdk/theme/colors';
 
 const NORMAL = GREY[500];
 

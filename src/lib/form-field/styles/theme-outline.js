@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { GREEN, GREY, RED } from '../../../components/core/theme/colors';
+import { GREEN, GREY, RED } from '../../../cdk/theme/colors';
 
 const idleEmptyOutline = GREY[500];
 const disabledOutline = idleEmptyOutline;

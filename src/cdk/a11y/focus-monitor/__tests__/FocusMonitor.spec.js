@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { mount } from 'enzyme';
 import {FocusMonitor, TOUCH_BUFFER_MS, withFocusMonitor} from '../exports';
 import {Platform} from '../../../platform';
-import {TAB} from '../../../../components/core/keys';
+import {TAB} from '../../../keycodes/keys';
 
 describe('FocusMonitor smoke test', () => {
   it('should render without problems', () => {

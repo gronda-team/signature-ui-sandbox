@@ -1,5 +1,5 @@
 import { keyframes, css } from 'styled-components';
-import { GREY } from '../../../components/core/theme/colors';
+import { GREY } from '../../../cdk/theme/colors';
 
 const background = 'white';
 const hoverBackground = GREY[100];

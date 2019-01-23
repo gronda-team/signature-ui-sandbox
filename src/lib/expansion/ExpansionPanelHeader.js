@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { ExpansionPanelHeaderContent, ExpansionPanelHeaderRoot } from './styles/index';
 import { withBaseAccordionItemConsumer } from '../../cdk/accordion/context';
 import { stack } from '../core/components/util';
-import { ENTER, SPACE, SPACEBAR } from '../../components/core/keys';
+import { ENTER, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
 import { withAccordionItemConsumer } from './context';
 import {
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes,

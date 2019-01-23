@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { GREY, GREEN, RED } from '../../../components/core/theme/colors';
+import { GREY, GREEN, RED } from '../../../cdk/theme/colors';
 import { PLACEHOLDER } from '../../core/styles/vendor';
 
 const active = GREEN[500];

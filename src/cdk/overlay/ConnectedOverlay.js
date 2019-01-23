@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { OverlayContextDefaultProps, OverlayContextPropTypes, withOverlayConsumer } from './context/overlay';
 import { stack } from '../../lib/core/components/util';
 import Overlay from './Overlay';
-import { ESC, ESCAPE } from '../../components/core/keys';
+import { ESC, ESCAPE } from '../keycodes/keys';
 import { PositionStrategyDefaultProps, PositionStrategyPropTypes, withPositionStrategy } from './position/context';
 import FlexibleConnectedPositionStrategy from './position/FlexibleConnectedPositionStrategy';
 import RepositionScrollStrategy from './scroll/RepositionScrollStrategy';

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import VISUALLY_HIDDEN from '../../core/styles/a11y';
 import { TOGGLE_PADDING } from '../../core/styles/variables';
 import { USER_SELECT } from '../../core/styles/vendor';
-import { TRUNCATE_LINE } from '../../../components/core/theme/text';
+import { TRUNCATE_LINE } from '../../../cdk/theme/text';
 import { LINEAR } from '../../core/styles/animation';
 import themeThunk from './theme';
 

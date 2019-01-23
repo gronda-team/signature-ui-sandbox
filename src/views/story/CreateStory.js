@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from 'lodash';
 import { FormField } from '../../lib/form-field';
 import { TagList, TagInput, Tag } from '../../lib/tags';
-import { COMMA, ENTER } from '../../components/core/keys';
+import { COMMA, ENTER } from '../../cdk/keycodes/keys';
 
 export default class CreateStory extends React.Component {
   constructor() {

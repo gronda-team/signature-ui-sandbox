@@ -7,7 +7,7 @@ import {
   ListKeyManagerPropTypes, withListKeyConsumer,
 } from '../../cdk/a11y/key-manager/list-key-manager';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
-import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../components/core/keys';
+import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
 import {
   SelectionModelDefaultProps,
   SelectionModelPropTypes, withSelectionModelConsumer,

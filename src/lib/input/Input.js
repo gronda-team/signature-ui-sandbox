@@ -5,7 +5,7 @@ import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../../cdk/platform';
 import { BaseInput, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
-import { PROP_TYPE_STRING_OR_NUMBER } from '../../components/core/prop-types';
+import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/prop-types';
 import { stack } from '../core/components/util';
 
 /*

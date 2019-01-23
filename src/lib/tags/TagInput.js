@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { TagListInput } from './styles/index';
-import { ENTER } from '../../components/core/keys';
+import { ENTER } from '../../cdk/keycodes/keys';
 import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from './input-context';
 
 class TagInput extends React.Component {

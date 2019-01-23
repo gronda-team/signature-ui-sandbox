@@ -6,7 +6,7 @@ import {
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes,
   withListKeyConsumer,
 } from '../../cdk/a11y/key-manager/list-key-manager';
-import { BACKSPACE, DELETE, SPACE, SPACEBAR } from '../../components/core/keys';
+import { BACKSPACE, DELETE, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
 import {
   SelectionModelDefaultProps, SelectionModelPropTypes,
   withSelectionModelConsumer,

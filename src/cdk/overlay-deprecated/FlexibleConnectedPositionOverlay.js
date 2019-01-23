@@ -5,7 +5,7 @@ import Overlay from './Overlay';
 import { OverlayConnectedPositionBoundingBox, OverlayPane } from './styles/index';
 import { withPositionStrategyConsumer } from './position/context';
 import FlexibleConnectedPositionStrategy, { ConnectedPositionPropType } from './position/FlexibleConnectedPositionStrategy';
-import { ESC, ESCAPE } from '../../components/core/keys';
+import { ESC, ESCAPE } from '../keycodes/keys';
 
 /*
 Structure is as follows:

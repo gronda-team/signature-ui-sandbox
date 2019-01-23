@@ -9,7 +9,7 @@ import {
   SelectionModelDefaultProps, SelectionModelPropTypes,
   withSelectionModelConsumer,
 } from '../../cdk/collections/selection-model';
-import { BACKSPACE, END, HOME } from '../../components/core/keys';
+import { BACKSPACE, END, HOME } from '../../cdk/keycodes/keys';
 import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field/control';
 import { TagListProvider } from './context';
 import { TagListRoot } from './styles/index';

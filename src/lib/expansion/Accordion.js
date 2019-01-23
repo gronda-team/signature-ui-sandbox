@@ -8,7 +8,7 @@ import ListKeyManager, {
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes,
   withListKeyConsumer,
 } from '../../cdk/a11y/key-manager/list-key-manager';
-import { END, HOME } from '../../components/core/keys';
+import { END, HOME } from '../../cdk/keycodes/keys';
 
 const toArray = React.Children.toArray;
 

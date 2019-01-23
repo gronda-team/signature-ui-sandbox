@@ -1,5 +1,5 @@
 import { css } from 'styled-components';
-import { GREY } from '../../../components/core/theme/colors';
+import { GREY } from '../../../cdk/theme/colors';
 
 const selectThemeThunk = (components) => {
   const { Content, Trigger, Value, ValueText, Panel, Placeholder } = components;
