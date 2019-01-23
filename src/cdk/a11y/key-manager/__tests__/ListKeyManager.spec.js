@@ -57,9 +57,11 @@ describe('ListKeyManager', () => {
       disabled: [false, ...state.disabled],
     }));
 
-    expect(state.provide.activeItemIndex).toBe(1);
-    expect(state.getLabel(state.provide.activeItem))
+    // Same label
+    expect(state.getLabel(keyManagerInstance.state.provide.activeItem))
       .toBe('Thorium');
+    // But different index
+    expect(keyManagerInstance.state.provide.activeItemIndex).toBe(1);
   });
 });
 

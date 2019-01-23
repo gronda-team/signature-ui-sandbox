@@ -3,6 +3,10 @@ import _ from 'lodash';
 import {ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, DOWN, LEFT, RIGHT, TAB, UP} from '../../keycodes/keys';
 import { ListKeyConsumer, ListKeyProvider } from './context/ListKeyManagerContext';
 
+// Aliases
+const count = React.Children.count;
+const toArray = React.Children.toArray;
+
 /**
  * Function that obtains a label or view value from a React
  * component.
@@ -87,6 +91,15 @@ export default class ListKeyManager extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.typeAhead !== this.state.typeAhead) {
       this.setTypeAhead(this.state.typeAhead);
+    }
+
+    if (count(prevState.items) !== count(this.state.items)) {
+      updateActiveItemOnItemsChange.call(this, this.state.items);
+    } else {
+      const toItemLabel = this.state.getLabel;
+      if (!_.isEqual(prevState.items.map(toItemLabel), this.state.items.map(toItemLabel))) {
+        updateActiveItemOnItemsChange.call(this, this.state.items);
+      }
     }
   }
   
@@ -399,4 +412,25 @@ function setActiveItemByIndex(index, fallbackDelta) {
   }
   
   this.setActiveItem(index);
+}
+
+/**
+ * React to changes in the children, i.e., if they're not of the same length,
+ * or if the order is different within them, and then update the activeItem
+ * index accordingly.
+ */
+function updateActiveItemOnItemsChange(newItems) {
+  if (this.state.provide.activeItem) {
+    const activeItemLabel = this.state.getLabel(this.state.provide.activeItem);
+    const newIndex = _.findIndex(newItems, item => this.state.getLabel(item) === activeItemLabel);
+
+    if (newIndex > -1 && newIndex !== this.state.provide.activeItemIndex) {
+      this.setState(state => ({
+        provide: {
+          ...state.provide,
+          activeItemIndex: newIndex,
+        },
+      }));
+    }
+  }
 }
