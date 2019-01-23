@@ -26,7 +26,6 @@ describe('FocusMonitor', () => {
   let buttonElementNode;
   let monitorSpy;
   let stopMonitoringSpy;
-  let changeHandlerSpy;
 
   beforeAll(() => {
     root = document.createElement('div');
@@ -65,7 +64,7 @@ describe('FocusMonitor', () => {
     monitor uses addEventListener (rather than JSX) to add
     the focus monitor stuff.
      */
-    buttonElementNode.dispatchEvent(new Event('focus'));
+    buttonElementNode.focus();
     expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
   });
 
@@ -74,7 +73,7 @@ describe('FocusMonitor', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', {
       key: TAB,
     }));
-    buttonElementNode.dispatchEvent(new Event('focus'));
+    buttonElementNode.focus();
 
     expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
     expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('keyboard');
@@ -86,7 +85,7 @@ describe('FocusMonitor', () => {
       bubbles: true,
       cancelable: true,
     }));
-    buttonElementNode.dispatchEvent(new Event('focus'));
+    buttonElementNode.focus();
 
     expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
     expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('mouse');
@@ -102,7 +101,7 @@ describe('FocusMonitor', () => {
     touchEvent.initEvent('touchstart', true, true);
 
     buttonElementNode.dispatchEvent(touchEvent);
-    buttonElementNode.dispatchEvent(new Event('focus'));
+    buttonElementNode.focus();
     jest.runTimersToTime(TOUCH_BUFFER_MS);
 
     expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
