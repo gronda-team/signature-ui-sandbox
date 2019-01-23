@@ -8,7 +8,7 @@ import {
   withScrollDispatcher,
 } from '../../scrolling/context/scroll-dispatcher';
 import { ViewportContextDefaultProps, ViewportContextPropTypes } from '../../scrolling/context/viewport-ruler';
-import { isElementScrolledOutsideView } from '../../overlay-deprecated/position/scroll-clip';
+import { isElementScrolledOutsideView } from '../position/scroll-clip';
 import { ScrollStrategyProvider } from './context';
 
 class RepositionScrollStrategy extends React.Component {

@@ -14,7 +14,7 @@ import { PositionStrategyProvider } from './context';
 import {
   isElementClippedByScrolling,
   isElementScrolledOutsideView,
-} from '../../overlay-deprecated/position/scroll-clip';
+} from './scroll-clip';
 
 class FlexibleConnectedPositionStrategy extends React.Component {
   constructor() {
