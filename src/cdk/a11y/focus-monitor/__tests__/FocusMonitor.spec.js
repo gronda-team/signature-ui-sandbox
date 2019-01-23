@@ -106,6 +106,53 @@ describe('FocusMonitor', () => {
     expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('touch');
     jest.useRealTimers();
   });
+
+  it('should detect programmatic focus', () => {
+    buttonElementNode.focus();
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('program');
+  });
+
+  it('should simulate keyboard focus when using focusVia', () => {
+    focusMonitor.instance().focusVia(buttonElementNode, 'keyboard');
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('keyboard');
+  });
+
+  it('should simulate mouse focus when using focusVia', () => {
+    focusMonitor.instance().focusVia(buttonElementNode, 'mouse');
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('mouse');
+  });
+
+  it('should simulate touch focus when using focusVia', () => {
+    focusMonitor.instance().focusVia(buttonElementNode, 'touch');
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('touch');
+  });
+
+  it('should simulate programmatic focus when using focusVia', () => {
+    focusMonitor.instance().focusVia(buttonElementNode, 'program');
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('program');
+  });
+
+  it('should have falsy data attributes on blur', () => {
+    buttonElementNode.focus();
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('program');
+
+    buttonElementNode.blur();
+
+    expect(buttonElementNode.getAttribute('data-focused')).toBe('false');
+    expect(buttonElementNode.getAttribute('data-focus-origin')).toBe(null);
+  });
 });
 
 class PlainButton extends React.Component {
