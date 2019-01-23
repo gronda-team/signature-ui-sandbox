@@ -1,9 +1,2 @@
-export {
-  default as FocusMonitor,
-  TOUCH_BUFFER_MS,
-  FocusMonitorPropTypes,
-  FocusMonitorDefaultProps,
-  FocusMonitorProvider,
-  FocusMonitorConsumer,
-  withFocusMonitor,
-} from './focus-monitor/FocusMonitor';
+export { default as FocusMonitor } from './focus-monitor/FocusMonitor';
+export * from './focus-monitor/context/FocusMonitorContext';

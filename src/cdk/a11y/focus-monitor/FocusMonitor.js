@@ -1,30 +1,10 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {
   withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes,
   normalizePassiveListenerOptions,
 } from '../../platform';
-
-// This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
-// that a value of around 650ms seems appropriate.
-const TOUCH_BUFFER_MS = 650;
-
-const FocusMonitorPropTypes = PropTypes.shape({
-  focusVia: PropTypes.func,
-  monitor: PropTypes.func,
-  stopMonitoring: PropTypes.func,
-});
-
-const FocusMonitorDefaultProps = {
-  focusVia: _.noop,
-  monitor: _.noop,
-  stopMonitoring: _.noop,
-};
-
-const { Provider: FocusMonitorProvider, Consumer: FocusMonitorConsumer } = React.createContext(
-  FocusMonitorDefaultProps,
-);
+import {FocusMonitorProvider, TOUCH_BUFFER_MS} from './context/FocusMonitorContext';
 
 class FocusMonitor extends React.Component {
   constructor() {
@@ -165,29 +145,6 @@ FocusMonitor.defaultProps = {
 };
 
 export default withPlatformConsumer(FocusMonitor);
-
-function withFocusMonitor(Component) {
-  function WithFocusMonitor(props) {
-    return (
-      <FocusMonitorConsumer>
-        { value => <Component {...props} __focusMonitor={value} />}
-      </FocusMonitorConsumer>
-    );
-  }
-  
-  WithFocusMonitor.displayName = `WithFocusMonitor${Component.displayName}`;
-  
-  return WithFocusMonitor;
-}
-
-export {
-  TOUCH_BUFFER_MS,
-  FocusMonitorPropTypes,
-  FocusMonitorDefaultProps,
-  FocusMonitorProvider,
-  FocusMonitorConsumer,
-  withFocusMonitor,
-};
 
 /**
  * Private methods
