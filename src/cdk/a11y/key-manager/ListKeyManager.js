@@ -1,20 +1,17 @@
 import * as React from 'react';
 import _ from 'lodash';
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, TAB } from '../../keycodes/keys';
+import {ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, DOWN, LEFT, RIGHT, TAB, UP} from '../../keycodes/keys';
 import { ListKeyConsumer, ListKeyProvider } from './context/ListKeyManagerContext';
 
 /**
- * Function that checks whether an item has a property that matches the *UPPERCASE* string
- * that comes from state.pressedLetters.
- *
- * Depending on if you pass
+ * Function that obtains a label or view value from a React
+ * component.
  *
  * @param item - iteratee from this.state.items
- * @param STRING - *UPPERCASE* string
  * @returns {boolean}
  */
-function defaultMatchViewValue(item, STRING) {
-  return _.get(item.props, 'viewValue', '').toUpperCase().trim().indexOf(STRING) === 0;
+function defaultGetLabel(item) {
+  return _.get(item.props, 'viewValue', '');
 }
 
 /**
@@ -43,24 +40,36 @@ export default class ListKeyManager extends React.Component {
       /** Turns on typeahead mode which allows users to set the
        * active item by typing. */
       typeAhead: 200,
+      /**
+       * Predicate function that can be used to check whether an item should be skipped
+       * by the key manager. By default, disabled items are skipped.
+       */
       skipPredicateFn: item => _.get(item.props, 'disabled', false),
-      matchViewValue: defaultMatchViewValue,
+      /** Gets the label for this option. */
+      getLabel: defaultGetLabel,
+      /**
+       * Callback that is called when the TAB key is pressed, so components can react
+       * when focus is shifted off of the list.
+       */
       tabOutFn: _.noop,
-      items: [], // Component[] or HTMLElement[]
+      /** QueryList equivalent for React */
+      items: [],
+      // Buffer for the letters that the user has pressed when the typeahead option is turned on.
       pressedLetters: [],
+      /** Callback that runs when the active item changes */
+      onChange: _.noop,
+      /**
+       * Modifier keys which are allowed to be held down and whose default actions will be prevented
+       * as the user is pressing the arrow keys. Defaults to not allowing any modifier keys.
+       */
+      allowedModifierKeys: [],
       provide: {
-        /*
-        All these props are provided by the KeyManager provider
-         */
+        /** All these props are provided by the KeyManager provider */
         activeItemIndex: -1,
         activeItem: null,
-        setConfig: setConfig.bind(this),
-        setTabOutFn: setPrivateState.bind(this, 'tabOutFn'),
-        setSkipPredicateFn: setPrivateState.bind(this, 'skipPredicateFn'),
-        setMatchViewValueFn: setPrivateState.bind(this, 'matchViewValue'),
-        setItems: setPrivateState.bind(this, 'items'),
         setActiveItem: this.setActiveItem,
-        onKeydown: this.onKeydown,
+        onKeyDown: this.onKeyDown,
+        setConfig: setConfig.bind(this),
         setFirstItemActive: this.setFirstItemActive,
         setLastItemActive: this.setLastItemActive,
         setNextItemActive: this.setNextItemActive,
@@ -72,32 +81,23 @@ export default class ListKeyManager extends React.Component {
   }
   
   componentDidMount() {
-    this.setTypeAhead();
+    this.setTypeAhead(this.state.typeAhead);
   }
   
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.pressedLetters.length > prevState.pressedLetters.length) {
-      setActiveFromKeys.call(this);
-    }
-    
     if (prevState.typeAhead !== this.state.typeAhead) {
-      this.setTypeAhead();
+      this.setTypeAhead(this.state.typeAhead);
     }
   }
   
   /**
    * Turns on typeahead mode which allows users to set the active item by typing.
    */
-  setTypeAhead = () => {
-    const items = this.state.items;
-    /*
-    Todo: update throw error condition because we may pass HTMLElement items, which do not have .props
-     */
-    // if (items && _.some(items, item => !_.get(item.props, 'viewValue'))) {
-    //   throw new Error('ListKeyManager items must have a `viewValue` prop.');
-    // }
-  
-    this.purgeKeys = this.state.typeAhead ? _.debounce(clearKeys.bind(this), _.toNumber(this.state.typeAhead), { trailing: true }) : clearKeys.bind(this);
+  setTypeAhead = (debounceInterval = 200) => {
+    const typeAhead = _.toNumber(debounceInterval);
+    this.getStringFromKeys = typeAhead > 0 ?
+      _.debounce(getStringFromKeys.bind(this), typeAhead, { trailing: true }) :
+      getStringFromKeys.bind(this);
   };
   
   /*
@@ -106,9 +106,14 @@ export default class ListKeyManager extends React.Component {
   setActiveItem = (item) => {
     this.updateActiveItem(item);
   };
-  
-  onKeydown = (event) => {
+
+  onKeyDown = (event) => {
     const key = event.key;
+    const modifiers = ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'];
+    const isModifierAllowed = _.every(modifiers, modifier => (
+      // if modifier key wasn't pressed, or it was, and we allowed it
+      !event[modifier] || this.state.allowedModifierKeys.indexOf(modifier) > -1
+    ));
   
     switch (key) {
       case TAB:
@@ -116,58 +121,60 @@ export default class ListKeyManager extends React.Component {
         return;
     
       case ARROW_DOWN:
-        if (this.state.vertical) {
+      case DOWN:
+        if (this.state.vertical && isModifierAllowed) {
           this.setNextItemActive();
           break;
-        } else {
-          return;
-        }
+        } else return;
     
       case ARROW_UP:
-        if (this.state.vertical) {
+      case UP:
+        if (this.state.vertical && isModifierAllowed) {
           this.setPreviousItemActive();
           break;
-        } else {
-          return;
-        }
+        } else return;
     
       case ARROW_RIGHT:
-        if (this.state.horizontal === 'ltr') {
-          this.setNextItemActive();
+      case RIGHT:
+        if (this.state.horizontal && isModifierAllowed) {
+          this.state.horizontal === 'rtl' ?
+            this.setPreviousItemActive() :
+            this.setNextItemActive();
           break;
-        } else if (this.state.horizontal === 'rtl') {
-          this.setPreviousItemActive();
-          break;
-        } else {
-          // it's null, so disable navigation
-          return;
-        }
+        } else return;
     
       case ARROW_LEFT:
-        if (this.state.horizontal === 'ltr') {
-          this.setPreviousItemActive();
+      case LEFT:
+        if (this.state.horizontal && isModifierAllowed) {
+          this.state.horizontal === 'rtl' ?
+            this.setNextItemActive() :
+            this.setPreviousItemActive();
           break;
-        } else if (this.state.horizontal === 'rtl') {
-          this.setNextItemActive();
-          break;
-        } else {
-          // it's null, so disable navigation
-          return;
-        }
+        } else return;
     
       default:
-        // Attempt to use the `event.key` which also maps it to the user's keyboard language,
-        // otherwise fall back to resolving alphanumeric characters via the keyCode.
-        if (_.get(key, 'length', 1)) {
-          addKey.call(this, event.key.toLocaleUpperCase());
+        if (isModifierAllowed || event.shiftKey) {
+          if (key && key.length === 1) {
+            addKey.call(this, key.toLocaleUpperCase());
+          } else {
+            // Attempt to use the `event.key` which also maps it to the user's keyboard language,
+            // otherwise fall back to resolving alphanumeric characters via the keyCode.
+            const keyCode = event.keyCode;
+            if (
+              (keyCode >= 'A'.charCodeAt(0) && keyCode <= 'Z'.charCodeAt(0))
+              || (keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0))
+            ) {
+              addKey.call(this, String.fromCharCode(keyCode));
+            }
+          }
         }
       
         // Note that we return here, in order to avoid preventing
         // the default action of non-navigational keys.
         return;
     }
-  
-    clearKeys.call(this);
+
+    this.setState({ pressedLetters: [] });
     event.preventDefault();
   };
   
@@ -206,7 +213,10 @@ export default class ListKeyManager extends React.Component {
         activeItemIndex: index,
         activeItem: itemArray[index],
       },
-    }));
+    }), () => {
+      // Invoke the change handler to whoever is listening
+      this.state.onChange(index);
+    });
   };
   
   /** Allows setting of the activeItemIndex without any other effects. */
@@ -271,15 +281,11 @@ Private methods
  * Set the configuration, namely the wrap, typeAhead, vertical, and horizontal
  * parts of state
  */
-function setConfig({ wrap, vertical, horizontal, typeAhead }) {
-  this.setState({ wrap, vertical, horizontal, typeAhead });
-}
-
-/**
- * Set private state (i.e., things that are not exposed in this.state.provide)
- */
-function setPrivateState(key, value) {
-  this.setState({ [key]: value });
+function setConfig({ wrap, vertical, horizontal, typeAhead, skipPredicateFn,
+  getLabel, tabOutFn, items, onChange, allowedModifierKeys,
+}) {
+  const newState = _.pickBy(arguments[0], _.negate(_.isUndefined));
+  this.setState(newState);
 }
 
 /*
@@ -294,9 +300,42 @@ function addKey(key) {
     invoked with a debounce on the trailing edge, so will do it whenever
     all of the events end.
      */
-    _.invoke(this.purgeKeys, 'cancel');
-    this.purgeKeys();
+    _.invoke(this.getStringFromKeys, 'cancel');
+    this.getStringFromKeys(this.state.pressedLetters);
   });
+}
+
+/*
+Get string from array
+ */
+function getStringFromKeys(array = []) {
+  if (array.length > 0) {
+    onTypeAhead.call(this, array.join(''));
+  }
+}
+
+/*
+Get the appropriate list item from the string
+ */
+function onTypeAhead(inputString) {
+  const items = this.state.items;
+
+  // Start at 1 because we want to start searching at the item immediately
+  // following the current active item.
+  for (let i = 1; i < items.length; i++) {
+    const index = (this.state.activeItemIndex + i) % items.length;
+    const item = items[index];
+
+    if (
+      !this.state.skipPredicateFn(item)
+      && this.state.getLabel(item).toUpperCase().trim().indexOf(inputString) === 0
+    ) {
+      this.setActiveItem(index);
+      break;
+    }
+  }
+
+  this.setState({ pressedLetters: [] });
 }
 
 /*
@@ -360,27 +399,4 @@ function setActiveItemByIndex(index, fallbackDelta) {
   }
   
   this.setActiveItem(index);
-}
-
-/**
- * Sets the current active child from the list of keys that are given
- */
-function setActiveFromKeys() {
-  if (this.state.pressedLetters.length === 0) return;
-  const string = this.state.pressedLetters.join('');
-  
-  const items = this.state.items;
-  
-  for (let i = 1; i < items.length + 1; i++) {
-    const index = (this.state.provide.activeItemIndex + i) % items.length;
-    const item = items[index];
-    
-    if (!this.state.skipPredicateFn(item) && this.state.matchViewValue(item, string)) {
-      
-      this.setActiveItem(index);
-      break;
-    }
-  }
-  
-  this.purgeKeys();
 }
