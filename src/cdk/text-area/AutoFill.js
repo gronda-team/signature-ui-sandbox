@@ -4,7 +4,7 @@ import {
   withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes,
   normalizePassiveListenerOptions,
 } from '../platform';
-import { TEXT_FIELD_ANIMATION_END, TEXT_FIELD_ANIMATION_START } from '../a11y/focus-monitor/styles/index';
+import { TEXT_FIELD_ANIMATION_END, TEXT_FIELD_ANIMATION_START } from './styles/index';
 import { AutoFillProvider } from './context';
 
 const LISTENER_OPTIONS = normalizePassiveListenerOptions({ passive: true });
