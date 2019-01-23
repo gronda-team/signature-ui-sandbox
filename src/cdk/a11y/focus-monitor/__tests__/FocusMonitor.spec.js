@@ -37,6 +37,7 @@ describe('FocusMonitor', () => {
           <FocusMonitorPlainButton />
         </FocusMonitor>
       </Platform>,
+      // Must attach to root to ensure document captures the events
       { attachTo: root },
     );
   });
@@ -94,6 +95,8 @@ describe('FocusMonitor', () => {
   it('should detect focus via touch', () => {
     // Simulate focus via touch event on mobile
     jest.useFakeTimers();
+
+    // calling new TouchEvent() will throw "Illegal constructor" error
     const touchEvent = document.createEvent('TouchEvent');
 
     touchEvent.initEvent('touchstart', true, true);
@@ -155,10 +158,16 @@ describe('FocusMonitor', () => {
   });
 });
 
+/**
+ * Rather than test a library component, this testable component
+ * represents how most other library components interact with
+ * the FocusMonitor, without any additional overhead.
+ */
 class PlainButton extends React.Component {
   constructor() {
     super();
 
+    /** Keep track of focusOrigin */
     this.state = { focusOrigin: null };
   }
 
@@ -171,6 +180,7 @@ class PlainButton extends React.Component {
     if (button) {
       this.props.__focusMonitor.monitor({
         element: button,
+        /** Invoke a callback to set this component's state */
         callback: this.setFocusOrigin,
       });
     }
