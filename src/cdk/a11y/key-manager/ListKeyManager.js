@@ -219,12 +219,14 @@ export default class ListKeyManager extends React.Component {
   updateActiveItem = (item) => {
     const itemArray = _.toArray(this.state.items);
     const index = _.isNumber(item) ? item : itemArray.indexOf(item);
+
+    const activeItem = itemArray[index];
     
     this.setState(state => ({
       provide: {
         ...state.provide,
         activeItemIndex: index,
-        activeItem: itemArray[index],
+        activeItem: _.isNil(activeItem) ? null : activeItem,
       },
     }), () => {
       // Invoke the change handler to whoever is listening
