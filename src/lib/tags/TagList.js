@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes, withListKeyConsumer,
   withListKeyProvider,
-} from '../../cdk/a11y/key-manager/list-key-manager';
+} from '../../cdk/a11y/key-manager/ListKeyManager';
 import {
   SelectionModelDefaultProps, SelectionModelPropTypes,
   withSelectionModelConsumer,

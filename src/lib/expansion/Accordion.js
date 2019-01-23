@@ -7,7 +7,7 @@ import { AccordionRoot } from './styles/index';
 import ListKeyManager, {
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes,
   withListKeyConsumer,
-} from '../../cdk/a11y/key-manager/list-key-manager';
+} from '../../cdk/a11y/key-manager/ListKeyManager';
 import { END, HOME } from '../../cdk/keycodes/keys';
 
 const toArray = React.Children.toArray;
