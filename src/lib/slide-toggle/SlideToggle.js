@@ -5,7 +5,7 @@ import {
   SlideToggleBar, SlideToggleContent, SlideToggleInput, SlideToggleLabel, SlideToggleRoot, SlideToggleThumb,
   SlideToggleThumbContainer,
 } from './styles/index';
-import { FocusMonitorDefaultProps, FocusMonitorPropTypes } from '../../cdk/a11y/focus-monitor';
+import { FocusMonitorDefaultProps, FocusMonitorPropTypes } from '../../cdk/a11y';
 import { withFocusMonitor } from '../../cdk/a11y/focus-monitor/FocusMonitor';
 
 class SlideToggle extends React.Component {

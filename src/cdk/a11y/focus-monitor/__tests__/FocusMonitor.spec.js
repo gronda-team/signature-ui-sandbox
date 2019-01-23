@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { mount } from 'enzyme';
-import {FocusMonitor, TOUCH_BUFFER_MS, withFocusMonitor} from '../exports';
+import {FocusMonitor, TOUCH_BUFFER_MS, withFocusMonitor} from '../../exports';
 import {Platform} from '../../../platform';
 import {TAB} from '../../../keycodes/keys';
 

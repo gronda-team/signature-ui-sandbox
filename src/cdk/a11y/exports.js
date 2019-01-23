@@ -6,4 +6,4 @@ export {
   FocusMonitorProvider,
   FocusMonitorConsumer,
   withFocusMonitor,
-} from './FocusMonitor';
+} from './focus-monitor/FocusMonitor';

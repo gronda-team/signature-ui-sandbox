@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import './index.css';
 import App from './App';
-import { FocusMonitor } from './cdk/a11y/focus-monitor';
+import { FocusMonitor } from './cdk/a11y';
 import { Platform } from './cdk/platform';
 import registerServiceWorker from './registerServiceWorker';
 import { KeyboardDispatcher, OverlayContainer } from './cdk/overlay';

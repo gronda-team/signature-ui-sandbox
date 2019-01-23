@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {
   FocusMonitorDefaultProps, FocusMonitorPropTypes,
   withFocusMonitor,
-} from '../../cdk/a11y/focus-monitor';
+} from '../../cdk/a11y';
 import {
   CheckboxBackground, CheckboxCheckmark, CheckboxCheckmarkPath, CheckboxFrame, CheckboxInnerContainer, CheckboxInput,
   CheckboxLabel,
