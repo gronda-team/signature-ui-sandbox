@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import {getDisplayName} from '../../../util';
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
 // that a value of around 650ms seems appropriate.
@@ -34,7 +35,7 @@ export function withFocusMonitor(Component) {
     );
   }
 
-  WithFocusMonitor.displayName = `WithFocusMonitor${Component.displayName}`;
+  WithFocusMonitor.displayName = `WithFocusMonitor(${getDisplayName(Component)})`;
 
   return WithFocusMonitor;
 }
