@@ -6,6 +6,7 @@ export const SHIFT = 'Shift';
 export const ENTER = 'Enter';
 export const TAB = 'Tab';
 export const SPACE = ' ';
+// IE 9, 10, 11; FF 37
 export const SPACEBAR = 'Spacebar';
 export const COMMA = ',';
 
@@ -14,6 +15,11 @@ export const ARROW_LEFT = 'ArrowLeft';
 export const ARROW_DOWN = 'ArrowDown';
 export const ARROW_RIGHT = 'ArrowRight';
 export const ARROW_UP = 'ArrowUp';
+// These are from IE, Edge 16, and FF 36
+export const LEFT = 'Left';
+export const DOWN = 'Down';
+export const RIGHT = 'Right';
+export const UP = 'Up';
 export const END = 'End';
 export const HOME = 'Home';
 export const PAGE_DOWN = 'PageDown';
