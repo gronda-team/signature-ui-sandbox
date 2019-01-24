@@ -74,6 +74,7 @@ export default class ListKeyManager extends React.Component {
         setActiveItem: this.setActiveItem,
         onKeyDown: this.onKeyDown,
         setConfig: setConfig.bind(this),
+        setItemsIfChanged: itemComparator.bind(this),
         setFirstItemActive: this.setFirstItemActive,
         setLastItemActive: this.setLastItemActive,
         setNextItemActive: this.setNextItemActive,
@@ -297,7 +298,7 @@ Private methods
  * parts of state
  */
 function setConfig({ wrap, vertical, horizontal, typeAhead, skipPredicateFn,
-  getLabel, tabOutFn, items, onChange, allowedModifierKeys,
+  getLabel, tabOutFn, items, onChange, allowedModifierKeys, setItemsIfChanged,
 }) {
   const newState = _.pickBy(arguments[0], _.negate(_.isUndefined));
   this.setState(newState);
@@ -434,5 +435,21 @@ function updateActiveItemOnItemsChange(newItems) {
         },
       }));
     }
+  }
+}
+
+/**
+ * Primitive detect changes function for determining whether or not the items
+ * should change. Completely opt-in.
+ * @param previous - previous array of items
+ * @param current - current array of items
+ */
+function itemComparator(previous, current) {
+  if (
+    previous.length !== current.length
+    || !_.isEqual(previous.map(this.state.getLabel), current.map(this.state.getLabel))
+    || !_.isEqual(previous.map(this.state.skipPredicateFn), current.map(this.state.skipPredicateFn))
+  ) {
+    setConfig.call(this, { items: current });
   }
 }
