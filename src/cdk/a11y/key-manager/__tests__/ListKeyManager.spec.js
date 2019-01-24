@@ -391,6 +391,126 @@ describe('ListKeyManager', () => {
       expect(onChangeSpy).not.toHaveBeenCalled();
     }
   });
+
+  // Using the individual functions that are passed as context
+  describe('Programmatic focus (functions passed as context)', () => {
+    it('should setActiveItem()', () => {
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+
+      keyManagerInstance.setActiveItem(1);
+      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+    });
+
+    it('should be able to set the active item by reference', () => {
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+
+      const item = keyManagerInstance.state.items[2];
+      keyManagerInstance.setActiveItem(item);
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+    });
+
+    it('should be able to set the active item without emitting', () => {
+      onChangeSpy = jest.spyOn(keyManagerInstance.state, 'onChange');
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      keyManagerInstance.updateActiveItem(2);
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(onChangeSpy).not.toHaveBeenCalled();
+    });
+
+    it('should expose the active item correctly', () => {
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.getLabel(keyManager.state('provide').activeItem))
+        .toBe('Protactinium');
+
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.getLabel(keyManager.state('provide').activeItem))
+        .toBe('Uranium');
+    });
+
+    it('should setFirstItemActive()', () => {
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+
+      keyManagerInstance.setFirstItemActive();
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+    });
+
+    it('should set the first item active to the second item if the first one is disabled', () => {
+      plainList.setState({
+        disabled: [true, false, false],
+      });
+
+      keyManagerInstance.setFirstItemActive();
+      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+    });
+
+    it('should setLastItemActive()', () => {
+      keyManagerInstance.setLastItemActive();
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+    });
+
+    it('should set the active item to the penultimate item if the last one is disabled', () => {
+      plainList.setState({
+        disabled: [false, false, true],
+      });
+
+      keyManagerInstance.setLastItemActive();
+      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+    });
+
+    it('should setNextItemActive()', () => {
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      keyManagerInstance.setNextItemActive();
+      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+    });
+
+    it('should set the next active item to the next enabled item', () => {
+      plainList.setState({
+        disabled: [false, true, false],
+      });
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      keyManagerInstance.setNextItemActive();
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+    });
+
+    it('should setPreviousItemActive()', () => {
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+      keyManagerInstance.setPreviousItemActive();
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+    });
+
+    it('should set the previous active item to the previous enabled item', () => {
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+
+      plainList.setState({
+        disabled: [false, true, false],
+      });
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      keyManagerInstance.setPreviousItemActive();
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+    });
+
+    it('should not call onChange if the item did not change', () => {
+      onChangeSpy = jest.spyOn(keyManagerInstance.state, 'onChange');
+
+      keyManagerInstance.setActiveItem(2);
+      keyManagerInstance.setActiveItem(2);
+
+      expect(onChangeSpy).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 /**
