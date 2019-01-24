@@ -118,7 +118,13 @@ export default class ListKeyManager extends React.Component {
   Sets the active item to the item at the index specified. (Or item)
    */
   setActiveItem = (item) => {
+    const previousIndex = this.state.provide.activeItemIndex;
     this.updateActiveItem(item);
+
+    if (this.state.provide.activeItemIndex !== previousIndex) {
+      // Invoke the change handler to whoever is listening
+      this.state.onChange(this.state.provide.activeItemIndex);
+    }
   };
 
   onKeyDown = (event) => {
@@ -229,10 +235,7 @@ export default class ListKeyManager extends React.Component {
         activeItemIndex: index,
         activeItem: _.isNil(activeItem) ? null : activeItem,
       },
-    }), () => {
-      // Invoke the change handler to whoever is listening
-      this.state.onChange(index);
-    });
+    }));
   };
   
   /** Allows setting of the activeItemIndex without any other effects. */
