@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { buttonBaseThunk, fabThunk, iconThunk, raisedButtonThunk, strokedButtonThunk } from './button-base';
+import {buttonBaseThunk, fullThunk, iconThunk, strokedButtonThunk} from './button-base';
 import FILL from '../../core/styles/layout-common';
 import { EASE_IN_OUT } from '../../core/styles/animation';
 import themeThunk from './theme';
@@ -64,10 +64,9 @@ ${ButtonFocusOverlay} > * {
   ${buttonBaseThunk(components)}
 }
 
-&[data-appearance=raised] { ${raisedButtonThunk(components)} }
-&[data-appearance=floating] { ${fabThunk(components)} }
 &[data-appearance=stroked] { ${strokedButtonThunk(components)} }
-&[data-appearance=icon] { ${iconThunk(components)} }
+&[data-size=icon] { ${iconThunk(components)} }
+&[data-size=full] { ${fullThunk()} }
 
 ${themeThunk(components)}
 `;

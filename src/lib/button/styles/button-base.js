@@ -14,17 +14,14 @@ const STROKED_BUTTON_PADDING = '0 23px';
 const STROKED_BUTTON_BORDER_WIDTH = '1px';
 
 // Icon Button standards
-const ICON_BUTTON_SIZE = 40;
-const ICON_BUTTON_BORDER_RADIUS = '50%';
+const ICON_BUTTON_SIZE = 36;
+const ICON_BUTTON_BORDER_RADIUS = BUTTON_BORDER_RADIUS;
 const ICON_BUTTON_LINE_HEIGHT = 24; // px
 
 // Fab standards
 const FAB_BORDER_RADIUS = '50%';
 const FAB_SIZE = 56; // px
 const FAB_PADDING = 16; // px
-
-const MINI_FAB_SIZE = 40; // px
-const MINI_FAB_PADDING = 8;
 
 
 export const buttonBaseThunk = (components) => {
@@ -135,9 +132,14 @@ height: ${ICON_BUTTON_SIZE}px;
 
 flex-shrink: 0;
 line-height: ${ICON_BUTTON_SIZE}px;
-border-radius: ${ICON_BUTTON_BORDER_RADIUS};
+border-radius: ${ICON_BUTTON_BORDER_RADIUS}px;
 
 i {
   line-height: ${ICON_BUTTON_LINE_HEIGHT};
 }
+`;
+
+export const fullThunk = () => css`
+box-sizing: border-box;
+width: 100%;
 `;
