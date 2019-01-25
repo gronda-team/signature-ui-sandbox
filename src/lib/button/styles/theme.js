@@ -2,24 +2,32 @@ import { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
 
 const primary = GREEN[500];
-const primaryText = 'white';
+const darkPrimaryText = GREY[900];
 const secondary = GREY[700];
+const strokedBorder = 'rgba(0, 0, 0, 0.12);';
 
-const focusOverlayColorThunk = () => css`
-[data-color=primary] > & { background-color: ${primary}; }
-[data-color=secondary] > & { background-color: ${secondary}; }
-[disabled=true] > & { background-color: transparent; }
-`;
-
-const buttonThemeProperty = property => {
+const buttonColors = (foreground, background, border) => {
   return css`
-  &[data-color=primary] { ${property}: ${property === 'color' ? primaryText : primary}; }
-  &[data-color=secondary] { ${property}: ${secondary}; }
-  &[disabled=true] {
-    ${property}:
-  }
+  color: ${foreground};
+  background: ${background};
+  ${border ? `border-color: ${border}` : ''}
   `;
 };
+
+// Standard is a transparent button with colored text
+const standardColor = foreground => (
+  buttonColors(foreground, 'transparent')
+);
+
+// Fill is a color-filled button with white text
+// But for color=default, it's the same as standard
+const fillColor = background => (
+  buttonColors('white', background)
+);
+
+const strokedColor = foreground => (
+  buttonColors(foreground, 'transparent', strokedBorder)
+);
 
 const buttonTypography = css`
 font-size: 14px;
@@ -33,21 +41,34 @@ const themeThunk = (components) => {
   // ensure that the button is readable on custom background colors. It's wrong to always assume
   // that those buttons are always placed inside of containers with the default background
   // color of the theme (e.g. themed toolbars).
-  &, &[data-variant=icon], &[data-variant=stroked] {
+  &[data-appearance=standard], &[data-appearance=stroked] {
     color: inherit;
     background: transparent;
     
-    ${buttonThemeProperty('color')}
-    ${FocusOverlay} {
-      ${focusOverlayColorThunk()}
-    }
+    &[data-color=primary] > ${FocusOverlay} { background-color: ${primary}; }
+    &[data-color=secondary] > ${FocusOverlay} { background-color: ${secondary}; }
+    &[disabled=true] > ${FocusOverlay} { background-color: transparent; }
+  }
+  
+  &[data-appearance=standard] {
+    &[data-color=primary] { ${standardColor(primary)} }
+    &[data-color=secondary] { ${standardColor(darkPrimaryText)} }
+  }
+  
+  &[data-appearance=fill] {
+    &[data-color=primary] { ${fillColor(primary)} }
+    &[data-color=secondary] { ${standardColor(darkPrimaryText)} }
+  }
+  
+  &[data-appearance=stroked] {
+    &[data-color=primary] { ${strokedColor(primary)} }
+    &[data-color=secondary] { ${strokedColor(darkPrimaryText)} }
   }
   
   ${FocusOverlay} { background-color: black; }
   
-  &[data-variant=stroked]:not([disabled=true]) { border-color: rgba(0, 0, 0, 0.12); }
-  &[data-variant=standard], &[data-variant=flat], &[data-variant=raised] {
-    ${buttonThemeProperty('background-color')}
+  &[data-appearance=stroked]:not([disabled=true]) {
+    border-color: ${strokedBorder};
   }
   
   ${buttonTypography}

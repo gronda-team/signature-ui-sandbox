@@ -30,7 +30,7 @@ const components = {
 };
 
 export const ButtonRoot = styled.div`
-&[data-variant=standard], &[data-variant=icon] {
+&[data-appearance=standard] {
   ${ButtonFocusOverlay} { opacity: 0; }
 }
 
@@ -41,7 +41,7 @@ ${ButtonFocusOverlay} > * {
 
 // Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
-&[data-variant=standard], &[data-variant=stroked] {
+&[data-appearance=standard], &[data-appearance=stroked] {
   &:hover {
     ${ButtonFocusOverlay} { opacity: 0.04; }
   }
@@ -51,24 +51,23 @@ ${ButtonFocusOverlay} > * {
 // enhancement and not all desktop browsers support this kind of media query, we can't
 // use something like @media (hover).
 @media (hover: none) {
-  &[data-variant=standard], &[data-variant=stroked] {
+  &[data-appearance=standard], &[data-appearance=stroked] {
     &:hover {
       ${ButtonFocusOverlay} { opacity: 0; }
     }
   }
 }
 
-&[data-variant=standard],
-&[data-variant=icon],
-&[data-variant=stroked],
-&[data-variant=flat] {
+&[data-appearance=standard],
+&[data-appearance=stroked],
+&[data-appearance=fill] {
   ${buttonBaseThunk(components)}
 }
 
-&[data-variant=raised] { ${raisedButtonThunk(components)} }
-&[data-variant=floating] { ${fabThunk(components)} }
-&[data-variant=stroked] { ${strokedButtonThunk(components)} }
-&[data-variant=icon] { ${iconThunk(components)} }
+&[data-appearance=raised] { ${raisedButtonThunk(components)} }
+&[data-appearance=floating] { ${fabThunk(components)} }
+&[data-appearance=stroked] { ${strokedButtonThunk(components)} }
+&[data-appearance=icon] { ${iconThunk(components)} }
 
 ${themeThunk(components)}
 `;

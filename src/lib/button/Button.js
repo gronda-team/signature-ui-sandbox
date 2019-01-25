@@ -31,17 +31,15 @@ class Button extends React.Component {
   // get Button ref
   getButtonRef = (button) => {
     this.BUTTON = button;
-    _.defer(() => {
-      if (button) {
-        this.props.__focusMonitor.monitor({
-          element: button,
-          checkChildren: true,
-          callback: (origin) => {
-            this.setState({ focusOrigin: origin });
-          },
-        });
-      }
-    });
+    if (button) {
+      this.props.__focusMonitor.monitor({
+        element: button,
+        checkChildren: true,
+        callback: (origin) => {
+          this.setState({ focusOrigin: origin });
+        },
+      });
+    }
   };
   
   /**
@@ -77,16 +75,17 @@ class Button extends React.Component {
   };
   
   render() {
-    const { appearance, is, color, __focusMonitor, ...restProps } = this.props;
+    const { appearance, size, is, color, __focusMonitor, ...restProps } = this.props;
     return (
       <this.BUTTON_ROOT
         {...restProps}
         {...this.getNodeAttrs()}
-        innerRef={this.getButtonRef}
         data-sui-type={'button'}
-        data-variant={appearance}
+        data-appearance={appearance}
+        data-size={size}
         data-color={color}
         data-focus-origin={this.state.focusOrigin}
+        innerRef={this.getButtonRef}
         onClick={this.onClick}
       >
         <ButtonWrapper>{ this.props.children }</ButtonWrapper>
@@ -102,7 +101,9 @@ Button.propTypes = {
   /** Whether or not the button is disabled */
   disabled: PropTypes.bool,
   /** appearance, one of standard, flat, icon, raised, stroked, floating */
-  appearance: PropTypes.oneOf(['standard', 'flat', 'icon', 'raised', 'stroked', 'floating']),
+  appearance: PropTypes.oneOf(['standard', 'fill', 'stroked']),
+  /** size of the button. icon, standard, full */
+  size: PropTypes.oneOf(['icon', 'standard', 'fill']),
   /** color: green = primary, grey = secondary */
   color: PropTypes.oneOf(['primary', 'secondary']),
   /** Focus monitor */
@@ -113,6 +114,7 @@ Button.defaultProps = {
   is: 'button',
   disabled: false,
   appearance: 'standard',
+  size: 'standard',
   color: 'primary',
   __focusMonitor: FocusMonitorDefaultProps,
 };
