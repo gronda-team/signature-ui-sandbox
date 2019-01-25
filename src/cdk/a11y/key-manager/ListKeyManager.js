@@ -15,7 +15,7 @@ const toArray = React.Children.toArray;
  * @returns {boolean}
  */
 function defaultGetLabel(item) {
-  return _.get(item.props, 'viewValue', '');
+  return _.get(item.props, 'label', '');
 }
 
 /**
@@ -109,9 +109,10 @@ export default class ListKeyManager extends React.Component {
    */
   setTypeAhead = (debounceInterval = 200) => {
     const typeAhead = _.toNumber(debounceInterval);
+    const fn = getStringFromKeys.bind(this);
     this.getStringFromKeys = typeAhead > 0 ?
-      _.debounce(getStringFromKeys.bind(this), typeAhead, { trailing: true }) :
-      getStringFromKeys.bind(this);
+      _.debounce(fn, typeAhead, { trailing: true }) :
+      fn;
   };
   
   /*
@@ -342,7 +343,7 @@ function onTypeAhead(inputString) {
   // Start at 1 because we want to start searching at the item immediately
   // following the current active item.
   for (let i = 1; i < items.length; i++) {
-    const index = (this.state.activeItemIndex + i) % items.length;
+    const index = (this.state.provide.activeItemIndex + i) % items.length;
     const item = items[index];
 
     if (
@@ -354,13 +355,6 @@ function onTypeAhead(inputString) {
     }
   }
 
-  this.setState({ pressedLetters: [] });
-}
-
-/*
-Clear keys synchronously
- */
-function clearKeys() {
   this.setState({ pressedLetters: [] });
 }
 
