@@ -511,6 +511,300 @@ describe('ListKeyManager', () => {
       expect(onChangeSpy).toHaveBeenCalledTimes(1);
     });
   });
+
+  // when the user can wrap around
+  describe('Wrap mode', () => {
+    it('should wrap focus when arrow keying past items while in wrap mode', () => {
+      keyManager.setState({ wrap: true });
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+
+      // this down arrow moves down past the end of the list
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+
+      // this up arrow moves up past the beginning of the list
+      keyManagerInstance.onKeyDown(keyboardEvents.UP);
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+    });
+
+    it('should set last item active when up arrow is pressed if no active item', () => {
+      keyManager.setState({ wrap: true });
+      keyManagerInstance.setActiveItem(-1);
+      keyManagerInstance.onKeyDown(keyboardEvents.UP);
+
+      expect(keyManager.state('provide').activeItemIndex)
+        .toBe(2, 'Expected last item to be active on up arrow if no active item.');
+      expect(setActiveItemSpy).not.toHaveBeenCalledWith(0);
+      expect(setActiveItemSpy).toHaveBeenCalledWith(2);
+
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      expect(keyManager.state('provide').activeItemIndex)
+        .toBe(0, 'Expected active item to be 0 after wrapping back to beginning.');
+      expect(setActiveItemSpy).toHaveBeenCalledWith(0);
+    });
+
+    // This test should pass if all items are disabled and the down arrow key got pressed.
+    // If the test setup crashes or this test times out, this test can be considered as failed.
+    it('should not get into an infinite loop if all items are disabled', () => {
+      keyManager.setState({ wrap: true });
+      keyManagerInstance.setActiveItem(0);
+
+      plainList.setState({ disabled: [true, true, true] });
+
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+    });
+
+    it('should be able to disable wrapping', () => {
+      keyManager.setState({ wrap: true });
+      keyManagerInstance.setFirstItemActive();
+      keyManagerInstance.onKeyDown(keyboardEvents.UP);
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+
+      keyManager.setState({ wrap: false });
+      keyManagerInstance.setFirstItemActive();
+      keyManagerInstance.onKeyDown(keyboardEvents.UP);
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+    });
+  });
+
+  // Testing the skipPredicate fn when the user changes it
+  describe('skipPredicateFn', () => {
+    it('should skip disabled items by default', () => {
+      plainList.setState({ disabled: [false, true, false] });
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+    });
+
+    it('should be able to skip items with a custom predicate', () => {
+      keyManager.setState({ skipPredicateFn: item => _.get(item.props, 'skip', false )});
+
+      plainList.setState({ skip: [false, true, false ] });
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+
+      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+    });
+  });
+
+  // Testing the getLabel fn when the user changes it
+  describe('getLabel', () => {
+    it('should get props.label from an item by default', () => {
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      const getLabel = keyManager.state('getLabel');
+      expect(getLabel(keyManager.state('provide').activeItem)).toBe('Thorium');
+    });
+
+    it('should be able to get a separate view value using a getLabel fn', () => {
+      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      keyManagerInstance.state.provide.setConfig({
+        getLabel: item => _.get(item.props, 'text', ''),
+      });
+      const getLabel = keyManager.state('getLabel');
+      expect(getLabel(keyManager.state('provide').activeItem)).toBe('Thorium');
+    });
+  });
+
+  describe.skip('typeAhead mode', () => {
+    const debounceInterval = 50;
+    const createKeyboardEvent = initKeyMap => new KeyboardEvent('keydown', initKeyMap);
+
+    beforeEach(() => {
+      keyManager.setState({ typeAhead: debounceInterval });
+      keyManagerInstance.setActiveItem(-1);
+    });
+
+    it('should debounce the input key presses', (done) => {
+      jest.useRealTimers(); // must do this to trigger debounce stuff
+      Array.from('Tho').forEach((letter) => {
+        keyManagerInstance.onKeyDown(createKeyboardEvent({
+          cancelable: true,
+          bubbles: true,
+          keyCode: letter.charCodeAt(0),
+          key: letter,
+        }));
+      });
+
+      expect(keyManager.state('provide').activeItemIndex).not.toBe(0);
+      setTimeout(() => {
+        expect(keyManager.state('provide').activeItemIndex).toBe(0);
+        done();
+      }, debounceInterval);
+
+      jest.useFakeTimers();
+    });
+
+    it('should focus the first item that starts with a letter', () => {
+      jest.useRealTimers(); // must do this to trigger debounce stuff
+      keyManagerInstance.onKeyDown(createKeyboardEvent({
+        cancelable: true,
+        bubbles: true,
+        keyCode: 'p'.charCodeAt(0),
+        key: 'p',
+      }));
+
+      setTimeout(() => {
+        expect(keyManager.state('provide').activeItemIndex).toBe(1);
+        done();
+      }, debounceInterval);
+
+      jest.useFakeTimers();
+    });
+
+    it('should not move focus if a modifier, that is not allowed, is pressed', fakeAsync(() => {
+      const tEvent = createKeyboardEvent('keydown', 84, undefined, 't');
+      Object.defineProperty(tEvent, 'ctrlKey', {get: () => true});
+
+      expect(keyManager.activeItem).toBeFalsy();
+
+      keyManagerInstance.onKeyDown(tEvent); // types "t"
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBeFalsy();
+    }));
+
+    it('should always allow the shift key', fakeAsync(() => {
+      const tEvent = createKeyboardEvent('keydown', 84, undefined, 't');
+      Object.defineProperty(tEvent, 'shiftKey', {get: () => true});
+
+      expect(keyManager.activeItem).toBeFalsy();
+
+      keyManagerInstance.onKeyDown(tEvent); // types "t"
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBeTruthy();
+    }));
+
+    it('should focus the first item that starts with sequence of letters', fakeAsync(() => {
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 72, undefined, 'h')); // types "h"
+
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[2]);
+    }));
+
+    it('should cancel any pending timers if a navigation key is pressed', fakeAsync(() => {
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 72, undefined, 'h')); // types "h"
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[0]);
+    }));
+
+    it('should handle non-English input', fakeAsync(() => {
+      itemList.items = [
+        new FakeFocusable('едно'),
+        new FakeFocusable('две'),
+        new FakeFocusable('три')
+      ];
+
+      const keyboardEvent = createKeyboardEvent('keydown', 68, undefined, 'д');
+
+      keyManagerInstance.onKeyDown(keyboardEvent); // types "д"
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[1]);
+    }));
+
+    it('should handle non-letter characters', fakeAsync(() => {
+      itemList.items = [
+        new FakeFocusable('[]'),
+        new FakeFocusable('321'),
+        new FakeFocusable('`!?')
+      ];
+
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 192, undefined, '`')); // types "`"
+      tick(debounceInterval);
+      expect(keyManager.activeItem).toBe(itemList.items[2]);
+
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 51, undefined, '3')); // types "3"
+      tick(debounceInterval);
+      expect(keyManager.activeItem).toBe(itemList.items[1]);
+
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 219, undefined, '[')); // types "["
+      tick(debounceInterval);
+      expect(keyManager.activeItem).toBe(itemList.items[0]);
+    }));
+
+    it('should not focus disabled items', fakeAsync(() => {
+      expect(keyManager.activeItem).toBeFalsy();
+
+      itemList.items[0].disabled = true;
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 79, undefined, 'o')); // types "o"
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBeFalsy();
+    }));
+
+    it('should start looking for matches after the active item', fakeAsync(() => {
+      itemList.items = [
+        new FakeFocusable('Bilbo'),
+        new FakeFocusable('Frodo'),
+        new FakeFocusable('Pippin'),
+        new FakeFocusable('Boromir'),
+        new FakeFocusable('Aragorn')
+      ];
+
+      keyManagerInstance.setActiveItem(1);
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 66, undefined, 'b'));
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[3]);
+    }));
+
+    it('should wrap back around if there were no matches after the active item', fakeAsync(() => {
+      itemList.items = [
+        new FakeFocusable('Bilbo'),
+        new FakeFocusable('Frodo'),
+        new FakeFocusable('Pippin'),
+        new FakeFocusable('Boromir'),
+        new FakeFocusable('Aragorn')
+      ];
+
+      keyManagerInstance.setActiveItem(3);
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 66, undefined, 'b'));
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[0]);
+    }));
+
+    it('should wrap back around if the last item is active', fakeAsync(() => {
+      keyManagerInstance.setActiveItem(2);
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 79, undefined, 'o'));
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[0]);
+    }));
+
+    it('should be able to select the first item', fakeAsync(() => {
+      keyManagerInstance.setActiveItem(-1);
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 79, undefined, 'o'));
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[0]);
+    }));
+
+    it('should not do anything if there is no match', fakeAsync(() => {
+      keyManagerInstance.setActiveItem(1);
+      keyManagerInstance.onKeyDown(createKeyboardEvent('keydown', 87, undefined, 'w'));
+      tick(debounceInterval);
+
+      expect(keyManager.activeItem).toBe(itemList.items[1]);
+    }));
+  });
 });
 
 /**
@@ -527,12 +821,16 @@ function ListKeyItem(props) {
 
 ListKeyItem.propTypes = {
   disabled: PropTypes.bool,
+  skip: PropTypes.bool, // alias for skipping
   label: PropTypes.string,
+  text: PropTypes.string, // alias for label
 };
 
 ListKeyItem.defaultProps = {
   disabled: false,
+  skip: false,
   label: '',
+  text: '',
   __key: 'ListKeyItem',
 };
 
@@ -582,6 +880,8 @@ class PlainList extends React.Component {
     this.state = {
       ITEMS: [...LIST_ITEMS].slice(1, 4),
       disabled: _.times(3, _.stubFalse),
+      // for testing the skipPredicateFn
+      skip: [false, false, false],
     };
 
     this.LIST_REF = React.createRef();
@@ -590,7 +890,6 @@ class PlainList extends React.Component {
   componentDidMount() {
     this.props.__keyManager.setConfig({
       items: toArray(this.LIST_REF.current.props.children),
-      getLabel: item => _.get(item.props, 'label', ''),
     });
 
     if (this.LIST_REF.current) {
@@ -612,7 +911,13 @@ class PlainList extends React.Component {
     return (
       <List ref={this.LIST_REF}>
         { this.state.ITEMS.map((item, index) => (
-          <ListKeyItem key={item} label={item} disabled={this.state.disabled[index]} />
+          <ListKeyItem
+            key={item}
+            label={item}
+            text={item}
+            skip={this.state.skip[index]}
+            disabled={this.state.disabled[index]}
+          />
         )) }
       </List>
     );
