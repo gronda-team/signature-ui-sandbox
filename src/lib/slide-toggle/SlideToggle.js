@@ -6,7 +6,7 @@ import {
   SlideToggleThumbContainer,
 } from './styles/index';
 import { FocusMonitorDefaultProps, FocusMonitorPropTypes } from '../../cdk/a11y';
-import { withFocusMonitor } from '../../cdk/a11y/focus-monitor/FocusMonitor';
+import { withFocusMonitor } from '../../cdk/a11y';
 
 class SlideToggle extends React.Component {
   constructor() {

@@ -5,7 +5,7 @@ import TagRoot, { TagClose } from './styles/index';
 import {
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes,
   withListKeyConsumer,
-} from '../../cdk/a11y/key-manager/ListKeyManager';
+} from '../../cdk/a11y';
 import { BACKSPACE, DELETE, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
 import {
   SelectionModelDefaultProps, SelectionModelPropTypes,

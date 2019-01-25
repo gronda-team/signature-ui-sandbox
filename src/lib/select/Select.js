@@ -5,7 +5,7 @@ import { FormFieldPropTypes, FormFieldDefaultProps, withFormFieldConsumer } from
 import {
   ListKeyManagerDefaultProps,
   ListKeyManagerPropTypes, withListKeyConsumer,
-} from '../../cdk/a11y/key-manager/ListKeyManager';
+} from '../../cdk/a11y';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
 import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
 import {

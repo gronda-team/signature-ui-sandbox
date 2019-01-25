@@ -4,10 +4,11 @@ import _ from 'lodash';
 import BaseAccordion from '../../cdk/accordion/Accordion';
 import { AccordionProvider } from './context';
 import { AccordionRoot } from './styles/index';
-import ListKeyManager, {
+import {
+  ListKeyManager,
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes,
   withListKeyConsumer,
-} from '../../cdk/a11y/key-manager/ListKeyManager';
+} from '../../cdk/a11y';
 import { END, HOME } from '../../cdk/keycodes/keys';
 
 const toArray = React.Children.toArray;

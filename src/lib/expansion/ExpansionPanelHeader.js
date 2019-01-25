@@ -9,7 +9,7 @@ import { withAccordionItemConsumer } from './context';
 import {
   ListKeyManagerDefaultProps, ListKeyManagerPropTypes,
   withListKeyConsumer,
-} from '../../cdk/a11y/key-manager/ListKeyManager';
+} from '../../cdk/a11y';
 
 const toArray = React.Children.toArray;
 
