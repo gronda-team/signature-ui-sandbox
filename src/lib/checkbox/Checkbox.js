@@ -11,7 +11,6 @@ import {
   CheckboxLayout,
   CheckboxRoot,
 } from './styles/index';
-import {ButtonToggleRoot} from '../button-toggle/styles';
 
 class Checkbox extends React.Component {
   constructor() {
@@ -26,6 +25,12 @@ class Checkbox extends React.Component {
   /**
    * Lifecycle
    */
+  componentDidUpdate(prevProps) {
+    if (prevProps.indeterminate !== this.props.indeterminate) {
+      updateCheckboxIndeterminateStatus.call(this, this.props.indeterminate);
+    }
+  }
+
   componentWillUnmount() {
     this.props.__focusMonitor.stopMonitoring(this.CHECKBOX_ROOT);
   }
@@ -92,6 +97,11 @@ class Checkbox extends React.Component {
     // This will lead to multiple click events.
     // Preventing bubbling for the second event will solve that issue.
     event.stopPropagation();
+    if (!this.props.disabled) {
+      if (this.props.indeterminate) {
+        this.props.onIndeterminateChange(false);
+      }
+    }
     if (_.isFunction(this.props.onClick)) {
       this.props.onClick(event);
     }
@@ -135,7 +145,7 @@ class Checkbox extends React.Component {
               value={value}
               disabled={disabled}
               name={name}
-              tabIndex={tabIndex}
+              tabIndex={tabIndex || 0}
               aria-label={ariaLabel || null}
               aria-labelledby={ariaLabelledBy || null}
               aria-checked={this.getAriaChecked()}
@@ -182,6 +192,8 @@ const CheckboxPropTypes = {
   value: PropTypes.any,
   /** Called when the checkbox is blurred */
   onTouched: PropTypes.func,
+  /** Called when the indeterminate value is changed */
+  onIndeterminateChange: PropTypes.func,
   /** Whether the checkbox is checked. */
   checked: PropTypes.bool,
   /** Whether the checkbox is disabled. */
@@ -205,6 +217,7 @@ const CheckboxDefaultProps = {
   name: null,
   value: null,
   onTouched: _.noop,
+  onIndeterminateChange: _.noop,
   checked: false,
   disabled: false,
   indeterminate: false,
@@ -240,4 +253,15 @@ function monitorFocus(origin) {
     // has been touched until the next tick.
     _.defer(this.props.onTouched);
   }
+}
+
+/** Handle indeterminate setting for the checkbox element */
+function updateCheckboxIndeterminateStatus(status) {
+  /*
+  checkbox.indeterminate is not an HTML prop, so it must be handled
+  manually here.
+
+  When it's changed, then props.onIndeterminateChange() will be called.
+   */
+  this.CHECKBOX_INPUT.indeterminate = status;
 }
