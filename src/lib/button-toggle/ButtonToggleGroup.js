@@ -20,9 +20,9 @@ class ButtonToggleGroup extends React.Component {
 
   providerValue = () => ({
     name: this.getName(),
-    value: this.selectionModel.current ?
-      this.selectionModel.current.selected() :
-      [],
+    selectionModel: this.selectionModel.current ?
+      this.selectionModel.current :
+      { isSelected: _.noop, toggle: _.noop },
     multiple: this.props.multiple,
     disabled: this.props.disabled,
     onTouched: this.props.onTouched,

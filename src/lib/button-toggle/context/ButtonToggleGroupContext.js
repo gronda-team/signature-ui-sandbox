@@ -8,7 +8,10 @@ const ButtonToggleGroupContextPropTypes = PropTypes.shape({
   multiple: PropTypes.bool,
   disabled: PropTypes.bool,
   onTouched: PropTypes.func,
-  value: PropTypes.array,
+  selectionModel: PropTypes.shape({
+    isSelected: PropTypes.func,
+    toggle: PropTypes.func,
+  }),
   onChange: PropTypes.func,
 });
 
@@ -17,7 +20,7 @@ const ButtonToggleGroupContextDefaultProps = {
   multiple: false,
   disabled: false,
   onTouched: _.noop,
-  value: [],
+  selectionModel: { isSelected: _.noop, toggle: _.noop },
   onChange: _.noop,
 };
 
