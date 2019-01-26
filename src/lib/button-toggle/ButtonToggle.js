@@ -7,10 +7,6 @@ import {
 } from './styles/index';
 import { ButtonToggleGroupContextPropTypes, withButtonToggleGroupConsumer } from './context/ButtonToggleGroupContext';
 import {
-  SelectionModelDefaultProps, SelectionModelPropTypes,
-  withSelectionModelConsumer,
-} from '../../cdk/collections/selection-model';
-import {
   FocusMonitorDefaultProps, FocusMonitorPropTypes,
   withFocusMonitor,
 } from '../../cdk/a11y';
@@ -184,19 +180,16 @@ ButtonToggle.propTypes = {
   ...ButtonTogglePropTypes,
   __focusMonitor: FocusMonitorPropTypes,
   __buttonToggleGroup: ButtonToggleGroupContextPropTypes,
-  __selectionModel: SelectionModelPropTypes,
 };
 
 ButtonToggle.defaultProps = {
   ...ButtonToggleDefaultProps,
   __focusMonitor: FocusMonitorDefaultProps,
   __buttonToggleGroup: null,
-  __selectionModel: SelectionModelDefaultProps,
 };
 
 const StackedButtonToggle = stack(
   withButtonToggleGroupConsumer,
-  withSelectionModelConsumer,
   withFocusMonitor,
 )(ButtonToggle);
 
