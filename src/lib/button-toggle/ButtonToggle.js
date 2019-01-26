@@ -65,7 +65,7 @@ class ButtonToggle extends React.Component {
   isChecked = () => {
     if (this.props.__buttonToggleGroup) {
       // return the toggle group selection
-      return this.props.__selectionModel.isSelected(this.props.value);
+      return this.props.__buttonToggleGroup.selectionModel.isSelected(this.props.value);
     }
     
     return this.props.checked;
@@ -89,11 +89,15 @@ class ButtonToggle extends React.Component {
     if (this.props.__buttonToggleGroup) {
       this.props.__buttonToggleGroup.onTouched();
     }
-    
-    this.props.__selectionModel.toggle(this.props.value);
+
+    // Trigger BTG.props.onSelectionChange
+    this.props.__buttonToggleGroup.selectionModel.toggle(this.props.value);
   
     // Emit a change event when it's the single selector
-    this.props.onChange({ value: this.props.value, source: this.NATIVE_BUTTON });
+    this.props.__buttonToggleGroup.onChange({
+      value: this.props.value,
+      source: this.NATIVE_BUTTON
+    });
   };
   
   render() {
@@ -101,7 +105,6 @@ class ButtonToggle extends React.Component {
       disabled, checked,
       ['aria-label']: ariaLabel,
       ['aria-labelledby']: ariaLabelledBy,
-      __selectionModel,
       __buttonToggleGroup,
       type, value, onChange,
       ...restProps,
@@ -162,8 +165,6 @@ const ButtonTogglePropTypes = {
   tabIndex: PropTypes.number,
   /** Whether the button is disabled. */
   disabled: PropTypes.bool,
-  /** Event emitted when the group value changes. */
-  onChange: PropTypes.func,
 };
 
 const ButtonToggleDefaultProps = {
@@ -173,7 +174,6 @@ const ButtonToggleDefaultProps = {
   type: 'radio',
   value: null,
   tabIndex: null,
-  onChange: _.noop,
 };
 
 ButtonToggle.propTypes = {
