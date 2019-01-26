@@ -63,7 +63,7 @@ class ButtonToggle extends React.Component {
   
   /** Whether the button is checked. */
   isChecked = () => {
-    if (this.props.__buttonToggleGroup) {
+    if (_.get(this.props.__buttonToggleGroup, 'selectionModel')) {
       // return the toggle group selection
       return this.props.__buttonToggleGroup.selectionModel.isSelected(this.props.value);
     }
@@ -86,16 +86,40 @@ class ButtonToggle extends React.Component {
   
   /** Checks the button toggle due to an interaction with the underlying native button. */
   onButtonClick = () => {
-    if (this.props.__buttonToggleGroup) {
-      this.props.__buttonToggleGroup.onTouched();
-    }
+    let value = this.props.value;
 
-    // Trigger BTG.props.onSelectionChange
-    this.props.__buttonToggleGroup.selectionModel.toggle(this.props.value);
+    if (_.get(this.props.__buttonToggleGroup, 'name') !== null) {
+      this.props.__buttonToggleGroup.onTouched();
+
+      if (this.props.__buttonToggleGroup.selectionModel) {
+        const selectionModel = this.props.__buttonToggleGroup.selectionModel;
+
+        // Trigger BTG.props.onSelectionChange
+        selectionModel.toggle(this.props.value);
+
+        if (selectionModel.isMultipleSelection()) {
+          // If we have multiple selection
+          const selected = selectionModel.selected();
+          if (selectionModel.isSelected(this.props.value)) {
+            // If we already have the value, return the array without it
+            value = _.without(selected, this.props.value);
+          } else {
+            // otherwise just append the value
+            value = [...selectionModel.selected(), this.props.value];
+          }
+        } // otherwise just continue
+      }
+      this.props.__buttonToggleGroup.onChange({
+        value,
+        source: this.NATIVE_BUTTON
+      });
+    } else {
+      value = this.isChecked() ? undefined : value;
+    }
   
     // Emit a change event when it's the single selector
-    this.props.__buttonToggleGroup.onChange({
-      value: this.props.value,
+    this.props.onChange({
+      value,
       source: this.NATIVE_BUTTON
     });
   };
@@ -165,6 +189,8 @@ const ButtonTogglePropTypes = {
   tabIndex: PropTypes.number,
   /** Whether the button is disabled. */
   disabled: PropTypes.bool,
+  /** Own onChange handler */
+  onChange: PropTypes.func,
 };
 
 const ButtonToggleDefaultProps = {
@@ -174,6 +200,7 @@ const ButtonToggleDefaultProps = {
   type: 'radio',
   value: null,
   tabIndex: null,
+  onChange: _.noop,
 };
 
 ButtonToggle.propTypes = {
