@@ -14,7 +14,7 @@ const defaultCheck = activeBorder;
 const disabledCheck = GREY[700];
 
 export const themeThunk = (components) => {
-  const { Frame, Checkmark, CheckmarkPath } = components;
+  const { Frame, Checkmark, IndeterminatePath, CheckmarkPath } = components;
   return css`
   ${Frame} {
     border-color: ${inactiveBorder};
@@ -28,6 +28,7 @@ export const themeThunk = (components) => {
   &[data-focus-origin=keyboard] ${Checkmark} { fill: ${activeBackground}; }
   
   ${CheckmarkPath} { stroke: ${defaultCheck} !important; }
+  ${IndeterminatePath} { background-color: ${defaultCheck}; }
   
   &[data-disabled=true] {
     ${Frame} {
@@ -36,6 +37,7 @@ export const themeThunk = (components) => {
     }
     
     ${CheckmarkPath} { stroke: ${disabledCheck} !important; }
+    ${IndeterminatePath} { background-color: ${disabledCheck}; }
   }
   `;
 };

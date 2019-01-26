@@ -5,12 +5,14 @@ import {
   FocusMonitorDefaultProps, FocusMonitorPropTypes,
   withFocusMonitor,
 } from '../../cdk/a11y';
+import { CheckIcon } from '../core/icons';
 import {
-  CheckboxBackground, CheckboxCheckmark, CheckboxCheckmarkPath, CheckboxFrame, CheckboxInnerContainer, CheckboxInput,
+  CheckboxBackground, CheckboxFrame, CheckboxInnerContainer, CheckboxInput,
   CheckboxLabel,
   CheckboxLayout,
   CheckboxRoot,
 } from './styles/index';
+import {CheckboxIndeterminateMark} from './styles';
 
 class Checkbox extends React.Component {
   constructor() {
@@ -155,17 +157,8 @@ class Checkbox extends React.Component {
             />
             <CheckboxFrame />
             <CheckboxBackground>
-              <CheckboxCheckmark
-                version="1.1"
-                focusable="false"
-                viewBox="0 0 20 20"
-              >
-                <CheckboxCheckmarkPath
-                  fill="none"
-                  stroke="white"
-                  d="M 5,10 8,13 15,7"
-                />
-              </CheckboxCheckmark>
+              <CheckIcon />
+              <CheckboxIndeterminateMark />
             </CheckboxBackground>
           </CheckboxInnerContainer>
           <CheckboxLabel>

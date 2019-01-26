@@ -82,6 +82,28 @@ display: inline-flex;
 justify-content: center;
 
 [data-checked=false] & { background-color: transparent; }
+
+& svg {
+  ${FILL}
+  width: 100%;
+  
+  [data-checked=true] & { opacity: 1; }
+  
+  & path {
+    stroke-dashoffset: ${MARK_PATH_LENGTH};
+    stroke-dasharray: ${MARK_PATH_LENGTH};
+    stroke-width: ${MARK_STROKE_SIZE}px;
+    
+    [data-checked=true] & { stroke-dashoffset: 0; animation: 180ms linear 0ms ${checkedUncheckedAnimation}; }
+  }
+}
+`;
+
+export const CheckboxIndeterminateMark = styled.div`
+width: calc(100% - 8px);
+height: ${Math.floor(MARK_STROKE_SIZE)}px;
+opacity: 0;
+border-radius: 3px;
 `;
 
 export const CheckboxInput = styled.input`
@@ -90,21 +112,6 @@ export const CheckboxInput = styled.input`
 bottom: 0;
 left: 50%;
 ${VISUALLY_HIDDEN}
-`;
-
-export const CheckboxCheckmark = styled.svg`
-${FILL}
-width: 100%;
-
-[data-checked=true] & { opacity: 1; }
-`;
-
-export const CheckboxCheckmarkPath = styled.path`
-stroke-dashoffset: ${MARK_PATH_LENGTH};
-stroke-dasharray: ${MARK_PATH_LENGTH};
-stroke-width: ${MARK_STROKE_SIZE}px;
-
-[data-checked=true] & { stroke-dashoffset: 0; animation: 180ms linear 0ms ${checkedUncheckedAnimation}; }
 `;
 
 export const CheckboxLabel = styled.div``;
