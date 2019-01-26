@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ButtonToggleGroupRoot } from './styles/index';
-import { ButtonToggleGroupProvider } from './context';
+import { ButtonToggleGroupProvider } from './context/ButtonToggleGroupContext';
 import { SelectionModel } from '../../cdk/collections/selection-model';
 
 class ButtonToggleGroup extends React.Component {

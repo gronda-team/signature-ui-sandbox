@@ -5,7 +5,7 @@ import {
   ButtonToggleButton, ButtonToggleFocusOverlay, ButtonToggleLabelContent,
   ButtonToggleRoot,
 } from './styles/index';
-import { ButtonToggleGroupContextPropTypes, withButtonToggleGroupConsumer } from './context';
+import { ButtonToggleGroupContextPropTypes, withButtonToggleGroupConsumer } from './context/ButtonToggleGroupContext';
 import {
   SelectionModelDefaultProps, SelectionModelPropTypes,
   withSelectionModelConsumer,
