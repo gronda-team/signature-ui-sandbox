@@ -3,23 +3,30 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ButtonToggleGroupRoot } from './styles/index';
 import { ButtonToggleGroupProvider } from './context/ButtonToggleGroupContext';
-import { SelectionModel } from '../../cdk/collections/selection-model';
+import { SelectionModel } from '../../cdk/collections';
 
 class ButtonToggleGroup extends React.Component {
   constructor() {
     super();
     
     this.DEFAULT_NAME = _.uniqueId('sui-button-toggle-group:');
+    this.selectionModel = React.createRef();
   }
-  
+
   /**
    * Derived data
    */
+  getName = () => this.props.name || this.DEFAULT_NAME;
+
   providerValue = () => ({
-    name: this.props.name || this.DEFAULT_NAME,
+    name: this.getName(),
+    value: this.selectionModel.current ?
+      this.selectionModel.current.selected() :
+      [],
     multiple: this.props.multiple,
     disabled: this.props.disabled,
     onTouched: this.props.onTouched,
+    onChange: this.props.onChange,
   });
   
   render() {
@@ -32,6 +39,7 @@ class ButtonToggleGroup extends React.Component {
         multiple={multiple}
         onChange={onChange}
         value={value}
+        ref={this.selectionModel}
       >
         <ButtonToggleGroupRoot
           {...restProps}
