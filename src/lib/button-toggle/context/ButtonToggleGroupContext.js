@@ -20,7 +20,7 @@ const ButtonToggleGroupContextDefaultProps = {
   multiple: false,
   disabled: false,
   onTouched: _.noop,
-  selectionModel: { isSelected: _.noop, toggle: _.noop },
+  selectionModel: null,
   onChange: _.noop,
 };
 
