@@ -30,7 +30,10 @@ class SelectionModel extends React.Component {
   }
 
   /** Get the selected value as an array */
-  selected = (props = this.props) => _.castArray(props.value);
+  selected = (props = this.props) => {
+    if (props.value === undefined) return [];
+    return _.castArray(props.value);
+  };
 
   /** Determines whether a value is selected. */
   isSelected = value => this.selected().indexOf(value) > -1;
@@ -38,15 +41,31 @@ class SelectionModel extends React.Component {
   /** Determines whether the model does not have a value. */
   isEmpty = () => this.selected().length === 0;
 
+  /** Determines whether it has a value */
+  hasValue = () => !this.isEmpty();
+
+  /** Determines if multiple selection is allowed */
+  isMultipleSelection = () => this.props.multiple;
+
   /** Selects a value or an array of values. */
   select = (...values) => {
-    values.forEach(value => markSelected.call(this, value));
+    if (this.props.multiple) {
+      values.forEach(value => markSelected.call(this, value));
+    } else {
+      markSelected.call(this, _.head(values));
+    }
+
     emitChangeEvent.call(this);
   };
 
   /** Deselects a value or an array of values. */
   deselect = (...values) => {
-    values.forEach(value => unmarkSelected.call(this, value));
+    if (this.props.multiple) {
+      values.forEach(value => unmarkSelected.call(this, value));
+    } else {
+      unmarkSelected.call(this, _.head(values));
+    }
+
     emitChangeEvent.call(this);
   };
 
@@ -75,7 +94,6 @@ SelectionModel.propTypes = {
 };
 
 SelectionModel.defaultProps = {
-  value: null,
   onChange: _.noop,
   multiple: false,
 };
@@ -92,7 +110,7 @@ function emitChangeEvent() {
     // don't interfere with state
     const { selectedToEmit, deselectedToEmit } = state;
     // apply change as side effect
-    if (_.isFunction(this.props.onChange)) {
+    if (_.isFunction(this.props.onChange) && (selectedToEmit.length || deselectedToEmit.length)) {
       this.props.onChange({
         added: selectedToEmit,
         removed: deselectedToEmit,
