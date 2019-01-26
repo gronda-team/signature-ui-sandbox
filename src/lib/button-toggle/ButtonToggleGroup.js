@@ -32,12 +32,12 @@ class ButtonToggleGroup extends React.Component {
   render() {
     const {
       vertical, multiple, disabled, name, onTouched,
-      onChange, value, ...restProps,
+      onSelectionChange, onChange, value, ...restProps,
     } = this.props;
     return (
       <SelectionModel
         multiple={multiple}
-        onChange={onChange}
+        onChange={onSelectionChange}
         value={value}
         ref={this.selectionModel}
       >
@@ -73,6 +73,8 @@ const ButtonToggleGroupPropTypes = {
   onTouched: PropTypes.func,
   /** Callback called whenever the value of the group changes. */
   onChange: PropTypes.func,
+  /** Callback called in the form of { added: [], removed: [] } */
+  onSelectionChange: PropTypes.func,
 };
 
 const ButtonToggleGroupDefaultProps = {
@@ -83,6 +85,7 @@ const ButtonToggleGroupDefaultProps = {
   name: '',
   onTouched: _.noop,
   onChange: _.noop,
+  onSelectionChange: _.noop,
 };
 
 ButtonToggleGroup.propTypes = {
