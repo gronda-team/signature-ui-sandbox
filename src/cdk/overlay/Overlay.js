@@ -155,7 +155,11 @@ class Overlay extends React.Component {
     
     this.setState({ attached: true }, () => {
       this.updatePosition();
-      
+      Object.assign(
+        this.state.provide.pane.style,
+        { display: 'block' },
+      );
+
       this.props.__keyboardDispatcher.add({
         id: this.OVERLAY_ID,
         callback: _.isFunction(this.props.onKeyDown) ? this.props.onKeyDown : null,
@@ -187,6 +191,10 @@ class Overlay extends React.Component {
     this.setState({
       attached: false,
     }, () => {
+      Object.assign(
+        this.state.provide.pane.style,
+        { display: 'none' },
+      );
       this.props.__keyboardDispatcher.remove(this.OVERLAY_ID);
       detachContent.call(this);
     });
@@ -236,7 +244,7 @@ class Overlay extends React.Component {
   };
   
   render() {
-    const host = this.state.provide.host;
+    const host = this.state.provide.pane;
     const root = host || document.body;
     return (
       <OverlayProvider value={this.providerValue()}>
@@ -251,12 +259,7 @@ class Overlay extends React.Component {
           { this.state.renderDummyBackdrop ?
             <OverlayBackdrop innerRef={this.getDummyBackdrop} /> : null
           }
-          { ReactDOM.createPortal(
-            <React.Fragment>
-              { this.props.children }
-            </React.Fragment>,
-            root,
-          ) }
+          { ReactDOM.createPortal(this.props.children, root) }
         </React.Fragment>
       </OverlayProvider>
     )
@@ -366,6 +369,7 @@ function createPaneElement(host) {
     
     host.appendChild(pane);
   }
+  pane.style.display = 'none';
   return pane;
 }
 
