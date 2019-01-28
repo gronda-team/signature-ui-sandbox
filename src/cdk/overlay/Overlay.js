@@ -23,7 +23,6 @@ class Overlay extends React.Component {
       renderDummyBackdrop: true,
       previousHostParent: null,
       /** Strategy with which to position the overlay. */
-      // note: circular dependencies :/
       positionStrategy: {
         attach: _.noop,
         apply: _.noop,
@@ -36,31 +35,11 @@ class Overlay extends React.Component {
         disable: _.noop,
         dispose: _.noop,
       },
-      provide: {
-        /*
-        Let create, attach, detach, and dispose be
-        handled by the consumer component
-         */
-        create: this.create,
-        attach: this.attach,
-        detach: this.detach,
-        dispose: this.dispose,
-        /*
-        The overlay and the position strategy have circular
-        dependencies, so this is poor taste, but it's the only
-        React-ish way to get it.
-         */
-        setPositionStrategy: this.setPositionStrategy,
-        setScrollStrategy: this.setScrollStrategy,
-        updatePosition: this.updatePosition,
-        updateSize: this.updateSize,
-        host: null,
-        pane: null,
-        backdrop: null,
-        canRender: this.canRender,
-        created: false,
-        attached: false,
-      },
+      host: null,
+      pane: null,
+      backdrop: null,
+      created: false,
+      attached: false,
     };
     
     this.OVERLAY_ID = _.uniqueId('sui-overlay:');
@@ -116,14 +95,11 @@ class Overlay extends React.Component {
   create = () => {
     const host = createHostElement.call(this);
     const pane = createPaneElement.call(this, host);
-    this.setState(state => ({
-      provide: {
-        ...state.provide,
-        host,
-        pane,
-        created: true,
-      },
-    }), () => {
+    this.setState({
+      host,
+      pane,
+      created: true,
+    }, () => {
       // upon creation, attach the scroll strategy
       if (this.state.scrollStrategy.attach) {
         this.state.scrollStrategy.attach();
@@ -134,8 +110,8 @@ class Overlay extends React.Component {
   /** Attaches content to the overlay + creates backdrop */
   attach = () => {
     // Update the pane element with the given configuration.
-    if (!this.state.provide.host.parentElement && this.state.previousHostParent) {
-      this.state.previousHostParent.appendChild(this.state.provide.host);
+    if (!this.state.host.parentElement && this.state.previousHostParent) {
+      this.state.previousHostParent.appendChild(this.state.host);
     }
     
     updateStackingOrder.call(this);
@@ -156,7 +132,7 @@ class Overlay extends React.Component {
     this.setState({ attached: true }, () => {
       this.updatePosition();
       Object.assign(
-        this.state.provide.pane.style,
+        this.state.pane.style,
         { display: 'block' },
       );
 
@@ -192,7 +168,7 @@ class Overlay extends React.Component {
       attached: false,
     }, () => {
       Object.assign(
-        this.state.provide.pane.style,
+        this.state.pane.style,
         { display: 'none' },
       );
       this.props.__keyboardDispatcher.remove(this.OVERLAY_ID);
@@ -210,8 +186,8 @@ class Overlay extends React.Component {
       this.state.scrollStrategy.disable();
     }
     
-    if (_.has(this.state, 'provide.host.parentNode')) {
-      this.state.provide.host.parentNode.removeChild(this.state.provide.host);
+    if (_.has(this.state, 'host.parentNode')) {
+      this.state.host.parentNode.removeChild(this.state.host);
     }
     
     this.setState({ previousHostParent: null });
@@ -244,7 +220,7 @@ class Overlay extends React.Component {
   };
   
   render() {
-    const host = this.state.provide.pane;
+    const host = this.state.pane;
     const root = host || document.body;
     return (
       <OverlayProvider value={this.providerValue()}>
@@ -392,8 +368,8 @@ function attachBackdrop() {
     /*
     Insert the backdrop before the pane in the DOM order, in order to handle stacked overlays properly.
      */
-    if (this.state.provide.host) {
-      const host = this.state.provide.host;
+    if (this.state.host) {
+      const host = this.state.host;
       host.parentElement.insertBefore(backdrop, host);
     }
     
@@ -404,18 +380,13 @@ function attachBackdrop() {
       backdrop.dataset.visible = true;
     });
     
-    this.setState(state => ({
-      provide: {
-        ...state.provide,
-        backdrop,
-      },
-    }));
+    this.setState({ backdrop });
   }
 }
 
 /** Detaches the backdrop (if any) associated with the overlay. */
 function detachBackdrop() {
-  const backdrop = this.state.provide.backdrop;
+  const backdrop = this.state.backdrop;
   if (!backdrop) return;
   
   let timeoutId = null;
@@ -424,12 +395,7 @@ function detachBackdrop() {
     backdrop.parentNode.removeChild(backdrop);
   
     backdrop.dataset.shade = undefined; // toggle it off
-    this.setState(state => ({
-      provide: {
-        ...state.provide,
-        backdrop: null,
-      },
-    }), () => {
+    this.setState({ backdrop: null }, () => {
       window.clearTimeout(timeoutId);
     });
   };
@@ -446,10 +412,10 @@ function detachBackdrop() {
 
 /** Updates the size of the overlay element based on the overlay config. */
 function updateElementSize(props = this.props) {
-  const style = this.state.provide.pane.style;
+  const style = this.state.pane.style;
   
   Object.assign(
-    this.state.provide.pane.style,
+    this.state.pane.style,
     style,
     PROP_CSS_FIELDS.reduce((s, key) => {
       const value = _.get(props, key);
@@ -463,7 +429,7 @@ function updateElementSize(props = this.props) {
 
 /** Toggles the pointer events for the overlay pane element. */
 function togglePointerEvents(enable = false) {
-  this.state.provide.pane.style.pointerEvents = enable ?
+  this.state.pane.style.pointerEvents = enable ?
     'auto' : 'none';
 }
 
@@ -475,18 +441,18 @@ function togglePointerEvents(enable = false) {
  * in its original DOM position.
  */
 function updateStackingOrder() {
-  if (this.state.provide.host.nextSibling) {
-    this.state.provide.host.parentNode.appendChild(this.state.provide.host);
+  if (this.state.host.nextSibling) {
+    this.state.host.parentNode.appendChild(this.state.host);
   }
 }
 
 /** Detaches the overlay content */
 function detachContent() {
-  if (_.has(this.state, 'provide.host.parentElement')) {
+  if (_.has(this.state, 'host.parentElement')) {
     this.setState({
-      previousHostParent: this.state.provide.host.parentElement,
+      previousHostParent: this.state.host.parentElement,
     }, () => {
-      this.state.previousHostParent.removeChild(this.state.provide.host);
+      this.state.previousHostParent.removeChild(this.state.host);
     });
   }
 }
