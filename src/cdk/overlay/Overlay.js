@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { OverlayBackdrop, OverlayPaneRoot } from './styles/index';
-import { OverlayProvider } from './context/overlay';
 import {
   OverlayContainerDefaultProps, OverlayContainerPropTypes,
   withOverlayContainerConsumer,
@@ -79,14 +78,6 @@ class Overlay extends React.Component {
       this.setState({ renderDummyBackdrop: false });
     }
   };
-  
-  /**
-   * Derived data
-   */
-  providerValue = () => ({
-    ...this.state.provide,
-    ..._.pick(this.props, PROP_CSS_FIELDS),
-  });
   
   /**
    * Actions
@@ -205,10 +196,6 @@ class Overlay extends React.Component {
     updateElementSize.call(this, this.props);
   };
   
-  canRender = (canRender) => {
-    this.setState({ render: canRender });
-  };
-  
   /** Set the position context to be used */
   setPositionStrategy = (provider) => {
     this.setState({ positionStrategy: provider });
@@ -223,21 +210,19 @@ class Overlay extends React.Component {
     const host = this.state.pane;
     const root = host || document.body;
     return (
-      <OverlayProvider value={this.providerValue()}>
-        <React.Fragment>
-          { this.state.renderDummyOverlay ?
-            /*
-            we must get the styled-components classes
-            from a dummy PaneRoot
-             */
-            <OverlayPaneRoot innerRef={this.getDummyOverlay} /> : null
-          }
-          { this.state.renderDummyBackdrop ?
-            <OverlayBackdrop innerRef={this.getDummyBackdrop} /> : null
-          }
-          { ReactDOM.createPortal(this.props.children, root) }
-        </React.Fragment>
-      </OverlayProvider>
+      <React.Fragment>
+        { this.state.renderDummyOverlay ?
+          /*
+          we must get the styled-components classes
+          from a dummy PaneRoot
+           */
+          <OverlayPaneRoot innerRef={this.getDummyOverlay} /> : null
+        }
+        { this.state.renderDummyBackdrop ?
+          <OverlayBackdrop innerRef={this.getDummyBackdrop} /> : null
+        }
+        { ReactDOM.createPortal(this.props.children, root) }
+      </React.Fragment>
     )
   }
 }
