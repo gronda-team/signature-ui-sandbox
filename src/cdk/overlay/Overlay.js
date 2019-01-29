@@ -39,6 +39,9 @@ class Overlay extends React.Component {
       backdrop: null,
       created: false,
       attached: false,
+      /** emits when the backdrop has been clicked */
+      // For autocomplete, it must be part of the state rather than via props
+      onBackdropClick: _.noop,
     };
     
     this.OVERLAY_ID = _.uniqueId('sui-overlay:');
@@ -205,6 +208,13 @@ class Overlay extends React.Component {
   setScrollStrategy = (provider) => {
     this.setState({ scrollStrategy: provider });
   };
+
+  /** Has a non-binding event callback for the backdrop */
+  onBackdropClick = (event) => {
+    // That way, we don't have to update addEventListener or anything
+    // if we change the event listener
+    this.state.onBackdropClick(event);
+  };
   
   render() {
     const host = this.state.pane;
@@ -259,8 +269,6 @@ const OverlayPropTypes = {
    * the `HashLocationStrategy`).
    */
   disposeOnNavigation: PropTypes.bool,
-  /** emits when the backdrop has been clicked */
-  onBackdropClick: PropTypes.func,
   /** Key down events targed to this overlay */
   onKeyDown: PropTypes.func,
 };
@@ -300,6 +308,9 @@ const StackedOverlay = stack(
   withKeyboardDispatcher,
   withOverlayContainerConsumer,
 )(Overlay);
+
+StackedOverlay.propTypes = OverlayPropTypes;
+StackedOverlay.defaultProps = OverlayDefaultProps;
 
 export default StackedOverlay;
 
@@ -358,7 +369,7 @@ function attachBackdrop() {
       host.parentElement.insertBefore(backdrop, host);
     }
     
-    backdrop.addEventListener('click', this.props.onBackdropClick);
+    backdrop.addEventListener('click', this.onBackdropClick);
     
     _.defer(() => {
       // animate the appearance

@@ -5,25 +5,39 @@ import { OverlayContextDefaultProps, OverlayContextPropTypes, withOverlayConsume
 import { stack } from '../../lib/core/components/util';
 import Overlay from './Overlay';
 import { ESC, ESCAPE } from '../keycodes/keys';
-import { PositionStrategyDefaultProps, PositionStrategyPropTypes, withPositionStrategy } from './position/context';
 import FlexibleConnectedPositionStrategy from './position/FlexibleConnectedPositionStrategy';
 import RepositionScrollStrategy from './scroll/RepositionScrollStrategy';
 
 class ConnectedOverlay extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      positionStrategy: null,
+      scrollStrategy: null,
+    };
+
+    this.overlay = React.createRef();
+    this.positionStrategy = React.createRef();
+  }
+
   /**
    * Lifecycle
    */
-  componentDidMount() {
-    this.props.setKeyDown(this.handleKeyDown);
-    // set the pane once it becomes available
-    this.props.setPane(this.props.__overlay.pane);
-  }
-  
   componentDidUpdate(prevProps) {
-    if (prevProps.origin !== this.props.origin) {
-      if (this.props.open) {
-        this.props.__positionStrategy.apply();
+    if (this.positionStrategy.current) {
+      if (prevProps.origin !== this.props.origin) {
+        if (this.props.open) {
+          this.positionStrategy.current.apply();
+        }
       }
+    }
+
+    if (prevProps.backdropClick !== this.props.backdropClick) {
+      // Set it manually if it changes
+      this.overlay.current.setState({
+        backdropClick: this.props.backdropClick,
+      });
     }
     
     if (prevProps.open !== this.props.open) {
@@ -38,20 +52,61 @@ class ConnectedOverlay extends React.Component {
   componentWillUnmount() {
     destroyOverlay.call(this);
   }
-  
+
+  /**
+   * Derived data
+   */
+  getFinalPositions = () => {
+    return this.props.positions.map(position => ({
+      ...position,
+      offsetX: position.offsetX || this.props.offsetX,
+      offsetY: position.offsetY || this.props.offsetY,
+    }));
+  };
+
   /**
    * Actions
    */
   /** Handle key down actions */
-  handleKeyDown = (event) => {
-    this.props.overlayKeydown(event);
+  handleOverlayKeyDown = (event) => {
+    this.props.onOverlayKeyDown(event);
     
     if (event.key === ESC || event.key === ESCAPE) {
       detachOverlay.call(this);
     }
   };
+
+  /** Handle the position change */
+  emitPositionChange = (positionEvent) => {
+    this.props.onPositionChange(positionEvent);
+  };
   
-  render = () => this.props.children;
+  render = () => (
+    <Overlay
+      direction={this.props.dir}
+      positionStrategy={this.positionStrategy.current}
+      scrollStrategy={this.state.scrollStrategy}
+      backdrop={this.props.backdrop}
+      width={this.props.width}
+      height={this.props.height}
+      minWidth={this.props.minWidth}
+      minHeight={this.props.minHeight}
+      ref={this.overlay}
+    >
+      <FlexibleConnectedPositionStrategy
+        origin={this.props.origin}
+        onPositionChange={this.emitPositionChange}
+        preferredPositions={this.getFinalPositions()}
+        hasFlexibleDimensions={this.props.flexibleDimensions}
+        canPush={this.props.push}
+        growAfterOpen={this.props.growAfterOpen}
+        viewportMargin={this.props.viewportMargin}
+        positionLocked={this.props.lockPosition}
+        ref={this.positionStrategy}
+      />
+      { this.props.children }
+    </Overlay>
+  );
 }
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
@@ -140,6 +195,8 @@ const ConnectedOverlayPropTypes = {
   onAttached: PropTypes.func,
   /** Listener for detachments */
   onDetached: PropTypes.func,
+  /** Listener for overlay keydown events */
+  onOverlayKeyDown: PropTypes.func,
   /** Set pane element so consumer can use it */
   setPane: PropTypes.func,
 };
@@ -168,127 +225,79 @@ const ConnectedOverlayDefaultProps = {
   setKeyDown: _.noop,
   onAttached: _.noop,
   onDetached: _.noop,
+  onOverlayKeyDown: _.noop,
   setPane: _.noop,
 };
 
 ConnectedOverlay.propTypes = {
   ...ConnectedOverlayPropTypes,
   __overlay: OverlayContextPropTypes,
-  __positionStrategy: PositionStrategyPropTypes,
 };
 
 ConnectedOverlay.defaultProps = {
   ...ConnectedOverlayDefaultProps,
   __overlay: OverlayContextDefaultProps,
-  __positionStrategy: PositionStrategyDefaultProps,
 };
 
 const StackedConnectedOverlay = stack(
   withOverlayConsumer,
-  withPositionStrategy,
 )(ConnectedOverlay);
 
 StackedConnectedOverlay.propTypes = ConnectedOverlayPropTypes;
 StackedConnectedOverlay.defaultProps = ConnectedOverlayDefaultProps;
 
-class FinalConnectedOverlay extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      keyDown: _.noop,
-    };
-  }
-  
-  setKeyDown = (keyDownListener) => {
-    this.setState({ keyDown: keyDownListener });
-  };
-  
-  render() {
-    const {
-      origin, positions, offsetX, offsetY, viewportMargin,
-      lockPosition, flexibleDimensions, growAfterOpen, push,
-      ...restProps,
-    } = this.props;
-    return (
-      // inject position strategy so that ConnectedOverlay has access to context
-      <Overlay
-        onKeyDown={this.handleKeyDown}
-        onBackdropClick={restProps.backdropClick}
-        backdrop={restProps.backdrop}
-        width={restProps.width}
-        height={restProps.height}
-        minWidth={restProps.minWidth}
-        minHeight={restProps.minHeight}
-        maxWidth={restProps.maxWidth}
-        maxHeight={restProps.maxHeight}
-      >
-        <FlexibleConnectedPositionStrategy
-          origin={origin}
-          preferredPositions={positions}
-          offsetX={offsetX}
-          offsetY={offsetY}
-          viewportMargin={viewportMargin}
-          positionLocked={lockPosition}
-          hasflexibledimensions={flexibleDimensions}
-          growAfterOpen={growAfterOpen}
-          canPush={push}
-        >
-          <RepositionScrollStrategy>
-            <StackedConnectedOverlay
-              origin={origin}
-              setKeyDown={this.setKeyDown}
-              {...restProps}
-            >
-              { restProps.open ? this.props.children : null }
-            </StackedConnectedOverlay>
-          </RepositionScrollStrategy>
-        </FlexibleConnectedPositionStrategy>
-      </Overlay>
-    );
-  }
-}
-
-FinalConnectedOverlay.displayName = 'ConnectedOverlay';
-FinalConnectedOverlay.propTypes = ConnectedOverlayPropTypes;
-FinalConnectedOverlay.defaultProps = ConnectedOverlayDefaultProps;
-
-export default FinalConnectedOverlay;
-
 /**
  * Private methods
  */
+/** Create an overlay */
+function createOverlay() {
+  this.overlay.current.setState({
+    onOverlayKeyDown: this.handleOverlayKeyDown,
+  });
+}
 
 /** Attaches the overlay and subscribes to backdrop clicks if backdrop exists */
 function attachOverlay() {
-  if (!this.props.__overlay.created) {
-    /** Creates an overlay */
-    this.props.__overlay.create();
+  const overlay = this.overlay.current;
+  if (!overlay.state.created) {
+    createOverlay.call(this);
   } else {
-    this.props.__overlay.updateSize();
+    overlay.updateSize();
   }
   
   // Attach if it isn't already
-  _.defer(() => {
-    if (!this.props.__overlay.attached) {
-      this.props.__overlay.attach();
-      _.invoke(this.props, 'onAttached');
-    }
-  });
-  
-  // todo: backdrop click stuff
+  if (!overlay.state.attached) {
+    overlay.attach();
+    _.invoke(this.props, 'onAttached');
+  }
+
+  if (this.props.backdrop) {
+    // Set it manually
+    this.overlay.current.setState({
+      backdropClick: this.props.backdropClick,
+    });
+  }
 }
 
 /** Detaches the overlay and unsubscribes to backdrop clicks if backdrop exists */
 function detachOverlay() {
-  if (this.props.__overlay) {
-    this.props.__overlay.detach();
+  if (this.overlay.current) {
+    this.overlay.current.detach();
+    this.overlay.current.setState({
+      // Unsubscribe
+      onOverlayKeyDown: () => {},
+    });
     _.invoke(this.props, 'onDetached');
   }
 }
 
 /** Destroys the overlay created by this component. */
 function destroyOverlay() {
-  if (this.props.__overlay) {
-    this.props.__overlay.dispose();
+  if (this.overlay.current) {
+    this.overlay.current.dispose();
+    this.overlay.current.setState({
+      // Unsubscribe
+      onOverlayKeyDown: () => {},
+    });
   }
 }
