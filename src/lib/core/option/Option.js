@@ -97,8 +97,6 @@ Option.propTypes = {
   disabled: PropTypes.bool,
   /** The unique ID of the option. */
   id: PropTypes.string,
-  /** Event emitted when the option is selected or deselected. */
-  onSelectionChange: PropTypes.func,
   /** view value of the option item */
   viewValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   /** The option group */
@@ -109,6 +107,8 @@ Option.propTypes = {
   /** The parent, whether that's a select or menu or whatever */
   __parent: PropTypes.shape({
     multiple: PropTypes.bool,
+    /** Event emitted when the option is selected or deselected. */
+    onSelectionChange: PropTypes.func,
   }),
 };
 
@@ -116,12 +116,12 @@ Option.defaultProps = {
   selected: false,
   disabled: false,
   id: null,
-  onSelectionChange: _.noop,
   __optionGroup: {
     disabled: false,
   },
   __parent: {
     multiple: false,
+    onSelectionChange: _.noop,
   },
 };
 
@@ -131,8 +131,8 @@ export default Option;
  * Private methods
  */
 function emitSelectionChangeEvent(isUserInput = false) {
-  this.props.onSelectionChange({
+  this.props.__optionGroup.onSelectionChange({
     isUserInput,
-    value: this.props.value,
+    source: this,
   });
 }
