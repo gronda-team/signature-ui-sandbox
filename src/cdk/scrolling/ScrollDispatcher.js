@@ -89,7 +89,7 @@ class ScrollDispatcher extends React.Component {
     this.setState((state) => ({
       listeners: [...state.listeners, {
         id,
-        callback: throttleTime > 0 ? _.debounce(callback, throttleTime) : callback,
+        callback: throttleTime > 0 ? _.throttle(callback, throttleTime) : callback,
       }],
     }));
   };
