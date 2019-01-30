@@ -21,19 +21,6 @@ class Overlay extends React.Component {
       renderDummyOverlay: true,
       renderDummyBackdrop: true,
       previousHostParent: null,
-      /** Strategy with which to position the overlay. */
-      positionStrategy: {
-        attach: _.noop,
-        apply: _.noop,
-        detach: _.noop,
-        dispose: _.noop,
-      },
-      /** Strategy to be used when handling scroll events while the overlay is open. */
-      scrollStrategy: {
-        enable: _.noop,
-        disable: _.noop,
-        dispose: _.noop,
-      },
       host: null,
       pane: null,
       backdrop: null,
@@ -93,11 +80,6 @@ class Overlay extends React.Component {
       host,
       pane,
       created: true,
-    }, () => {
-      // upon creation, attach the scroll strategy
-      if (this.state.scrollStrategy.attach) {
-        this.state.scrollStrategy.attach();
-      }
     });
   };
   
@@ -112,8 +94,8 @@ class Overlay extends React.Component {
     updateElementSize.call(this);
     // updateElementDirection.call(this);
     
-    if (this.state.scrollStrategy) {
-      this.state.scrollStrategy.enable();
+    if (this.props.scrollStrategy) {
+      this.props.scrollStrategy.enable();
     }
   
     // Enable pointer events for the overlay pane element.
@@ -150,12 +132,12 @@ class Overlay extends React.Component {
     */
     togglePointerEvents.call(this, false);
     
-    if (this.state.positionStrategy) {
-      this.state.positionStrategy.detach();
+    if (this.props.positionStrategy) {
+      this.props.positionStrategy.detach();
     }
     
-    if (this.state.scrollStrategy) {
-      this.state.scrollStrategy.disable();
+    if (this.props.scrollStrategy) {
+      this.props.scrollStrategy.disable();
     }
     
     this.setState({
@@ -172,12 +154,12 @@ class Overlay extends React.Component {
   
   /** Cleans up the overlay and associated document listeners from the DOM. */
   dispose = () => {
-    if (this.state.positionStrategy) {
-      this.state.positionStrategy.dispose();
+    if (this.props.positionStrategy) {
+      this.props.positionStrategy.dispose();
     }
     
-    if (this.state.scrollStrategy) {
-      this.state.scrollStrategy.disable();
+    if (this.props.scrollStrategy) {
+      this.props.scrollStrategy.disable();
     }
     
     if (_.has(this.state, 'host.parentNode')) {
@@ -191,22 +173,12 @@ class Overlay extends React.Component {
   Updates position of overlay based on position strategy
    */
   updatePosition = () => {
-    _.invoke(this.state, 'positionStrategy.apply');
+    _.invoke(this.props.positionStrategy, 'apply');
   };
   
   /** Update the size properties of the overlay. */
   updateSize = () => {
     updateElementSize.call(this, this.props);
-  };
-  
-  /** Set the position context to be used */
-  setPositionStrategy = (provider) => {
-    this.setState({ positionStrategy: provider });
-  };
-  
-  /** Set the scrolling context to be used */
-  setScrollStrategy = (provider) => {
-    this.setState({ scrollStrategy: provider });
   };
 
   /** Has a non-binding event callback for the backdrop */
@@ -269,8 +241,18 @@ const OverlayPropTypes = {
    * the `HashLocationStrategy`).
    */
   disposeOnNavigation: PropTypes.bool,
-  /** Key down events targed to this overlay */
+  /** Key down events targeted to this overlay */
   onKeyDown: PropTypes.func,
+  /** Strategy with which to position the overlay. */
+  positionStrategy: PropTypes.shape({
+    enable: PropTypes.func,
+    disable: PropTypes.func,
+  }),
+  /** Strategy to be used when handling scroll events while the overlay is open. */
+  scrollStrategy: PropTypes.shape({
+    enable: PropTypes.func,
+    disable: PropTypes.func,
+  }),
 };
 
 const OverlayDefaultProps = {
