@@ -28,7 +28,7 @@ const SELECT_PANEL_MAX_HEIGHT = 160; // px
 /** The height of the select items in px. */
 const ITEM_HEIGHT = 32; // px
 /** The panel's padding on the x-axis */
-const SELECT_PANEL_PADDING_X = 24;
+const SELECT_PANEL_PADDING_X = 20;
 /** The panel's x axis padding if it is indented (e.g. there is an option group). */
 const SELECT_PANEL_INDENT_PADDING_X = SELECT_PANEL_PADDING_X * 2;
 /**
@@ -82,10 +82,11 @@ class Select extends React.Component {
      */
     /** Set the form field's onContainerClick function */
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    /** Set the key manager's onTabOut fn */
-    this.props.__keyManager.setTabOutFn(this.onTabOut);
-    /** Set the list of children in keyManager */
-    this.props.__keyManager.setItems(this.getOptions());
+    /** Set the key manager's config */
+    this.props.__keyManager.setConfig({
+      tabOutFn: this.onTabOut,
+      items: this.getOptions(),
+    });
   }
   
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -99,7 +100,12 @@ class Select extends React.Component {
     }
     
     /** Count the number of children, and if they differ, then update key manager */
-    if (countChildren(prevProps.children) !== countChildren(this.props.children)) {
+    if (
+      this.props.__keyManager.setItemsIfChanged(
+        toArray(this.getOptions(prevProps)),
+        toArray(this.getOptions())
+      )
+    ) {
       this.props.__keyManager.setItems(this.getOptions());
     }
   }
@@ -194,12 +200,10 @@ class Select extends React.Component {
    * Derived data
    */
   /** Get the options as a flat list */
-  getOptions = () => {
-    const children = toArray(this.props.children);
+  getOptions = (props = this.props) => {
+    const children = toArray(props.children);
     // if some of the children are OptGroups
-    if (_.some(children, child => (
-        _.get(child.props, '__sui-internal-type') === 'OptGroup' && _.has(child.props, 'children')
-      ))) {
+    if (this.getOptionGroups(props).length) {
       return children.reduce((acc, child) => {
         const options = toArray(_.get(child.props, 'children'));
         // reduce the options from the option group into an array of all the options
@@ -212,8 +216,8 @@ class Select extends React.Component {
   };
   
   /** Get the option groups */
-  getOptionGroups = () => {
-    const children = toArray(this.props.children);
+  getOptionGroups = (props = this.props) => {
+    const children = toArray(props.children);
     return children.filter(child => (
       _.get(child.props, '__sui-internal-type') === 'OptGroup'
     ));
