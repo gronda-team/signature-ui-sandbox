@@ -190,7 +190,7 @@ class Select extends React.Component {
   };
   
   /** Callback that is invoked when the overlay panel has been attached. */
-  onOpened = () => {
+  onAttached = () => {
     calculateOverlayOffsetX.call(this);
     // set the scrollTop on the panel
     this.PANEL.scrollTop = this.state.scrollTop;
@@ -329,10 +329,12 @@ class Select extends React.Component {
         aria-describedby={this.getAriaDescribedBy()}
         aria-activedescendant={this.getAriaActiveDescendant()}
         onKeydown={this.handleKeyDown}
+        onFocus={this.onFocus}
         onBlur={this.onBlur}
         innerRef={this.getRoot}
       >
         <SelectTrigger
+          aria-hidden="true"
           onClick={this.toggle}
           innerRef={this.getTriggerEl}
         >
@@ -346,20 +348,23 @@ class Select extends React.Component {
         </SelectTrigger>
         <ConnectedOverlay
           lockPosition
-          backdrop={'dark'}
+          backdrop="transparent"
           origin={this.TRIGGER}
           open={this.state.panelOpen}
           positions={this.POSITIONS}
-          minWidth={this.state.triggerRect.width}
+          minWidth={_.get(this.state.triggerRect, 'width', null)}
           offsetY={this.state.offsetY}
           backdropClick={this.close}
-          onAttached={this.onOpened}
+          onAttached={this.onAttached}
           onDetached={this.close}
-          setPane={this.setPane}
         >
           <SelectPanel
-            innerRef={this.getPanelEl}
+            style={{
+              transformOrigin: this.state.transformOrigin,
+              fontSize: this.state.triggerFontSize,
+            }}
             onKeydown={this.handleKeyDown}
+            innerRef={this.getPanelEl}
           >
             { this.renderNonTriggerChildren() }
           </SelectPanel>
