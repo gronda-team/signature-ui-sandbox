@@ -8,6 +8,7 @@ import {
   withScrollDispatcher,
 } from '../../scrolling/exports';
 import {stack} from '../../../lib/core/components/util';
+import {isElementScrolledOutsideView} from '../position/scroll-clip';
 
 /**
  * Reactive scroll strategy object to expose enable, and disable
@@ -29,7 +30,32 @@ class RepositionScrollStrategy extends React.Component {
   enable = () => {
     if (!this.state.enabled) {
       const throttle = this.props.scrollThrottle || 0;
-      // todo: add scroll dispatcher
+      this.props.__scrollDispatcher.add({
+        id: this.props.overlay.OVERLAY_ID,
+        throttleTime: throttle,
+        callback: () => {
+          this.props.overlay.updatePosition();
+
+          if (this.props.autoClose) {
+            const overlayRect = this.props.overlay.state.pane.getBoundingClientRect();
+            const { width, height } = this.props.__viewportRuler.getViewportSize();
+
+            const parentRects = [{
+              width,
+              height,
+              bottom: height,
+              right: width,
+              top: 0,
+              left: 0,
+            }];
+
+            if (isElementScrolledOutsideView(overlayRect, parentRects)) {
+              this.disable();
+              this.props.overlay.detach();
+            }
+          }
+        },
+      });
       this.setState({ enabled: true });
     }
   };
@@ -47,6 +73,8 @@ class RepositionScrollStrategy extends React.Component {
 }
 
 const RepositionScrollStrategyPropTypes = {
+  /** Associated overlay */
+  overlay: PropTypes.string.isRequired,
   /** Time in milliseconds to throttle the scroll events. */
   scrollThrottle: PropTypes.number,
   /** Whether to close the overlay once the user has scrolled away completely. */
