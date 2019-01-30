@@ -2,11 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { FormFieldPropTypes, FormFieldDefaultProps, withFormFieldConsumer } from '../form-field/control';
-import {
-  ListKeyManager,
-  ListKeyManagerDefaultProps,
-  ListKeyManagerPropTypes, withListKeyConsumer,
-} from '../../cdk/a11y';
+import { ListKeyManager } from '../../cdk/a11y';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
 import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
 import { stack } from '../core/components/util';
@@ -62,6 +58,7 @@ class Select extends React.Component {
     this.DEFAULT_ID = _.uniqueId('sui-select:');
     this.POSITIONS = DEFAULT_POSITIONS;
     this.selectionModel = React.createRef();
+    this.keyManager = React.createRef();
   }
   
   /** Lifecycle */
@@ -80,11 +77,6 @@ class Select extends React.Component {
      */
     /** Set the form field's onContainerClick function */
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    /** Set the key manager's config */
-    this.props.__keyManager.setConfig({
-      tabOutFn: this.onTabOut,
-      items: this.getOptions(),
-    });
   }
   
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -95,16 +87,6 @@ class Select extends React.Component {
     if (this.state.open && (prevState.scrollTop !== this.state.scrollTop)) {
       // if we're open and we have a new scroll top, set it on the panel
       this.PANEL.scrollTop = this.state.scrollTop;
-    }
-    
-    /** Count the number of children, and if they differ, then update key manager */
-    if (
-      this.props.__keyManager.setItemsIfChanged(
-        toArray(this.getOptions(prevProps)),
-        toArray(this.getOptions())
-      )
-    ) {
-      this.props.__keyManager.setItems(this.getOptions());
     }
   }
   
@@ -258,8 +240,8 @@ class Select extends React.Component {
   
   /** Determines the `aria-activedescendant` to be set on the host. */
   getAriaActiveDescendant = () => {
-    if (this.state.panelOpen && this.props.__keyManager.activeItem) {
-      return _.get(this.props.__keyManager, 'activeItem.id');
+    if (this.state.panelOpen && this.keyManager.current.state.activeItem) {
+      return _.get(this.keyManager.current.state.activeItem, 'activeItem.id');
     }
     
     return null;
@@ -344,7 +326,9 @@ class Select extends React.Component {
               this.props.dir :
               'ltr'
           }
+          onTabOut={this.onTabOut}
           allowedModifierKeys={['shiftKey']}
+          ref={this.keyManager}
         />
         <SelectTrigger
           aria-hidden="true"
@@ -418,7 +402,6 @@ Select.propTypes = {
   onTouched: PropTypes.func,
   /** delimiter for trigger value + multiple */
   delimiter: PropTypes.string,
-  __keyManager: ListKeyManagerPropTypes,
   __formFieldControl: FormFieldPropTypes,
 };
 
@@ -438,7 +421,6 @@ Select.defaultProps = {
   tabIndex: 0,
   onTouched: null,
   delimiter: ',',
-  __keyManager: ListKeyManagerDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
 };
 
@@ -464,7 +446,6 @@ const DEFAULT_POSITIONS = [
 ];
 
 export default stack(
-  withListKeyConsumer,
   withFormFieldConsumer,
   withPlatformConsumer,
 )(Select);
@@ -479,9 +460,9 @@ export default stack(
  */
 function highlightCorrectOption() {
   if (this.isEmpty()) {
-    this.props.__keyManager.setFirstItemActive();
+    this.keyManager.current.setFirstItemActive();
   } else {
-    this.props.__keyManager.setActiveItem(_.head(this.selectionModel.current.selected()));
+    this.keyManager.current.setActiveItem(_.head(this.selectionModel.current.selected()));
   }
 }
 
@@ -509,7 +490,7 @@ function handleClosedKeydown(event) {
     event.preventDefault();
     this.open();
   } else if (!this.props.multiple) {
-    this.props.__keyManager.onKeydown(event);
+    this.keyManager.current.onKeydown(event);
   }
 }
 
@@ -521,19 +502,24 @@ function handleOpenKeydown(event) {
   if (key === HOME || key === END) {
     // prevent navigation
     event.preventDefault();
-    key === HOME ? this.props.__keyManager.setFirstItemActive() : this.props.__keyManager.setLastItemActive();
+    key === HOME ?
+      this.keyManager.current.setFirstItemActive() :
+      this.keyManager.current.setLastItemActive();
   } else if (isArrowKey && event.altKey) {
     // Close the select on ALT + arrow key to match the native <select>
     event.preventDefault();
     this.close();
-  } else if ((key === ENTER || key === SPACE || key === SPACEBAR) && this.props.__keyManager.activeItem) {
+  } else if ((key === ENTER || key === SPACE || key === SPACEBAR) && this.keyManager.current.state.activeItem) {
     event.preventDefault();
     this.selectionModel.current.select(
-      _.get(this.getOptions(), this.props.__keyManager.activeItemIndex)
+      _.get(this.getOptions(), this.keyManager.current.state.activeItemIndex)
     );
   } else if (this.props.multiple && key === 'A' && event.ctrlKey) {
     event.preventDefault();
-    const hasDeselectedOptions = _.some(this.getOptions(), option => _.get(option.props, 'selected') === false);
+    const hasDeselectedOptions = _.some(
+      this.getOptions(),
+        option => _.get(option.props, 'selected') === false,
+      );
     const values = _.map(this.getOptions(), option => _.get(option.props, 'value'));
     if (hasDeselectedOptions) {
       this.selectionModel.current.select(...values);
@@ -541,13 +527,15 @@ function handleOpenKeydown(event) {
       this.selectionModel.current.deselect(...values);
     }
   } else {
-    const previouslyFocusedIndex = this.props.__keyManager.activeItemIndex;
+    const previouslyFocusedIndex = this.keyManager.current.state.activeItemIndex;
 
-    this.props.__keyManager.onKeydown(event);
+    this.keyManager.current.onKeydown(event);
     if (this.props.multiple && isArrowKey && event.shiftKey
-      && this.props.__keyManager.activeItem && previouslyFocusedIndex !== this.props.__keyManager.activeItemIndex) {
+      && this.keyManager.current.state.activeItem
+      && previouslyFocusedIndex !== this.keyManager.current.state.activeItemIndex
+    ) {
       this.selectionModel.current.select(
-        _.get(this.props.__keyManager.activeItem, 'props.value')
+        _.get(this.keyManager.current.state.activeItem, 'props.value')
       );
     }
   }
@@ -558,7 +546,7 @@ function handleOpenKeydown(event) {
  */
 /** Scrolls the active option into view. */
 function scrollActiveOptionIntoView() {
-  const activeOptionIndex = this.props.__keyManager.activeItemIndex || 0;
+  const activeOptionIndex = this.keyManager.current.state.activeItemIndex || 0;
   const labelCount = countGroupLabelsBeforeOption(
     activeOptionIndex, this.getOptions(), this.getOptionGroups()
   );
