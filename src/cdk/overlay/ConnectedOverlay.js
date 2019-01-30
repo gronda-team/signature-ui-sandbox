@@ -200,8 +200,8 @@ const ConnectedOverlayPropTypes = {
   onDetached: PropTypes.func,
   /** Listener for overlay keydown events */
   onOverlayKeyDown: PropTypes.func,
-  /** Set pane element so consumer can use it */
-  setPane: PropTypes.func,
+  /** Called when the position strategy changes */
+  onPositionChange: PropTypes.func,
 };
 
 const ConnectedOverlayDefaultProps = {
@@ -229,25 +229,18 @@ const ConnectedOverlayDefaultProps = {
   onAttached: _.noop,
   onDetached: _.noop,
   onOverlayKeyDown: _.noop,
-  setPane: _.noop,
+  onPositionChange: _.noop,
 };
 
 ConnectedOverlay.propTypes = {
   ...ConnectedOverlayPropTypes,
-  __overlay: OverlayContextPropTypes,
 };
 
 ConnectedOverlay.defaultProps = {
   ...ConnectedOverlayDefaultProps,
-  __overlay: OverlayContextDefaultProps,
 };
 
-const StackedConnectedOverlay = stack(
-  withOverlayConsumer,
-)(ConnectedOverlay);
-
-StackedConnectedOverlay.propTypes = ConnectedOverlayPropTypes;
-StackedConnectedOverlay.defaultProps = ConnectedOverlayDefaultProps;
+export default ConnectedOverlay;
 
 /**
  * Private methods
