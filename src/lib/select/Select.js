@@ -190,6 +190,17 @@ class Select extends React.Component {
     this.PANEL.scrollTop = this.state.scrollTop;
   };
 
+  /** Callback that's invoked whenever an option is selected */
+  onOptionSelectionChange = (event) => {
+    // Uses a synthetic (non-real) event
+    onSelect.call(this, event.source, event.isUserInput);
+
+    if (event.isUserInput && !this.props.multiple && this.state.panelOpen) {
+      this.close();
+      this.focus();
+    }
+  };
+
   /** Callback for when the overlay position changes */
   handleOverlayPositionChange = () => {
     this.oncePositionChange();
@@ -600,6 +611,47 @@ function setPseudoCheckboxPaddingSize() {
     if (pseudoCheckbox) {
       SELECT_MULTIPLE_PANEL_PADDING_X = SELECT_PANEL_PADDING_X * 1.5 + pseudoCheckbox.offsetWidth;
     }
+  }
+}
+
+/** Invoked when an option is selected */
+function onSelect(option, isUserInput) {
+  const value = _.get(option.props, 'value');
+  const selectionModel = this.selectionModel.current;
+  const wasSelected = selectionModel.isSelected(value);
+
+  if (value === null && !this.props.multiple) {
+    option.deselect();
+    selectionModel.clear();
+    // propagateChanges.call(this, value);
+  } else {
+    _.get(option.props, 'selected') ?
+      selectionModel.select(value) :
+      selectionModel.deselect(value);
+
+    if (isUserInput) {
+      this.keyManager.current.setActiveItem(option);
+    }
+
+    if (this.props.multiple) {
+      // sortValues.call(this);
+
+      if (isUserInput) {
+        // In case the user selected the option with their mouse, we
+        // want to restore focus back to the trigger, in order to
+        // prevent the select keyboard controls from clashing with
+        // the ones from `mat-option`.
+        this.focus();
+      }
+    }
+  }
+
+  if (wasSelected !== selected) {
+    this.props.onChange(
+      this.props.multiple ?
+        [...selectionModel.selected(), value] :
+        value
+    );
   }
 }
 
