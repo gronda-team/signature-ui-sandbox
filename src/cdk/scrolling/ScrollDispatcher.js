@@ -1,7 +1,7 @@
 import * as React from 'react';
 import _ from 'lodash';
 import { PlatformPropTypes, PlatformDefaultProps, withPlatformConsumer } from '../platform';
-import { ScrollDispatcherProvider } from './context/scroll-dispatcher';
+import { ScrollDispatcherProvider } from './context/ScrollDispatcherContext';
 
 /** Time in ms to throttle the scrolling events by default. */
 export const DEFAULT_SCROLL_TIME = 20; // ms
