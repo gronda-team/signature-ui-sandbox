@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { OverlayContextDefaultProps, OverlayContextPropTypes, withOverlayConsumer } from './context/overlay';
-import { stack } from '../../lib/core/components/util';
 import Overlay from './Overlay';
 import { ESC, ESCAPE } from '../keycodes/keys';
 import FlexibleConnectedPositionStrategy from './position/FlexibleConnectedPositionStrategy';
