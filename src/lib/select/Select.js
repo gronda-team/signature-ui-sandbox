@@ -8,11 +8,6 @@ import {
 } from '../../cdk/a11y';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
 import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
-import {
-  SelectionModelDefaultProps,
-  SelectionModelPropTypes, withSelectionModelConsumer,
-  withSelectionModelProvider,
-} from '../../cdk/collections/selection-model';
 import { stack } from '../core/components/util';
 import { getViewportSize } from '../../cdk/scrolling/viewport-ruler';
 import { isRtl } from '../../cdk/bidi/constants';
@@ -22,6 +17,7 @@ import {
   SelectValueText,
 } from './styles/index';
 import { ConnectedOverlay } from '../../cdk/overlay';
+import {SelectionModel} from '../../cdk/collections';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
@@ -64,6 +60,7 @@ class Select extends React.Component {
     
     this.DEFAULT_ID = _.uniqueId('sui-select:');
     this.POSITIONS = DEFAULT_POSITIONS;
+    this.selectionModel = React.createRef();
   }
   
   /** Lifecycle */
@@ -238,7 +235,7 @@ class Select extends React.Component {
   };
   
   /** Whether the select has a value. */
-  isEmpty = () => this.props.__selectionModel.isEmpty();
+  isEmpty = () => this.selectionModel.current.isEmpty();
   
   /** Returns the aria-label of the select component. */
   getAriaLabel = () => {
@@ -273,7 +270,7 @@ class Select extends React.Component {
   triggerValue = () => {
     if (this.isEmpty()) return '';
     const options = this.getOptions();
-    const selected = this.props.__selectionModel.selected;
+    const selected = this.selectionModel.current.selected();
     if (this.props.multiple) {
       const selectedOptionIndices = selected.map(getOptionIndexFromValue);
       
@@ -333,6 +330,12 @@ class Select extends React.Component {
         onBlur={this.onBlur}
         innerRef={this.getRoot}
       >
+        <SelectionModel
+          value={this.props.value}
+          multiple={this.props.multiple}
+          onChange={this.props.onSelectionChange}
+          ref={this.selectionModel}
+        />
         <SelectTrigger
           aria-hidden="true"
           onClick={this.toggle}
@@ -407,7 +410,6 @@ Select.propTypes = {
   delimiter: PropTypes.string,
   __keyManager: ListKeyManagerPropTypes,
   __formFieldControl: FormFieldPropTypes,
-  __selectionModel: SelectionModelPropTypes,
 };
 
 Select.defaultProps = {
@@ -428,7 +430,6 @@ Select.defaultProps = {
   delimiter: ',',
   __keyManager: ListKeyManagerDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
-  __selectionModel: SelectionModelDefaultProps,
 };
 
 /**
@@ -453,9 +454,7 @@ const DEFAULT_POSITIONS = [
 ];
 
 export default stack(
-  withSelectionModelProvider,
   withListKeyConsumer,
-  withSelectionModelConsumer,
   withFormFieldConsumer,
 )(Select);
 
@@ -471,7 +470,7 @@ function highlightCorrectOption() {
   if (this.isEmpty()) {
     this.props.__keyManager.setFirstItemActive();
   } else {
-    this.props.__keyManager.setActiveItem(_.head(this.props.__selectionModel.selected));
+    this.props.__keyManager.setActiveItem(_.head(this.selectionModel.current.selected()));
   }
 }
 
@@ -518,7 +517,7 @@ function handleOpenKeydown(event) {
     this.close();
   } else if ((key === ENTER || key === SPACE || key === SPACEBAR) && this.props.__keyManager.activeItem) {
     event.preventDefault();
-    this.props.__selectionModel.select(
+    this.selectionModel.current.select(
       _.get(this.getOptions(), this.props.__keyManager.activeItemIndex)
     );
   } else if (this.props.multiple && key === 'A' && event.ctrlKey) {
@@ -526,9 +525,9 @@ function handleOpenKeydown(event) {
     const hasDeselectedOptions = _.some(this.getOptions(), option => _.get(option.props, 'selected') === false);
     const values = _.map(this.getOptions(), option => _.get(option.props, 'value'));
     if (hasDeselectedOptions) {
-      this.props.__selectionModel.select(...values);
+      this.selectionModel.current.select(...values);
     } else {
-      this.props.__selectionModel.deselect(...values);
+      this.selectionModel.current.deselect(...values);
     }
   } else {
     const previouslyFocusedIndex = this.props.__keyManager.activeItemIndex;
@@ -536,7 +535,7 @@ function handleOpenKeydown(event) {
     this.props.__keyManager.onKeydown(event);
     if (this.props.multiple && isArrowKey && event.shiftKey
       && this.props.__keyManager.activeItem && previouslyFocusedIndex !== this.props.__keyManager.activeItemIndex) {
-      this.props.__selectionModel.select(
+      this.selectionModel.current.select(
         _.get(this.props.__keyManager.activeItem, 'props.value')
       );
     }
@@ -582,7 +581,7 @@ function calculateOverlayPosition() {
   
   // If no value is selected we open the popup to the first item.
   let selectedOptionOffset =
-    this.isEmpty() ? 0 : getOptionIndexFromValue.call(this, _.head(this.props.__selectionModel.selected));
+    this.isEmpty() ? 0 : getOptionIndexFromValue.call(this, _.head(this.selectionModel.current.selected()));
   
   selectedOptionOffset += countGroupLabelsBeforeOption(
     selectedOptionOffset, this.getOptions(), this.getOptionGroups(),
@@ -634,7 +633,7 @@ function calculateOverlayOffsetX() {
   const paddingWidth = SELECT_PANEL_PADDING_X * 2;
   
   // Adjust the offset, depending on the option padding.
-  let selectedValue = _.head(this.props.__selectionModel.selected);
+  let selectedValue = _.head(this.selectionModel.current.selected());
   let selected = _.get(
     selectedValue ? getOptionIndexFromValue(selectedValue) : 0
   );
