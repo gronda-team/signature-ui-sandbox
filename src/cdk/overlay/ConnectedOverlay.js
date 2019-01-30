@@ -77,36 +77,39 @@ class ConnectedOverlay extends React.Component {
     this.props.onPositionChange(positionEvent);
   };
   
-  render = () => (
-    <Overlay
-      direction={this.props.dir}
-      positionStrategy={this.positionStrategy.current}
-      scrollStrategy={this.state.scrollStrategy}
-      backdrop={this.props.backdrop}
-      width={this.props.width}
-      height={this.props.height}
-      minWidth={this.props.minWidth}
-      minHeight={this.props.minHeight}
-      ref={this.overlay}
-    >
-      <RepositionScrollStrategy
-        overlay={this.overlay.current}
-        ref={this.scrollStrategy}
-      />
-      <FlexibleConnectedPositionStrategy
-        origin={this.props.origin}
-        onPositionChange={this.emitPositionChange}
-        preferredPositions={this.getFinalPositions()}
-        hasFlexibleDimensions={this.props.flexibleDimensions}
-        canPush={this.props.push}
-        growAfterOpen={this.props.growAfterOpen}
-        viewportMargin={this.props.viewportMargin}
-        positionLocked={this.props.lockPosition}
-        ref={this.positionStrategy}
-      />
-      { this.props.children }
-    </Overlay>
-  );
+  render() {
+    const ScrollStrategy = this.props.scrollStrategy;
+    return (
+      <Overlay
+        direction={this.props.dir}
+        positionStrategy={this.positionStrategy.current}
+        scrollStrategy={this.scrollStrategy.current}
+        backdrop={this.props.backdrop}
+        width={this.props.width}
+        height={this.props.height}
+        minWidth={this.props.minWidth}
+        minHeight={this.props.minHeight}
+        ref={this.overlay}
+      >
+        <ScrollStrategy
+          overlay={this.overlay.current}
+          ref={this.scrollStrategy}
+        />
+        <FlexibleConnectedPositionStrategy
+          origin={this.props.origin}
+          onPositionChange={this.emitPositionChange}
+          preferredPositions={this.getFinalPositions()}
+          hasFlexibleDimensions={this.props.flexibleDimensions}
+          canPush={this.props.push}
+          growAfterOpen={this.props.growAfterOpen}
+          viewportMargin={this.props.viewportMargin}
+          positionLocked={this.props.lockPosition}
+          ref={this.positionStrategy}
+        />
+        { this.props.children }
+      </Overlay>
+    );
+  };
 }
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
@@ -170,7 +173,7 @@ const ConnectedOverlayPropTypes = {
   /** Margin between the overlay and the viewport edges. */
   viewportMargin: PropTypes.number,
   /** Strategy to be used when handling scroll events while the overlay is open. */
-  scrollStrategy: PropTypes.any,
+  scrollStrategy: PropTypes.node,
   /** Whether the overlay is open. */
   open: PropTypes.bool,
   /** Whether or not the overlay should be locked when scrolling. */
@@ -212,7 +215,7 @@ const ConnectedOverlayDefaultProps = {
   minHeight: null,
   backdrop: null,
   viewportMargin: 0, // position strategy
-  scrollStrategy: null,
+  scrollStrategy: RepositionScrollStrategy,
   open: false,
   lockPosition: false, // position strategy
   flexibleDimensions: false, // position strategy
