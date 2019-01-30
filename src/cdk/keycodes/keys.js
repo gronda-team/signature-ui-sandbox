@@ -49,4 +49,7 @@ export const F10 = 'F10';
 export const F11 = 'F11';
 export const F12 = 'F12';
 
-export const ARROW_KEYS = [ARROW_LEFT, ARROW_RIGHT, ARROW_DOWN, ARROW_UP];
+export const ARROW_KEYS = [
+  LEFT, ARROW_LEFT, RIGHT, ARROW_RIGHT,
+  DOWN, ARROW_DOWN, UP, ARROW_UP,
+];
