@@ -1,22 +1,25 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, DOWN, LEFT, RIGHT, TAB, UP} from '../../keycodes/keys';
 import { ListKeyConsumer, ListKeyProvider } from './context/ListKeyManagerContext';
 
 // Aliases
 const count = React.Children.count;
-const toArray = React.Children.toArray;
 
 /**
  * Function that obtains a label or view value from a React
  * component.
  *
- * @param item - iteratee from this.state.items
+ * @param item - iteratee from this.props.items
  * @returns {boolean}
  */
 function defaultGetLabel(item) {
   return _.get(item.props, 'label', '');
 }
+
+/** Modifier keys handled by the ListKeyManager. */
+const LIST_KEY_MANAGER_MODIFIERS = ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'];
 
 /**
  * This class manages keyboard events for selectable lists.
@@ -32,74 +35,29 @@ export default class ListKeyManager extends React.Component {
     super();
     
     this.state = {
-      /** whether the active item will wrap to the other end of list
-       * when there are no more items in the given direction. */
-      wrap: true,
-      /** Configures whether the key manager should be able to
-       * move the selection vertically. */
-      vertical: true,
-      /** Configures the key manager to move the selection horizontally.
-       * Passing in `null` will disable horizontal movement. */
-      horizontal: 'ltr',
-      /** Turns on typeahead mode which allows users to set the
-       * active item by typing. */
-      typeAhead: 200,
-      /**
-       * Predicate function that can be used to check whether an item should be skipped
-       * by the key manager. By default, disabled items are skipped.
-       */
-      skipPredicateFn: item => _.get(item.props, 'disabled', false),
-      /** Gets the label for this option. */
-      getLabel: defaultGetLabel,
-      /**
-       * Callback that is called when the TAB key is pressed, so components can react
-       * when focus is shifted off of the list.
-       */
-      tabOutFn: _.noop,
-      /** QueryList equivalent for React */
-      items: [],
       // Buffer for the letters that the user has pressed when the typeahead option is turned on.
       pressedLetters: [],
-      /** Callback that runs when the active item changes */
-      onChange: _.noop,
-      /**
-       * Modifier keys which are allowed to be held down and whose default actions will be prevented
-       * as the user is pressing the arrow keys. Defaults to not allowing any modifier keys.
-       */
-      allowedModifierKeys: [],
-      provide: {
-        /** All these props are provided by the KeyManager provider */
-        activeItemIndex: -1,
-        activeItem: null,
-        setActiveItem: this.setActiveItem,
-        onKeyDown: this.onKeyDown,
-        setConfig: setConfig.bind(this),
-        setItemsIfChanged: itemComparator.bind(this),
-        setFirstItemActive: this.setFirstItemActive,
-        setLastItemActive: this.setLastItemActive,
-        setNextItemActive: this.setNextItemActive,
-        setPreviousItemActive: this.setPreviousItemActive,
-        updateActiveItem: this.updateActiveItem,
-        updateActiveItemIndex: this.updateActiveItemIndex,
-      }
+      // Currently active item
+      activeItemIndex: -1,
+      activeItem: null,
     };
   }
   
   componentDidMount() {
-    this.setTypeAhead(this.state.typeAhead);
+    this.setTypeAhead(this.props.typeAhead);
   }
   
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.typeAhead !== this.state.typeAhead) {
-      this.setTypeAhead(this.state.typeAhead);
+  componentDidUpdate(prevProps) {
+    if (prevProps.typeAhead !== this.props.typeAhead) {
+      this.setTypeAhead(this.props.typeAhead);
     }
 
-    if (count(prevState.items) !== count(this.state.items)) {
-      updateActiveItemOnItemsChange.call(this, this.state.items);
+    if (count(prevProps.items) !== count(this.props.items)) {
+      updateActiveItemOnItemsChange.call(this, this.props.items);
     } else {
-      const toItemLabel = this.state.getLabel;
-      if (!_.isEqual(prevState.items.map(toItemLabel), this.state.items.map(toItemLabel))) {
-        updateActiveItemOnItemsChange.call(this, this.state.items);
+      const toItemLabel = this.props.getLabel;
+      if (!_.isEqual(prevProps.items.map(toItemLabel), this.props.items.map(toItemLabel))) {
+        updateActiveItemOnItemsChange.call(this, this.props.items);
       }
     }
   }
@@ -119,12 +77,12 @@ export default class ListKeyManager extends React.Component {
   Sets the active item to the item at the index specified. (Or item)
    */
   setActiveItem = (item) => {
-    const previousIndex = this.state.provide.activeItemIndex;
+    const previousIndex = this.state.activeItemIndex;
     this.updateActiveItem(item);
 
-    if (this.state.provide.activeItemIndex !== previousIndex) {
+    if (this.state.activeItemIndex !== previousIndex) {
       // Invoke the change handler to whoever is listening
-      this.state.onChange(this.state.provide.activeItemIndex);
+      this.props.onChange(this.state.activeItemIndex);
     }
   };
 
@@ -133,32 +91,32 @@ export default class ListKeyManager extends React.Component {
     const modifiers = ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'];
     const isModifierAllowed = _.every(modifiers, modifier => (
       // if modifier key wasn't pressed, or it was, and we allowed it
-      !event[modifier] || this.state.allowedModifierKeys.indexOf(modifier) > -1
+      !event[modifier] || this.props.allowedModifierKeys.indexOf(modifier) > -1
     ));
   
     switch (key) {
       case TAB:
-        this.state.tabOutFn();
+        this.props.tabOutFn();
         return;
     
       case ARROW_DOWN:
       case DOWN:
-        if (this.state.vertical && isModifierAllowed) {
+        if (this.props.vertical && isModifierAllowed) {
           this.setNextItemActive();
           break;
         } else return;
     
       case ARROW_UP:
       case UP:
-        if (this.state.vertical && isModifierAllowed) {
+        if (this.props.vertical && isModifierAllowed) {
           this.setPreviousItemActive();
           break;
         } else return;
     
       case ARROW_RIGHT:
       case RIGHT:
-        if (this.state.horizontal && isModifierAllowed) {
-          this.state.horizontal === 'rtl' ?
+        if (this.props.horizontal && isModifierAllowed) {
+          this.props.horizontal === 'rtl' ?
             this.setPreviousItemActive() :
             this.setNextItemActive();
           break;
@@ -166,8 +124,8 @@ export default class ListKeyManager extends React.Component {
     
       case ARROW_LEFT:
       case LEFT:
-        if (this.state.horizontal && isModifierAllowed) {
-          this.state.horizontal === 'rtl' ?
+        if (this.props.horizontal && isModifierAllowed) {
+          this.props.horizontal === 'rtl' ?
             this.setNextItemActive() :
             this.setPreviousItemActive();
           break;
@@ -206,37 +164,34 @@ export default class ListKeyManager extends React.Component {
   
   /** Sets the active item to the last enabled item in the list. */
   setLastItemActive = () => {
-    setActiveItemByIndex.call(this, this.state.items.length - 1, -1);
+    setActiveItemByIndex.call(this, this.props.items.length - 1, -1);
   };
   
   /** Sets the active item to the next enabled item in the list. */
   setNextItemActive = () => {
-    this.state.provide.activeItemIndex < 0 ?
+    this.state.activeItemIndex < 0 ?
       this.setFirstItemActive() :
       setActiveItemByDelta.call(this, 1);
   };
   
   /** Sets the active item to a previous enabled item in the list. */
   setPreviousItemActive = () => {
-    this.state.provide.activeItemIndex < 0 && this.state.wrap ?
+    this.state.activeItemIndex < 0 && this.props.wrap ?
       this.setLastItemActive() :
       setActiveItemByDelta.call(this, -1);
   };
   
   /** Allows setting the active without any other effects. */
   updateActiveItem = (item) => {
-    const itemArray = _.toArray(this.state.items);
+    const itemArray = _.toArray(this.props.items);
     const index = _.isNumber(item) ? item : itemArray.indexOf(item);
 
     const activeItem = itemArray[index];
     
-    this.setState(state => ({
-      provide: {
-        ...state.provide,
-        activeItemIndex: index,
-        activeItem: _.isNil(activeItem) ? null : activeItem,
-      },
-    }));
+    this.setState({
+      activeItemIndex: index,
+      activeItem: _.isNil(activeItem) ? null : activeItem,
+    });
   };
   
   /** Allows setting of the activeItemIndex without any other effects. */
@@ -244,14 +199,57 @@ export default class ListKeyManager extends React.Component {
     this.updateActiveItem(index);
   };
   
-  render() {
-    return (
-      <ListKeyProvider value={this.state.provide}>
-        { this.props.children }
-      </ListKeyProvider>
-    );
-  }
+  render = () => null;
 }
+
+ListKeyManager.propTypes = {
+  /** whether the active item will wrap to the other end of list
+   * when there are no more items in the given direction. */
+  wrap: PropTypes.bool,
+  /** Configures whether the key manager should be able to
+   * move the selection vertically. */
+  vertical: PropTypes.bool,
+  /** Configures the key manager to move the selection horizontally.
+   * Passing in `null` will disable horizontal movement. */
+  horizontal: PropTypes.oneOf(['ltr', 'rtl']),
+  /** Turns on typeahead mode which allows users to set the
+   * active item by typing. */
+  typeAhead: PropTypes.number,
+  /**
+   * Predicate function that can be used to check whether an item should be skipped
+   * by the key manager. By default, disabled items are skipped.
+   */
+  skipPredicateFn: PropTypes.func,
+  /** Gets the label for this option. */
+  getLabel: PropTypes.func,
+  /**
+   * Callback that is called when the TAB key is pressed, so components can react
+   * when focus is shifted off of the list.
+   */
+  onTabOut: PropTypes.func,
+  /** QueryList equivalent for React */
+  items: PropTypes.array,
+  /** Callback that runs when the active item changes */
+  onChange: PropTypes.func,
+  /**
+   * Modifier keys which are allowed to be held down and whose default actions will be prevented
+   * as the user is pressing the arrow keys. Defaults to not allowing any modifier keys.
+   */
+  allowedModifierKeys: PropTypes.arrayOf(PropTypes.oneOf(LIST_KEY_MANAGER_MODIFIERS)),
+};
+
+ListKeyManager.defaultProps = {
+  wrap: true,
+  vertical: true,
+  horizontal: 'ltr',
+  typeAhead: 200,
+  skipPredicateFn: item => _.get(item.props, 'disabled', false),
+  getLabel: defaultGetLabel,
+  onTabOut: _.noop,
+  items: [],
+  onChange: _.noop,
+  allowedModifierKeys: [],
+};
 
 /*
 Remove props because, as this is a component development kit,
@@ -297,17 +295,6 @@ export function withListKeyConsumer(Component) {
 Private methods
  */
 
-/**
- * Set the configuration, namely the wrap, typeAhead, vertical, and horizontal
- * parts of state
- */
-function setConfig({ wrap, vertical, horizontal, typeAhead, skipPredicateFn,
-  getLabel, tabOutFn, items, onChange, allowedModifierKeys, setItemsIfChanged,
-}) {
-  const newState = _.pickBy(arguments[0], _.negate(_.isUndefined));
-  this.setState(newState);
-}
-
 /*
 Add key to list of pressed keys. Automatically invoke purgeKeys after
 this.state.typeAhead ms
@@ -338,17 +325,17 @@ function getStringFromKeys(array = []) {
 Get the appropriate list item from the string
  */
 function onTypeAhead(inputString) {
-  const items = this.state.items;
+  const items = this.props.items;
 
   // Start at 1 because we want to start searching at the item immediately
   // following the current active item.
   for (let i = 1; i < items.length; i++) {
-    const index = (this.state.provide.activeItemIndex + i) % items.length;
+    const index = (this.state.activeItemIndex + i) % items.length;
     const item = items[index];
 
     if (
-      !this.state.skipPredicateFn(item)
-      && this.state.getLabel(item).toUpperCase().trim().indexOf(inputString) === 0
+      !this.props.skipPredicateFn(item)
+      && this.props.getLabel(item).toUpperCase().trim().indexOf(inputString) === 0
     ) {
       this.setActiveItem(index);
       break;
@@ -364,7 +351,7 @@ function onTypeAhead(inputString) {
  * depending on whether wrap mode is turned on.
  */
 function setActiveItemByDelta(delta) {
-  this.state.wrap ?
+  this.props.wrap ?
     setActiveInWrapMode.call(this, delta) :
     setActiveInDefaultMode.call(this, delta);
 }
@@ -375,13 +362,13 @@ function setActiveItemByDelta(delta) {
  * encounters either end of the list.
  */
 function setActiveInWrapMode(delta) {
-  const items = this.state.items;
+  const items = this.props.items;
   
   for (let i = 1; i <= items.length; i++) {
-    const index = (this.state.provide.activeItemIndex + (delta * i) + items.length) % items.length;
+    const index = (this.state.activeItemIndex + (delta * i) + items.length) % items.length;
     const item = items[index];
   
-    if (!this.state.skipPredicateFn(item)) {
+    if (!this.props.skipPredicateFn(item)) {
       this.setActiveItem(index);
       return;
     }
@@ -394,7 +381,7 @@ function setActiveInWrapMode(delta) {
  * it encounters either end of the list, it will stop and not wrap.
  */
 function setActiveInDefaultMode(delta) {
-  setActiveItemByIndex.call(this, this.state.provide.activeItemIndex + delta, delta);
+  setActiveItemByIndex.call(this, this.state.activeItemIndex + delta, delta);
 }
 
 /**
@@ -403,10 +390,10 @@ function setActiveInDefaultMode(delta) {
  * finds an enabled item or encounters the end of the list.
  */
 function setActiveItemByIndex(index, fallbackDelta) {
-  const items = this.state.items;
+  const items = this.props.items;
   if (!_.get(items, index)) return;
   
-  while (this.state.skipPredicateFn(items[index])) {
+  while (this.props.skipPredicateFn(items[index])) {
     index += fallbackDelta;
     if (!_.get(items, index)) return;
   }
@@ -420,33 +407,14 @@ function setActiveItemByIndex(index, fallbackDelta) {
  * index accordingly.
  */
 function updateActiveItemOnItemsChange(newItems) {
-  if (this.state.provide.activeItem) {
-    const activeItemLabel = this.state.getLabel(this.state.provide.activeItem);
-    const newIndex = _.findIndex(newItems, item => this.state.getLabel(item) === activeItemLabel);
+  if (this.state.activeItem) {
+    const activeItemLabel = this.props.getLabel(this.state.activeItem);
+    const newIndex = _.findIndex(newItems, item => this.props.getLabel(item) === activeItemLabel);
 
-    if (newIndex > -1 && newIndex !== this.state.provide.activeItemIndex) {
-      this.setState(state => ({
-        provide: {
-          ...state.provide,
-          activeItemIndex: newIndex,
-        },
-      }));
+    if (newIndex > -1 && newIndex !== this.state.activeItemIndex) {
+      this.setState({
+        activeItemIndex: newIndex,
+      });
     }
-  }
-}
-
-/**
- * Primitive detect changes function for determining whether or not the items
- * should change. Completely opt-in.
- * @param previous - previous array of items
- * @param current - current array of items
- */
-function itemComparator(previous, current) {
-  if (
-    previous.length !== current.length
-    || !_.isEqual(previous.map(this.state.getLabel), current.map(this.state.getLabel))
-    || !_.isEqual(previous.map(this.state.skipPredicateFn), current.map(this.state.skipPredicateFn))
-  ) {
-    setConfig.call(this, { items: current });
   }
 }
