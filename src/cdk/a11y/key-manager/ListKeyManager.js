@@ -96,7 +96,7 @@ export default class ListKeyManager extends React.Component {
   
     switch (key) {
       case TAB:
-        this.props.tabOutFn();
+        this.props.onTabOut();
         return;
     
       case ARROW_DOWN:
