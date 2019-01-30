@@ -9,8 +9,8 @@ export {
 } from './ViewportRuler';
 export {
   withViewportRuler,
-  ViewportContextDefaultProps,
-  ViewportContextPropTypes,
+  ViewportContextDefaultProps as ViewportRulerDefaultProps,
+  ViewportContextPropTypes as ViewportRulerPropTypes,
   ViewportRulerConsumer,
   ViewportRulerProvider,
 } from './context/ViewportRulerContext';
