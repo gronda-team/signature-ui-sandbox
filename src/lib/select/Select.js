@@ -4,17 +4,17 @@ import _ from 'lodash';
 import { FormFieldPropTypes, FormFieldDefaultProps, withFormFieldConsumer } from '../form-field/control';
 import { ListKeyManager } from '../../cdk/a11y';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
-import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
+import {ARROW_DOWN, ARROW_KEYS, ARROW_UP, DOWN, END, ENTER, HOME, SPACE, SPACEBAR, UP} from '../../cdk/keycodes/keys';
 import { stack } from '../core/components/util';
 import { isRtl } from '../../cdk/bidi/constants';
 import {
-  SelectContent,
   SelectPanel, SelectPlaceholder, SelectRoot, SelectTrigger, SelectValue,
   SelectValueText,
 } from './styles/index';
 import { ConnectedOverlay } from '../../cdk/overlay';
 import {SelectionModel} from '../../cdk/collections';
 import {withPlatformConsumer} from '../../cdk/platform';
+import {hasModifierKey} from '../../cdk/keycodes/modifiers';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
@@ -29,6 +29,16 @@ const SELECT_PANEL_INDENT_PADDING_X = SELECT_PANEL_PADDING_X * 2;
  * this value or more away from the viewport boundary.
  */
 const SELECT_PANEL_VIEWPORT_PADDING = 8;
+/**
+ * Distance between the panel edge and the option text in
+ * multi-selection mode.
+ *
+ * Calculated as:
+ * (SELECT_PANEL_PADDING_X * 1.5) + 20 = 44
+ * The padding is multiplied by 1.5 because the checkbox's margin is half the padding.
+ * The checkbox width is 16px.
+ */
+export let SELECT_MULTIPLE_PANEL_PADDING_X = 0;
 
 // Extract React.Children.count
 const countChildren = React.Children.count;
@@ -77,6 +87,9 @@ class Select extends React.Component {
      */
     /** Set the form field's onContainerClick function */
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
+
+    /** Set the reposition callback as _.once() so it doesn't infinitely loop */
+    this.oncePositionChange = _.once(this.onPositionChange);
   }
   
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -101,12 +114,6 @@ class Select extends React.Component {
   
   getPanelEl = (el) => {
     this.PANEL = el;
-  };
-  
-  setPane = (pane) => {
-    if (pane) {
-      this.PANE = pane;
-    }
   };
   
   /**
@@ -145,6 +152,8 @@ class Select extends React.Component {
     this.setState((state) => {
       if (state.panelOpen) return { panelOpen: false };
       return null;
+    }, () => {
+      this.oncePositionChange = _.once(this.onPositionChange);
     });
   };
   
@@ -160,12 +169,41 @@ class Select extends React.Component {
       this.state.panelOpen ? handleOpenKeydown.call(this, event) : handleClosedKeydown.call(this, event);
     }
   };
+
+  onFocus = () => {
+    // Easier for tests
+    if (!this.props.disabled) {
+      this.setState({ focused: true });
+    }
+  };
   
   onBlur = () => {
+    this.setState({ focused: false });
     if (!this.props.disabled && !this.state.panelOpen) {
-      if (_.isFunction(this.props.onTouched)) {
-        this.props.onTouched();
-      }
+      _.invoke(this.props, 'onTouched');
+    }
+  };
+
+  onPositionChange = () => {
+    setPseudoCheckboxPaddingSize.call(this);
+    calculateOverlayOffsetX.call(this);
+    this.PANEL.scrollTop = this.state.scrollTop;
+  };
+
+  /** Callback for when the overlay position changes */
+  handleOverlayPositionChange = () => {
+    this.oncePositionChange();
+  };
+
+  /** Callback that is invoked when the value is changed */
+  handleValueChange = () => {
+    if (this.state.panelOpen && this.PANEL) {
+      scrollActiveOptionIntoView.call(this);
+    } else if (
+      !this.state.panelOpen && !this.props.multiple
+      && this.keyManager.current.state.activeItem
+    ) {
+      this.keyManager.current.activeItem.selectViaInteraction();
     }
   };
   
@@ -216,9 +254,13 @@ class Select extends React.Component {
     return toArray(this.props.children)
       .filter(child => _.get(child.props, '__sui-internal-type') === 'Trigger');
   };
+
+  /** Get specific directionality when it's open */
+  getDirectionality = () => this.state.panelOpen ?
+    null : this.props.dir;
   
   /** Whether the select has a value. */
-  isEmpty = () => this.selectionModel.current.isEmpty();
+  isEmpty = () => !this.selectionModel.current || this.selectionModel.current.isEmpty();
   
   /** Returns the aria-label of the select component. */
   getAriaLabel = () => {
@@ -321,12 +363,9 @@ class Select extends React.Component {
         />
         <ListKeyManager
           vertical
-          horizontal={
-            ['ltr', 'rtl'].indexOf(this.props.dir) > -1 ?
-              this.props.dir :
-              'ltr'
-          }
+          horizontal={this.getDirectionality()}
           onTabOut={this.onTabOut}
+          onChange={this.handleValueChange}
           allowedModifierKeys={['shiftKey']}
           ref={this.keyManager}
         />
@@ -354,11 +393,11 @@ class Select extends React.Component {
           backdropClick={this.close}
           onAttached={this.onAttached}
           onDetached={this.close}
+          onPositionChange={this.handleOverlayPositionChange}
         >
           <SelectPanel
             style={{
               transformOrigin: this.state.transformOrigin,
-              fontSize: this.state.triggerFontSize,
             }}
             onKeydown={this.handleKeyDown}
             innerRef={this.getPanelEl}
@@ -483,60 +522,83 @@ function handleClosedKeydown(event) {
   const key = event.key;
   const isArrowKey = ARROW_KEYS.indexOf(key) > -1;
   const isOpenKey = key === ENTER || key === SPACE || key === SPACEBAR;
+  const manager = this.keyManager.current;
   
   // Open the select on ALT + arrow key to match the native <select>
-  if (isOpenKey || ((this.props.multiple || event.altKey) && isArrowKey)) {
+  if ((isOpenKey && !hasModifierKey(event)) || ((this.props.multiple || event.altKey) && isArrowKey)) {
     // prevents the page from scrolling down when pressing space
     event.preventDefault();
     this.open();
   } else if (!this.props.multiple) {
-    this.keyManager.current.onKeydown(event);
+    if (key === HOME || key === END) {
+      key === HOME ?
+        manager.setFirstItemActive() :
+        manager.setLastItemActive();
+      event.preventDefault();
+    } else {
+      this.keyManager.current.onKeydown(event);
+    }
   }
 }
 
 /** Handles keyboard events when the selected is open. */
 function handleOpenKeydown(event) {
   const key = event.key;
-  const isArrowKey = key === ARROW_DOWN || key === ARROW_UP;
-  
+  const isArrowKey = [ARROW_UP, UP, ARROW_DOWN, DOWN].indexOf(key) > -1;
+  const manager = this.keyManager.current;
+
   if (key === HOME || key === END) {
     // prevent navigation
     event.preventDefault();
     key === HOME ?
-      this.keyManager.current.setFirstItemActive() :
-      this.keyManager.current.setLastItemActive();
+      manager.setFirstItemActive() :
+      manager.setLastItemActive();
   } else if (isArrowKey && event.altKey) {
     // Close the select on ALT + arrow key to match the native <select>
     event.preventDefault();
     this.close();
-  } else if ((key === ENTER || key === SPACE || key === SPACEBAR) && this.keyManager.current.state.activeItem) {
+  } else if (
+    (key === ENTER || key === SPACE || key === SPACEBAR)
+    && manager.state.activeItem
+    && !hasModifierKey(event)
+  ) {
     event.preventDefault();
-    this.selectionModel.current.select(
-      _.get(this.getOptions(), this.keyManager.current.state.activeItemIndex)
-    );
+    manager.state.activeItem.selectViaInteraction();
   } else if (this.props.multiple && key === 'A' && event.ctrlKey) {
     event.preventDefault();
+    const options = this.getOptions();
     const hasDeselectedOptions = _.some(
-      this.getOptions(),
-        option => _.get(option.props, 'selected') === false,
+      options,
+        option => (
+          _.get(option.props, 'selected') === false
+          && _.get(option.props, 'disabled') === false
+        ),
       );
-    const values = _.map(this.getOptions(), option => _.get(option.props, 'value'));
-    if (hasDeselectedOptions) {
-      this.selectionModel.current.select(...values);
-    } else {
-      this.selectionModel.current.deselect(...values);
-    }
-  } else {
-    const previouslyFocusedIndex = this.keyManager.current.state.activeItemIndex;
 
-    this.keyManager.current.onKeydown(event);
+    options.forEach((option) => {
+      if (!_.get(option.props, 'disabled')) {
+        hasDeselectedOptions ? option.select() : option.deselect();
+      }
+    })
+  } else {
+    const previouslyFocusedIndex = manager.state.activeItemIndex;
+
+    manager.onKeydown(event);
     if (this.props.multiple && isArrowKey && event.shiftKey
       && this.keyManager.current.state.activeItem
       && previouslyFocusedIndex !== this.keyManager.current.state.activeItemIndex
     ) {
-      this.selectionModel.current.select(
-        _.get(this.keyManager.current.state.activeItem, 'props.value')
-      );
+      manager.activeItem.selectViaInteraction();
+    }
+  }
+}
+
+/** Sets the checkmark padding size based on width of it */
+function setPseudoCheckboxPaddingSize() {
+  if (!SELECT_MULTIPLE_PANEL_PADDING_X && this.props.multiple) {
+    const pseudoCheckbox = this.PANEL.querySelector('.mat-pseudo-checkbox');
+    if (pseudoCheckbox) {
+      SELECT_MULTIPLE_PANEL_PADDING_X = SELECT_PANEL_PADDING_X * 1.5 + pseudoCheckbox.offsetWidth;
     }
   }
 }
