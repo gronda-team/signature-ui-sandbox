@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import {getDisplayName} from '../util';
 
 export const PlatformPropTypes = PropTypes.shape({
   is: PropTypes.func,
@@ -58,16 +59,32 @@ export default class Platform extends React.Component {
 export { PlatformProvider, PlatformConsumer }
 
 export function withPlatformConsumer(Component) {
-  function WithPlatformConsumer(props) {
-    return (
-      <PlatformConsumer>
-        { value => <Component {...props} __platform={value} /> }
-      </PlatformConsumer>
-    );
+  // Must be a class component since refs can't exist on functional components
+  class WithPlatform extends React.Component {
+    render() {
+      const { forwardedRef, ...restProps } = this.props;
+      return (
+        <PlatformConsumer>
+          { value => (
+            <Component
+              {...restProps}
+              __platform={value}
+              ref={forwardedRef}
+            />
+          ) }
+        </PlatformConsumer>
+      );
+    }
   }
-  
-  WithPlatformConsumer.displayName = `WithPlatformConsumer(${Component.displayName})`;
-  return WithPlatformConsumer;
+
+  // Create a forward ref to pass any refs through
+  function forwardRef(props, ref) {
+    return <WithPlatform {...props} forwardedRef={ref} />
+  }
+
+  forwardRef.displayName = `WithPlatform(${getDisplayName(Component)})`;
+
+  return React.forwardRef(forwardRef);
 }
 
 /**
