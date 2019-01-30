@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { FormFieldPropTypes, FormFieldDefaultProps, withFormFieldConsumer } from '../form-field/control';
 import {
+  ListKeyManager,
   ListKeyManagerDefaultProps,
   ListKeyManagerPropTypes, withListKeyConsumer,
 } from '../../cdk/a11y';
@@ -335,6 +336,15 @@ class Select extends React.Component {
           multiple={this.props.multiple}
           onChange={this.props.onSelectionChange}
           ref={this.selectionModel}
+        />
+        <ListKeyManager
+          vertical
+          horizontal={
+            ['ltr', 'rtl'].indexOf(this.props.dir) > -1 ?
+              this.props.dir :
+              'ltr'
+          }
+          allowedModifierKeys={['shiftKey']}
         />
         <SelectTrigger
           aria-hidden="true"
