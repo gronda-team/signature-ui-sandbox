@@ -15,6 +15,7 @@ import { ConnectedOverlay } from '../../cdk/overlay';
 import {SelectionModel} from '../../cdk/collections';
 import {withPlatformConsumer} from '../../cdk/platform';
 import {hasModifierKey} from '../../cdk/keycodes/modifiers';
+import { OptionParentProvider } from '../core/option';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
@@ -228,6 +229,12 @@ class Select extends React.Component {
   /**
    * Derived data
    */
+  /** Get the provider value used by the Option children */
+  getOptionParentProviderValue = () => ({
+    multiple: this.props.multiple,
+    onSelectionChange: this.onOptionSelectionChange,
+  });
+
   /** Get the options as a flat list */
   getOptions = (props = this.props) => {
     const children = toArray(props.children);
@@ -413,7 +420,9 @@ class Select extends React.Component {
             onKeydown={this.handleKeyDown}
             innerRef={this.getPanelEl}
           >
-            { this.renderNonTriggerChildren() }
+            <OptionParentProvider value={this.getOptionParentProviderValue()}>
+              { this.renderNonTriggerChildren() }
+            </OptionParentProvider>
           </SelectPanel>
         </ConnectedOverlay>
       </SelectRoot>
