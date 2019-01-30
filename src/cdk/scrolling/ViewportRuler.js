@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { PlatformDefaultProps, PlatformPropTypes, withPlatformConsumer } from '../platform/Platform';
-import { ViewportRulerProvider } from './context/viewport-ruler';
+import { ViewportRulerProvider } from './context/ViewportRulerContext';
 
 export const DEFAULT_RESIZE_TIME = 20;
 

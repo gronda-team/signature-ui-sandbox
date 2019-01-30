@@ -13,4 +13,4 @@ export {
   ViewportContextPropTypes,
   ViewportRulerConsumer,
   ViewportRulerProvider,
-} from './context/viewport-ruler';
+} from './context/ViewportRulerContext';
