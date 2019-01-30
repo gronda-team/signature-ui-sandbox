@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { OptionRoot, OptionText } from './styles/index';
 import { ENTER, SPACE, SPACEBAR } from '../../../cdk/keycodes/keys';
+import {withOptionParentConsumer} from './context/OptionParent';
 
 class Option extends React.Component {
   constructor() {
@@ -90,7 +91,7 @@ class Option extends React.Component {
   }
 }
 
-Option.propTypes = {
+const OptionPropTypes = {
   /** Whether or not the option is currently selected. */
   selected: PropTypes.bool,
   /** Whether the option is disabled. */
@@ -99,6 +100,16 @@ Option.propTypes = {
   id: PropTypes.string,
   /** view value of the option item */
   viewValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
+const OptionDefaultProps = {
+  selected: false,
+  disabled: false,
+  id: null,
+};
+
+Option.propTypes = {
+  ...OptionPropTypes,
   /** The option group */
   __optionGroup: PropTypes.shape({
     /** Whether the option group is disabled. */
@@ -113,9 +124,7 @@ Option.propTypes = {
 };
 
 Option.defaultProps = {
-  selected: false,
-  disabled: false,
-  id: null,
+  ...OptionDefaultProps,
   __optionGroup: {
     disabled: false,
   },
@@ -125,7 +134,15 @@ Option.defaultProps = {
   },
 };
 
-export default Option;
+const StackedOption = stack(
+  withOptionGroupConsumer,
+  withOptionParentConsumer,
+)(Option);
+
+StackedOption.propTypes = OptionPropTypes;
+StackedOption.defaultProps = OptionDefaultProps;
+
+export default StackedOption;
 
 /**
  * Private methods
