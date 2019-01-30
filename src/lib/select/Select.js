@@ -2,22 +2,20 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { FormFieldPropTypes, FormFieldDefaultProps, withFormFieldConsumer } from '../form-field/control';
-import {
-  ListKeyManagerDefaultProps,
-  ListKeyManagerPropTypes, withListKeyConsumer,
-} from '../../cdk/a11y';
+import { ListKeyManager } from '../../cdk/a11y';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
-import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
+import {ARROW_DOWN, ARROW_KEYS, ARROW_UP, DOWN, END, ENTER, HOME, SPACE, SPACEBAR, UP} from '../../cdk/keycodes/keys';
 import { stack } from '../core/components/util';
 import { isRtl } from '../../cdk/bidi/constants';
 import {
-  SelectContent,
   SelectPanel, SelectPlaceholder, SelectRoot, SelectTrigger, SelectValue,
   SelectValueText,
 } from './styles/index';
 import { ConnectedOverlay } from '../../cdk/overlay';
 import {SelectionModel} from '../../cdk/collections';
 import {withPlatformConsumer} from '../../cdk/platform';
+import {hasModifierKey} from '../../cdk/keycodes/modifiers';
+import { OptionParentProvider } from '../core/option';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
@@ -32,6 +30,16 @@ const SELECT_PANEL_INDENT_PADDING_X = SELECT_PANEL_PADDING_X * 2;
  * this value or more away from the viewport boundary.
  */
 const SELECT_PANEL_VIEWPORT_PADDING = 8;
+/**
+ * Distance between the panel edge and the option text in
+ * multi-selection mode.
+ *
+ * Calculated as:
+ * (SELECT_PANEL_PADDING_X * 1.5) + 20 = 44
+ * The padding is multiplied by 1.5 because the checkbox's margin is half the padding.
+ * The checkbox width is 16px.
+ */
+export let SELECT_MULTIPLE_PANEL_PADDING_X = 0;
 
 // Extract React.Children.count
 const countChildren = React.Children.count;
@@ -61,6 +69,7 @@ class Select extends React.Component {
     this.DEFAULT_ID = _.uniqueId('sui-select:');
     this.POSITIONS = DEFAULT_POSITIONS;
     this.selectionModel = React.createRef();
+    this.keyManager = React.createRef();
   }
   
   /** Lifecycle */
@@ -79,11 +88,9 @@ class Select extends React.Component {
      */
     /** Set the form field's onContainerClick function */
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    /** Set the key manager's config */
-    this.props.__keyManager.setConfig({
-      tabOutFn: this.onTabOut,
-      items: this.getOptions(),
-    });
+
+    /** Set the reposition callback as _.once() so it doesn't infinitely loop */
+    this.oncePositionChange = _.once(this.onPositionChange);
   }
   
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -94,16 +101,6 @@ class Select extends React.Component {
     if (this.state.open && (prevState.scrollTop !== this.state.scrollTop)) {
       // if we're open and we have a new scroll top, set it on the panel
       this.PANEL.scrollTop = this.state.scrollTop;
-    }
-    
-    /** Count the number of children, and if they differ, then update key manager */
-    if (
-      this.props.__keyManager.setItemsIfChanged(
-        toArray(this.getOptions(prevProps)),
-        toArray(this.getOptions())
-      )
-    ) {
-      this.props.__keyManager.setItems(this.getOptions());
     }
   }
   
@@ -118,12 +115,6 @@ class Select extends React.Component {
   
   getPanelEl = (el) => {
     this.PANEL = el;
-  };
-  
-  setPane = (pane) => {
-    if (pane) {
-      this.PANE = pane;
-    }
   };
   
   /**
@@ -162,6 +153,8 @@ class Select extends React.Component {
     this.setState((state) => {
       if (state.panelOpen) return { panelOpen: false };
       return null;
+    }, () => {
+      this.oncePositionChange = _.once(this.onPositionChange);
     });
   };
   
@@ -177,12 +170,52 @@ class Select extends React.Component {
       this.state.panelOpen ? handleOpenKeydown.call(this, event) : handleClosedKeydown.call(this, event);
     }
   };
+
+  onFocus = () => {
+    // Easier for tests
+    if (!this.props.disabled) {
+      this.setState({ focused: true });
+    }
+  };
   
   onBlur = () => {
+    this.setState({ focused: false });
     if (!this.props.disabled && !this.state.panelOpen) {
-      if (_.isFunction(this.props.onTouched)) {
-        this.props.onTouched();
-      }
+      _.invoke(this.props, 'onTouched');
+    }
+  };
+
+  onPositionChange = () => {
+    setPseudoCheckboxPaddingSize.call(this);
+    calculateOverlayOffsetX.call(this);
+    this.PANEL.scrollTop = this.state.scrollTop;
+  };
+
+  /** Callback that's invoked whenever an option is selected */
+  onOptionSelectionChange = (event) => {
+    // Uses a synthetic (non-real) event
+    onSelect.call(this, event.source, event.isUserInput);
+
+    if (event.isUserInput && !this.props.multiple && this.state.panelOpen) {
+      this.close();
+      this.focus();
+    }
+  };
+
+  /** Callback for when the overlay position changes */
+  handleOverlayPositionChange = () => {
+    this.oncePositionChange();
+  };
+
+  /** Callback that is invoked when the value is changed */
+  handleValueChange = () => {
+    if (this.state.panelOpen && this.PANEL) {
+      scrollActiveOptionIntoView.call(this);
+    } else if (
+      !this.state.panelOpen && !this.props.multiple
+      && this.keyManager.current.state.activeItem
+    ) {
+      this.keyManager.current.activeItem.selectViaInteraction();
     }
   };
   
@@ -196,6 +229,12 @@ class Select extends React.Component {
   /**
    * Derived data
    */
+  /** Get the provider value used by the Option children */
+  getOptionParentProviderValue = () => ({
+    multiple: this.props.multiple,
+    onSelectionChange: this.onOptionSelectionChange,
+  });
+
   /** Get the options as a flat list */
   getOptions = (props = this.props) => {
     const children = toArray(props.children);
@@ -233,9 +272,13 @@ class Select extends React.Component {
     return toArray(this.props.children)
       .filter(child => _.get(child.props, '__sui-internal-type') === 'Trigger');
   };
+
+  /** Get specific directionality when it's open */
+  getDirectionality = () => this.state.panelOpen ?
+    null : this.props.dir;
   
   /** Whether the select has a value. */
-  isEmpty = () => this.selectionModel.current.isEmpty();
+  isEmpty = () => !this.selectionModel.current || this.selectionModel.current.isEmpty();
   
   /** Returns the aria-label of the select component. */
   getAriaLabel = () => {
@@ -257,8 +300,8 @@ class Select extends React.Component {
   
   /** Determines the `aria-activedescendant` to be set on the host. */
   getAriaActiveDescendant = () => {
-    if (this.state.panelOpen && this.props.__keyManager.activeItem) {
-      return _.get(this.props.__keyManager, 'activeItem.id');
+    if (this.state.panelOpen && this.keyManager.current.state.activeItem) {
+      return _.get(this.keyManager.current.state.activeItem, 'activeItem.id');
     }
     
     return null;
@@ -336,6 +379,14 @@ class Select extends React.Component {
           onChange={this.props.onSelectionChange}
           ref={this.selectionModel}
         />
+        <ListKeyManager
+          vertical
+          horizontal={this.getDirectionality()}
+          onTabOut={this.onTabOut}
+          onChange={this.handleValueChange}
+          allowedModifierKeys={['shiftKey']}
+          ref={this.keyManager}
+        />
         <SelectTrigger
           aria-hidden="true"
           onClick={this.toggle}
@@ -360,16 +411,18 @@ class Select extends React.Component {
           backdropClick={this.close}
           onAttached={this.onAttached}
           onDetached={this.close}
+          onPositionChange={this.handleOverlayPositionChange}
         >
           <SelectPanel
             style={{
               transformOrigin: this.state.transformOrigin,
-              fontSize: this.state.triggerFontSize,
             }}
             onKeydown={this.handleKeyDown}
             innerRef={this.getPanelEl}
           >
-            { this.renderNonTriggerChildren() }
+            <OptionParentProvider value={this.getOptionParentProviderValue()}>
+              { this.renderNonTriggerChildren() }
+            </OptionParentProvider>
           </SelectPanel>
         </ConnectedOverlay>
       </SelectRoot>
@@ -408,7 +461,6 @@ Select.propTypes = {
   onTouched: PropTypes.func,
   /** delimiter for trigger value + multiple */
   delimiter: PropTypes.string,
-  __keyManager: ListKeyManagerPropTypes,
   __formFieldControl: FormFieldPropTypes,
 };
 
@@ -428,7 +480,6 @@ Select.defaultProps = {
   tabIndex: 0,
   onTouched: null,
   delimiter: ',',
-  __keyManager: ListKeyManagerDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
 };
 
@@ -454,7 +505,6 @@ const DEFAULT_POSITIONS = [
 ];
 
 export default stack(
-  withListKeyConsumer,
   withFormFieldConsumer,
   withPlatformConsumer,
 )(Select);
@@ -469,9 +519,9 @@ export default stack(
  */
 function highlightCorrectOption() {
   if (this.isEmpty()) {
-    this.props.__keyManager.setFirstItemActive();
+    this.keyManager.current.setFirstItemActive();
   } else {
-    this.props.__keyManager.setActiveItem(_.head(this.selectionModel.current.selected()));
+    this.keyManager.current.setActiveItem(_.head(this.selectionModel.current.selected()));
   }
 }
 
@@ -492,54 +542,125 @@ function handleClosedKeydown(event) {
   const key = event.key;
   const isArrowKey = ARROW_KEYS.indexOf(key) > -1;
   const isOpenKey = key === ENTER || key === SPACE || key === SPACEBAR;
+  const manager = this.keyManager.current;
   
   // Open the select on ALT + arrow key to match the native <select>
-  if (isOpenKey || ((this.props.multiple || event.altKey) && isArrowKey)) {
+  if ((isOpenKey && !hasModifierKey(event)) || ((this.props.multiple || event.altKey) && isArrowKey)) {
     // prevents the page from scrolling down when pressing space
     event.preventDefault();
     this.open();
   } else if (!this.props.multiple) {
-    this.props.__keyManager.onKeydown(event);
+    if (key === HOME || key === END) {
+      key === HOME ?
+        manager.setFirstItemActive() :
+        manager.setLastItemActive();
+      event.preventDefault();
+    } else {
+      this.keyManager.current.onKeydown(event);
+    }
   }
 }
 
 /** Handles keyboard events when the selected is open. */
 function handleOpenKeydown(event) {
   const key = event.key;
-  const isArrowKey = key === ARROW_DOWN || key === ARROW_UP;
-  
+  const isArrowKey = [ARROW_UP, UP, ARROW_DOWN, DOWN].indexOf(key) > -1;
+  const manager = this.keyManager.current;
+
   if (key === HOME || key === END) {
     // prevent navigation
     event.preventDefault();
-    key === HOME ? this.props.__keyManager.setFirstItemActive() : this.props.__keyManager.setLastItemActive();
+    key === HOME ?
+      manager.setFirstItemActive() :
+      manager.setLastItemActive();
   } else if (isArrowKey && event.altKey) {
     // Close the select on ALT + arrow key to match the native <select>
     event.preventDefault();
     this.close();
-  } else if ((key === ENTER || key === SPACE || key === SPACEBAR) && this.props.__keyManager.activeItem) {
+  } else if (
+    (key === ENTER || key === SPACE || key === SPACEBAR)
+    && manager.state.activeItem
+    && !hasModifierKey(event)
+  ) {
     event.preventDefault();
-    this.selectionModel.current.select(
-      _.get(this.getOptions(), this.props.__keyManager.activeItemIndex)
-    );
+    manager.state.activeItem.selectViaInteraction();
   } else if (this.props.multiple && key === 'A' && event.ctrlKey) {
     event.preventDefault();
-    const hasDeselectedOptions = _.some(this.getOptions(), option => _.get(option.props, 'selected') === false);
-    const values = _.map(this.getOptions(), option => _.get(option.props, 'value'));
-    if (hasDeselectedOptions) {
-      this.selectionModel.current.select(...values);
-    } else {
-      this.selectionModel.current.deselect(...values);
-    }
-  } else {
-    const previouslyFocusedIndex = this.props.__keyManager.activeItemIndex;
-
-    this.props.__keyManager.onKeydown(event);
-    if (this.props.multiple && isArrowKey && event.shiftKey
-      && this.props.__keyManager.activeItem && previouslyFocusedIndex !== this.props.__keyManager.activeItemIndex) {
-      this.selectionModel.current.select(
-        _.get(this.props.__keyManager.activeItem, 'props.value')
+    const options = this.getOptions();
+    const hasDeselectedOptions = _.some(
+      options,
+        option => (
+          _.get(option.props, 'selected') === false
+          && _.get(option.props, 'disabled') === false
+        ),
       );
+
+    options.forEach((option) => {
+      if (!_.get(option.props, 'disabled')) {
+        hasDeselectedOptions ? option.select() : option.deselect();
+      }
+    })
+  } else {
+    const previouslyFocusedIndex = manager.state.activeItemIndex;
+
+    manager.onKeydown(event);
+    if (this.props.multiple && isArrowKey && event.shiftKey
+      && this.keyManager.current.state.activeItem
+      && previouslyFocusedIndex !== this.keyManager.current.state.activeItemIndex
+    ) {
+      manager.activeItem.selectViaInteraction();
     }
+  }
+}
+
+/** Sets the checkmark padding size based on width of it */
+function setPseudoCheckboxPaddingSize() {
+  if (!SELECT_MULTIPLE_PANEL_PADDING_X && this.props.multiple) {
+    const pseudoCheckbox = this.PANEL.querySelector('.mat-pseudo-checkbox');
+    if (pseudoCheckbox) {
+      SELECT_MULTIPLE_PANEL_PADDING_X = SELECT_PANEL_PADDING_X * 1.5 + pseudoCheckbox.offsetWidth;
+    }
+  }
+}
+
+/** Invoked when an option is selected */
+function onSelect(option, isUserInput) {
+  const value = _.get(option.props, 'value');
+  const selectionModel = this.selectionModel.current;
+  const wasSelected = selectionModel.isSelected(value);
+
+  if (value === null && !this.props.multiple) {
+    option.deselect();
+    selectionModel.clear();
+    // propagateChanges.call(this, value);
+  } else {
+    _.get(option.props, 'selected') ?
+      selectionModel.select(value) :
+      selectionModel.deselect(value);
+
+    if (isUserInput) {
+      this.keyManager.current.setActiveItem(option);
+    }
+
+    if (this.props.multiple) {
+      // sortValues.call(this);
+
+      if (isUserInput) {
+        // In case the user selected the option with their mouse, we
+        // want to restore focus back to the trigger, in order to
+        // prevent the select keyboard controls from clashing with
+        // the ones from `mat-option`.
+        this.focus();
+      }
+    }
+  }
+
+  if (wasSelected !== selected) {
+    this.props.onChange(
+      this.props.multiple ?
+        [...selectionModel.selected(), value] :
+        value
+    );
   }
 }
 
@@ -548,7 +669,7 @@ function handleOpenKeydown(event) {
  */
 /** Scrolls the active option into view. */
 function scrollActiveOptionIntoView() {
-  const activeOptionIndex = this.props.__keyManager.activeItemIndex || 0;
+  const activeOptionIndex = this.keyManager.current.state.activeItemIndex || 0;
   const labelCount = countGroupLabelsBeforeOption(
     activeOptionIndex, this.getOptions(), this.getOptionGroups()
   );

@@ -12,9 +12,7 @@ describe('ListKeyManager smoke test', () => {
   it('should render without problems', () => {
     const div = document.createElement('div');
     ReactDOM.render((
-      <ListKeyManager>
-        <PlainListWithManager />
-      </ListKeyManager>
+      <ListKeyManager />
     ), div);
   });
 });
@@ -29,11 +27,7 @@ describe('ListKeyManager', () => {
   let keyboardEvents;
 
   beforeAll(() => {
-    wrapper = mount(
-      <ListKeyManager>
-        <PlainListWithManager />
-      </ListKeyManager>
-    );
+    wrapper = mount(<PlainList />);
   });
 
   beforeEach(() => {
@@ -47,7 +41,7 @@ describe('ListKeyManager', () => {
 
     wrapper.mount();
 
-    keyManager = wrapper.find('ListKeyManager');
+    keyManager = wrapper.find(ListKeyManager);
     plainList = wrapper.find('PlainList');
 
     keyManagerInstance = keyManager.instance();
@@ -64,19 +58,16 @@ describe('ListKeyManager', () => {
   });
 
   it('should start off the activeItem as null', () => {
-    const w = mount(
-      <ListKeyManager>
-        <PlainListWithManager />
-      </ListKeyManager>
-    );
+    const w = mount(<PlainList />);
 
-    expect(w.state('provide').activeItem).toBe(null);
+    expect(w.find('ListKeyManager').instance().state.activeItem).toBe(null);
   });
 
   it('should maintain the active item if the number of items changes', () => {
     const state = keyManagerInstance.state;
-    expect(state.provide.activeItemIndex).toBe(0);
-    expect(state.getLabel(state.provide.activeItem))
+    const props = keyManagerInstance.props;
+    expect(state.activeItemIndex).toBe(0);
+    expect(props.getLabel(state.activeItem))
       .toBe('Thorium');
 
     plainList.instance().setState(state => ({
@@ -85,27 +76,30 @@ describe('ListKeyManager', () => {
     }));
 
     // Same label
-    expect(state.getLabel(keyManagerInstance.state.provide.activeItem))
+    expect(props.getLabel(keyManagerInstance.state.activeItem))
       .toBe('Thorium');
     // But different index
-    expect(keyManagerInstance.state.provide.activeItemIndex).toBe(1);
+    expect(keyManagerInstance.state.activeItemIndex).toBe(1);
   });
 
   it('should set the activeItem to null if an invalid index is passed in', () => {
     keyManagerInstance.setActiveItem(10);
-    expect(keyManagerInstance.state.provide.activeItem).toBe(null);
+    expect(keyManagerInstance.state.activeItem).toBe(null);
   });
 
   describe('Key events', () => {
-    it('should call tabOutFn when the tab key is pressed', () => {
-      const spy = jest.spyOn(keyManagerInstance.state, 'tabOutFn');
+    it('should call onTabOut when the tab key is pressed', () => {
+      const spy = jest.fn();
+      wrapper.setProps({ onTabOut: spy });
+
       keyManagerInstance.onKeyDown(keyboardEvents.TAB);
 
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should call tabOutFn when the tab key is pressed + modifier', () => {
-      const spy = jest.spyOn(keyManagerInstance.state, 'tabOutFn');
+    it('should call onTabOut when the tab key is pressed + modifier', () => {
+      const spy = jest.fn();
+      wrapper.setProps({ onTabOut: spy });
 
       Object.defineProperty(keyboardEvents.TAB, 'shiftKey', { get: () => true });
 
@@ -115,30 +109,29 @@ describe('ListKeyManager', () => {
     });
 
     it('should emit an event when the active item changes', () => {
-      const spy = jest.spyOn(keyManagerInstance.state, 'onChange');
+      const onChangeSpy = jest.fn();
+      wrapper.setProps({
+        onChange: onChangeSpy,
+      });
+
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(onChangeSpy).toHaveBeenCalledTimes(1);
 
       keyManagerInstance.onKeyDown(keyboardEvents.UP);
 
-      expect(spy).toHaveBeenCalledTimes(2);
+      expect(onChangeSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should activate the first item when pressing down on a clean key manager', () => {
-      const w = mount(
-        <ListKeyManager>
-          <PlainListWithManager />
-        </ListKeyManager>
-      );
+      const w = mount(<PlainList />);
+      const km = w.find(ListKeyManager).instance();
 
-      expect(w.state('provide').activeItemIndex)
-        .toBe(-1, 'Expected active index to default to -1');
+      expect(km.state.activeItemIndex).toBe(-1);
 
-      w.instance().onKeyDown(keyboardEvents.DOWN);
+      km.onKeyDown(keyboardEvents.DOWN);
 
-      expect(w.state('provide').activeItemIndex)
-        .toBe(0, 'Expected first item to become active after pressing key down');
+      expect(km.state.activeItemIndex).toBe(0);
     });
 
     it('should not prevent the default keyboard action when pressing tab', () => {
@@ -155,41 +148,41 @@ describe('ListKeyManager', () => {
       });
       keyManagerInstance.setActiveItem(1);
 
-      expect(keyManagerInstance.state.provide.activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
       expect(unsupported.defaultPrevented).toBe(false);
 
       keyManagerInstance.onKeyDown(unsupported);
 
-      expect(keyManagerInstance.state.provide.activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
       expect(unsupported.defaultPrevented).toBe(false);
     });
 
     it('should ignore the horizontal keys when only in vertical mode', () => {
-      keyManager.setState({ horizontal: null, vertical: true });
+      wrapper.setProps({ horizontal: null, vertical: true });
 
-      expect(keyManagerInstance.state.provide.activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
 
       keyManagerInstance.onKeyDown(keyboardEvents.RIGHT);
 
-      expect(keyManagerInstance.state.provide.activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
       expect(keyboardEvents.RIGHT.defaultPrevented).toBe(false);
     });
 
     it('should ignore the horizontal keys when only in horizontal mode', () => {
-      keyManager.setState({ horizontal: 'ltr', vertical: false });
+      wrapper.setProps({ horizontal: 'ltr', vertical: false });
 
-      expect(keyManagerInstance.state.provide.activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
 
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
 
-      expect(keyManagerInstance.state.provide.activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
       expect(keyboardEvents.DOWN.defaultPrevented).toBe(false);
     });
 
     describe('with `vertical` direction', function() {
       // We use a function(){} to ensure a `this` binding.
       beforeEach(() => {
-        keyManager.setState({ vertical: true });
+        wrapper.setProps({ vertical: true });
         this.nextKeyEvent = keyboardEvents.DOWN;
         this.prevKeyEvent = keyboardEvents.UP;
       });
@@ -199,7 +192,7 @@ describe('ListKeyManager', () => {
 
     describe('with `ltr` direction', function() {
       beforeEach(() => {
-        keyManager.setState({ horizontal: 'ltr' });
+        wrapper.setProps({ horizontal: 'ltr' });
         this.nextKeyEvent = keyboardEvents.RIGHT;
         this.prevKeyEvent = keyboardEvents.LEFT;
       });
@@ -209,7 +202,7 @@ describe('ListKeyManager', () => {
 
     describe('with `rtl` direction', function() {
       beforeEach(() => {
-        keyManager.setState({ horizontal: 'rtl' });
+        wrapper.setProps({ horizontal: 'rtl' });
         this.nextKeyEvent = keyboardEvents.LEFT;
         this.prevKeyEvent = keyboardEvents.RIGHT;
       });
@@ -226,14 +219,14 @@ describe('ListKeyManager', () => {
       it('should set subsequent items as active when the next key is pressed', () => {
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
 
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(1, 'Expected active item to be 1 after one next key event.');
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(0);
         expect(setActiveItemSpy).toHaveBeenCalledWith(1);
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(2);
 
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(2, 'Expected active item to be 2 after two next key events.');
         expect(setActiveItemSpy).toHaveBeenCalledWith(2);
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(0);
@@ -243,7 +236,7 @@ describe('ListKeyManager', () => {
         keyManagerInstance.setActiveItem(-1);
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
 
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(0, 'Expected active item to be 0 after next key if active item was null.');
         expect(setActiveItemSpy).toHaveBeenCalledWith(0);
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(1);
@@ -253,23 +246,23 @@ describe('ListKeyManager', () => {
       it('should set previous items as active when the previous key is pressed', () => {
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
 
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(1, 'Expected active item to be 1 after one next key event.');
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(0);
         expect(setActiveItemSpy).toHaveBeenCalledWith(1);
 
         keyManagerInstance.onKeyDown(this.prevKeyEvent);
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(0, 'Expected active item to be 0 after one next and one previous key event.');
         expect(setActiveItemSpy).toHaveBeenCalledWith(0);
       });
 
       it('should do nothing when the prev key is pressed if no active item and not wrap', () => {
-        keyManager.setState({ wrap: false });
+        wrapper.setProps({ wrap: false });
         keyManagerInstance.setActiveItem(-1);
         keyManagerInstance.onKeyDown(this.prevKeyEvent);
 
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(-1, 'Expected nothing to happen if prev event occurs and no active item.');
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(0);
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(1);
@@ -288,7 +281,7 @@ describe('ListKeyManager', () => {
 
         // Next event should skip past disabled item from 0 to 2
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(2, 'Expected active item to skip past disabled item on next event.');
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(0);
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(1);
@@ -296,34 +289,34 @@ describe('ListKeyManager', () => {
 
         // Previous event should skip past disabled item from 2 to 0
         keyManagerInstance.onKeyDown(this.prevKeyEvent);
-        expect(keyManagerInstance.state.provide.activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(0, 'Expected active item to skip past disabled item on up arrow.');
         expect(setActiveItemSpy).toHaveBeenCalledWith(0);
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(1);
       });
 
       it('should not move active item past either end of the list', () => {
-        keyManager.setState({ wrap: false });
+        wrapper.setProps({ wrap: false });
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
-        expect(keyManager.state('provide').activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(2, 'Expected last item of the list to be active.');
 
         // This next event would move the active item past the end of the list
         // but without wrap: true, this should not happen
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
-        expect(keyManager.state('provide').activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(2, 'Expect active item to remain at the end of the list.');
 
         // In other direction
         keyManagerInstance.onKeyDown(this.prevKeyEvent);
         keyManagerInstance.onKeyDown(this.prevKeyEvent);
-        expect(keyManager.state('provide').activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(0, 'Expected first item fo the list to be active.');
 
         // Try to move backwards past 0
         keyManagerInstance.onKeyDown(this.prevKeyEvent);
-        expect(keyManager.state('provide').activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(0, 'Expect active item to remain at the beginning of the list.');
       });
 
@@ -340,13 +333,13 @@ describe('ListKeyManager', () => {
         });
 
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
-        expect(keyManager.state('provide').activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(1, 'Expect second item of the list to be active');
 
         // simulate next key, which would normally activate the last item
         // but since it's disabled, it shouldn't
         keyManagerInstance.onKeyDown(this.nextKeyEvent);
-        expect(keyManager.state('provide').activeItemIndex)
+        expect(keyManagerInstance.state.activeItemIndex)
           .toBe(1, 'Expect second item to remain active');
         expect(setActiveItemSpy).not.toHaveBeenCalledWith(2);
       });
@@ -370,8 +363,9 @@ describe('ListKeyManager', () => {
 
     /** Runs the test that asserts that we handle modifier keys correctly. */
     function runModifierKeyTest(modifier) {
-      const initialActiveIndex = keyManager.state('provide').activeItemIndex;
-      onChangeSpy = jest.spyOn(keyManagerInstance.state, 'onChange');
+      const initialActiveIndex = keyManagerInstance.state.activeItemIndex;
+      const spy = jest.fn();
+      wrapper.setProps({ onChange: spy });
 
       expect(this.nextKeyEvent.defaultPrevented).toBe(false);
       expect(this.prevKeyEvent.defaultPrevented).toBe(false);
@@ -382,64 +376,65 @@ describe('ListKeyManager', () => {
       // This key event now has a modifier pressed
       keyManagerInstance.onKeyDown(this.nextKeyEvent);
       expect(this.nextKeyEvent.defaultPrevented).toBe(false);
-      expect(keyManager.state('provide').activeItemIndex).toBe(initialActiveIndex);
-      expect(onChangeSpy).not.toHaveBeenCalled();
+      expect(keyManagerInstance.state.activeItemIndex).toBe(initialActiveIndex);
+      expect(spy).not.toHaveBeenCalled();
 
       keyManagerInstance.onKeyDown(this.prevKeyEvent);
       expect(this.prevKeyEvent.defaultPrevented).toBe(false);
-      expect(keyManager.state('provide').activeItemIndex).toBe(initialActiveIndex);
-      expect(onChangeSpy).not.toHaveBeenCalled();
+      expect(keyManagerInstance.state.activeItemIndex).toBe(initialActiveIndex);
+      expect(spy).not.toHaveBeenCalled();
     }
   });
 
   // Using the individual functions that are passed as context
   describe('Programmatic focus (functions passed as context)', () => {
     it('should setActiveItem()', () => {
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
 
       keyManagerInstance.setActiveItem(1);
-      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
     });
 
     it('should be able to set the active item by reference', () => {
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
 
-      const item = keyManagerInstance.state.items[2];
+      const item = keyManagerInstance.props.items[2];
       keyManagerInstance.setActiveItem(item);
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
     });
 
     it('should be able to set the active item without emitting', () => {
-      onChangeSpy = jest.spyOn(keyManagerInstance.state, 'onChange');
+      const spy = jest.fn();
+      wrapper.setProps({ onChange: spy });
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
       keyManagerInstance.updateActiveItem(2);
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
-      expect(onChangeSpy).not.toHaveBeenCalled();
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
+      expect(spy).not.toHaveBeenCalled();
     });
 
     it('should expose the active item correctly', () => {
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
-      expect(keyManager.state('provide').activeItemIndex).toBe(1);
-      expect(keyManagerInstance.state.getLabel(keyManager.state('provide').activeItem))
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
+      expect(keyManagerInstance.props.getLabel(keyManagerInstance.state.activeItem))
         .toBe('Protactinium');
 
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
-      expect(keyManagerInstance.state.getLabel(keyManager.state('provide').activeItem))
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
+      expect(keyManagerInstance.props.getLabel(keyManagerInstance.state.activeItem))
         .toBe('Uranium');
     });
 
     it('should setFirstItemActive()', () => {
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
 
       keyManagerInstance.setFirstItemActive();
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
     });
 
     it('should set the first item active to the second item if the first one is disabled', () => {
@@ -448,13 +443,13 @@ describe('ListKeyManager', () => {
       });
 
       keyManagerInstance.setFirstItemActive();
-      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
     });
 
     it('should setLastItemActive()', () => {
       keyManagerInstance.setLastItemActive();
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
     });
 
     it('should set the active item to the penultimate item if the last one is disabled', () => {
@@ -463,13 +458,13 @@ describe('ListKeyManager', () => {
       });
 
       keyManagerInstance.setLastItemActive();
-      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
     });
 
     it('should setNextItemActive()', () => {
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
       keyManagerInstance.setNextItemActive();
-      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
     });
 
     it('should set the next active item to the next enabled item', () => {
@@ -477,16 +472,16 @@ describe('ListKeyManager', () => {
         disabled: [false, true, false],
       });
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
       keyManagerInstance.setNextItemActive();
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
     });
 
     it('should setPreviousItemActive()', () => {
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
-      expect(keyManager.state('provide').activeItemIndex).toBe(1);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(1);
       keyManagerInstance.setPreviousItemActive();
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
     });
 
     it('should set the previous active item to the previous enabled item', () => {
@@ -497,51 +492,52 @@ describe('ListKeyManager', () => {
         disabled: [false, true, false],
       });
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
       keyManagerInstance.setPreviousItemActive();
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
     });
 
     it('should not call onChange if the item did not change', () => {
-      onChangeSpy = jest.spyOn(keyManagerInstance.state, 'onChange');
+      const spy = jest.fn();
+      wrapper.setProps({ onChange: spy });
 
       keyManagerInstance.setActiveItem(2);
       keyManagerInstance.setActiveItem(2);
 
-      expect(onChangeSpy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 
   // when the user can wrap around
   describe('Wrap mode', () => {
     it('should wrap focus when arrow keying past items while in wrap mode', () => {
-      keyManager.setState({ wrap: true });
+      wrapper.setProps({ wrap: true });
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
 
       // this down arrow moves down past the end of the list
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
 
       // this up arrow moves up past the beginning of the list
       keyManagerInstance.onKeyDown(keyboardEvents.UP);
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
     });
 
     it('should set last item active when up arrow is pressed if no active item', () => {
-      keyManager.setState({ wrap: true });
+      wrapper.setProps({ wrap: true });
       keyManagerInstance.setActiveItem(-1);
       keyManagerInstance.onKeyDown(keyboardEvents.UP);
 
-      expect(keyManager.state('provide').activeItemIndex)
+      expect(keyManagerInstance.state.activeItemIndex)
         .toBe(2, 'Expected last item to be active on up arrow if no active item.');
       expect(setActiveItemSpy).not.toHaveBeenCalledWith(0);
       expect(setActiveItemSpy).toHaveBeenCalledWith(2);
 
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
-      expect(keyManager.state('provide').activeItemIndex)
+      expect(keyManagerInstance.state.activeItemIndex)
         .toBe(0, 'Expected active item to be 0 after wrapping back to beginning.');
       expect(setActiveItemSpy).toHaveBeenCalledWith(0);
     });
@@ -549,7 +545,7 @@ describe('ListKeyManager', () => {
     // This test should pass if all items are disabled and the down arrow key got pressed.
     // If the test setup crashes or this test times out, this test can be considered as failed.
     it('should not get into an infinite loop if all items are disabled', () => {
-      keyManager.setState({ wrap: true });
+      wrapper.setProps({ wrap: true });
       keyManagerInstance.setActiveItem(0);
 
       plainList.setState({ disabled: [true, true, true] });
@@ -558,17 +554,17 @@ describe('ListKeyManager', () => {
     });
 
     it('should be able to disable wrapping', () => {
-      keyManager.setState({ wrap: true });
+      wrapper.setProps({ wrap: true });
       keyManagerInstance.setFirstItemActive();
       keyManagerInstance.onKeyDown(keyboardEvents.UP);
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
 
-      keyManager.setState({ wrap: false });
+      wrapper.setProps({ wrap: false });
       keyManagerInstance.setFirstItemActive();
       keyManagerInstance.onKeyDown(keyboardEvents.UP);
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
     });
   });
 
@@ -577,41 +573,41 @@ describe('ListKeyManager', () => {
     it('should skip disabled items by default', () => {
       plainList.setState({ disabled: [false, true, false] });
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
 
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
     });
 
     it('should be able to skip items with a custom predicate', () => {
-      keyManager.setState({ skipPredicateFn: item => _.get(item.props, 'skip', false )});
+      wrapper.setProps({ skipPredicateFn: item => _.get(item.props, 'skip', false )});
 
       plainList.setState({ skip: [false, true, false ] });
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
 
       keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
 
-      expect(keyManager.state('provide').activeItemIndex).toBe(2);
+      expect(keyManagerInstance.state.activeItemIndex).toBe(2);
     });
   });
 
   // Testing the getLabel fn when the user changes it
   describe('getLabel', () => {
     it('should get props.label from an item by default', () => {
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
-      const getLabel = keyManager.state('getLabel');
-      expect(getLabel(keyManager.state('provide').activeItem)).toBe('Thorium');
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
+      const getLabel = keyManagerInstance.props.getLabel;
+      expect(getLabel(keyManagerInstance.state.activeItem)).toBe('Thorium');
     });
 
     it('should be able to get a separate view value using a getLabel fn', () => {
-      expect(keyManager.state('provide').activeItemIndex).toBe(0);
-      keyManagerInstance.state.provide.setConfig({
+      expect(keyManagerInstance.state.activeItemIndex).toBe(0);
+      wrapper.setProps({
         getLabel: item => _.get(item.props, 'text', ''),
       });
-      const getLabel = keyManager.state('getLabel');
-      expect(getLabel(keyManager.state('provide').activeItem)).toBe('Thorium');
+      const getLabel = keyManagerInstance.props.getLabel;
+      expect(getLabel(keyManagerInstance.state.activeItem)).toBe('Thorium');
     });
   });
 
@@ -635,9 +631,9 @@ describe('ListKeyManager', () => {
         }));
       });
 
-      expect(keyManager.state('provide').activeItemIndex).not.toBe(0);
+      expect(keyManagerInstance.state.activeItemIndex).not.toBe(0);
       setTimeout(() => {
-        expect(keyManager.state('provide').activeItemIndex).toBe(0);
+        expect(keyManagerInstance.state.activeItemIndex).toBe(0);
         done();
       }, debounceInterval);
 
@@ -654,7 +650,7 @@ describe('ListKeyManager', () => {
       }));
 
       setTimeout(() => {
-        expect(keyManager.state('provide').activeItemIndex).toBe(1);
+        expect(keyManagerInstance.state.activeItemIndex).toBe(1);
         done();
       }, debounceInterval);
 
@@ -834,12 +830,6 @@ ListKeyItem.defaultProps = {
   __key: 'ListKeyItem',
 };
 
-class List extends React.Component {
-  render() {
-    return <ul>{ this.props.children }</ul>
-  }
-}
-
 const LIST_ITEMS = [
   'Actinium',
   'Thorium',
@@ -883,45 +873,37 @@ class PlainList extends React.Component {
       // for testing the skipPredicateFn
       skip: [false, false, false],
     };
-
-    this.LIST_REF = React.createRef();
-  }
-
-  componentDidMount() {
-    this.props.__keyManager.setConfig({
-      items: toArray(this.LIST_REF.current.props.children),
-    });
-
-    if (this.LIST_REF.current) {
-      /*
-      This is a very contrived workaround because for the most part,
-      the library component will already have access to this.props.children,
-      and would be able to invoke setItemsIfChanged themselves.
-       */
-      const update = this.props.__keyManager.setItemsIfChanged;
-      const previousCDU = this.LIST_REF.current.componentDidUpdate || _.noop;
-      this.LIST_REF.current.componentDidUpdate = function(prevProps) {
-        previousCDU();
-        update(toArray(prevProps.children), toArray(this.props.children));
-      }.bind(this.LIST_REF.current);
-    }
   }
 
   render() {
+    const items = this.state.ITEMS.map((item, index) => (
+      <ListKeyItem
+        key={item}
+        label={item}
+        text={item}
+        skip={this.state.skip[index]}
+        disabled={this.state.disabled[index]}
+      />
+    ));
+
     return (
-      <List ref={this.LIST_REF}>
-        { this.state.ITEMS.map((item, index) => (
-          <ListKeyItem
-            key={item}
-            label={item}
-            text={item}
-            skip={this.state.skip[index]}
-            disabled={this.state.disabled[index]}
-          />
-        )) }
-      </List>
+      <ul>
+        <ListKeyManager
+          wrap={this.props.wrap}
+          horizontal={this.props.horizontal}
+          vertical={this.props.vertical}
+          typeAhead={this.props.typeAhead}
+          skipPredicateFn={this.props.skipPredicateFn}
+          getLabel={this.props.getLabel}
+          onTabOut={this.props.onTabOut}
+          onChange={this.props.onChange}
+          allowedModifierKeys={this.props.allowedModifierKeys}
+          items={items}
+        />
+        { items }
+      </ul>
     );
   }
 }
 
-const PlainListWithManager = withListKeyConsumer(PlainList);
+PlainList.defaultProps = ListKeyManager.defaultProps;

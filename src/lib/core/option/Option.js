@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { OptionRoot, OptionText } from './styles/index';
 import { ENTER, SPACE, SPACEBAR } from '../../../cdk/keycodes/keys';
+import {withOptionParentConsumer} from './context/OptionParent';
 
 class Option extends React.Component {
   constructor() {
@@ -90,17 +91,25 @@ class Option extends React.Component {
   }
 }
 
-Option.propTypes = {
+const OptionPropTypes = {
   /** Whether or not the option is currently selected. */
   selected: PropTypes.bool,
   /** Whether the option is disabled. */
   disabled: PropTypes.bool,
   /** The unique ID of the option. */
   id: PropTypes.string,
-  /** Event emitted when the option is selected or deselected. */
-  onSelectionChange: PropTypes.func,
   /** view value of the option item */
   viewValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
+const OptionDefaultProps = {
+  selected: false,
+  disabled: false,
+  id: null,
+};
+
+Option.propTypes = {
+  ...OptionPropTypes,
   /** The option group */
   __optionGroup: PropTypes.shape({
     /** Whether the option group is disabled. */
@@ -109,30 +118,38 @@ Option.propTypes = {
   /** The parent, whether that's a select or menu or whatever */
   __parent: PropTypes.shape({
     multiple: PropTypes.bool,
+    /** Event emitted when the option is selected or deselected. */
+    onSelectionChange: PropTypes.func,
   }),
 };
 
 Option.defaultProps = {
-  selected: false,
-  disabled: false,
-  id: null,
-  onSelectionChange: _.noop,
+  ...OptionDefaultProps,
   __optionGroup: {
     disabled: false,
   },
   __parent: {
     multiple: false,
+    onSelectionChange: _.noop,
   },
 };
 
-export default Option;
+const StackedOption = stack(
+  withOptionGroupConsumer,
+  withOptionParentConsumer,
+)(Option);
+
+StackedOption.propTypes = OptionPropTypes;
+StackedOption.defaultProps = OptionDefaultProps;
+
+export default StackedOption;
 
 /**
  * Private methods
  */
 function emitSelectionChangeEvent(isUserInput = false) {
-  this.props.onSelectionChange({
+  this.props.__optionGroup.onSelectionChange({
     isUserInput,
-    value: this.props.value,
+    source: this,
   });
 }
