@@ -27,15 +27,30 @@ export const {
 );
 
 export function withFocusMonitor(Component) {
-  function WithFocusMonitor(props) {
-    return (
-      <FocusMonitorConsumer>
-        { value => <Component {...props} __focusMonitor={value} />}
-      </FocusMonitorConsumer>
-    );
+  // Must be a class component since refs can't exist on functional components
+  class WithFocusMonitor extends React.Component {
+    render() {
+      const { forwardedRef, ...restProps } = this.props;
+      return (
+        <FocusMonitorConsumer>
+          { value => (
+            <Component
+              {...restProps}
+              __focusMonitor={value}
+              ref={forwardedRef}
+            />
+          )}
+        </FocusMonitorConsumer>
+      );
+    }
   }
 
-  WithFocusMonitor.displayName = `WithFocusMonitor(${getDisplayName(Component)})`;
+  // Create a forward ref to pass any refs through
+  function forwardRef(props, ref) {
+    return <WithFocusMonitor {...props} forwardedRef={ref} />;
+  }
 
-  return WithFocusMonitor;
+  forwardRef.displayName = `WithFocusMonitor(${getDisplayName(Component)})`;
+
+  return React.forwardRef(forwardRef);
 }
