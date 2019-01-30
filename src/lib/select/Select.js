@@ -9,7 +9,6 @@ import {
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
 import { ARROW_DOWN, ARROW_KEYS, ARROW_UP, END, ENTER, HOME, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
 import { stack } from '../core/components/util';
-import { getViewportSize } from '../../cdk/scrolling/viewport-ruler';
 import { isRtl } from '../../cdk/bidi/constants';
 import {
   SelectContent,
@@ -18,6 +17,7 @@ import {
 } from './styles/index';
 import { ConnectedOverlay } from '../../cdk/overlay';
 import {SelectionModel} from '../../cdk/collections';
+import {withPlatformConsumer} from '../../cdk/platform';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
@@ -456,6 +456,7 @@ const DEFAULT_POSITIONS = [
 export default stack(
   withListKeyConsumer,
   withFormFieldConsumer,
+  withPlatformConsumer,
 )(Select);
 
 /**
@@ -628,7 +629,7 @@ function calculateOverlayScroll(selectedIndex, scrollBuffer, maxScroll) {
  */
 function calculateOverlayOffsetX() {
   const overlayRect = this.PANE.getBoundingClientRect();
-  const viewportSize = getViewportSize();
+  const viewportSize = this.props.__viewportRuler.getViewportSize();
   const rtl = isRtl.call(this);
   const paddingWidth = SELECT_PANEL_PADDING_X * 2;
   
@@ -719,7 +720,7 @@ function calculateOverlayOffsetY(selectedIndex, scrollBuffer, maxScroll) {
  */
 function checkOverlayWithinViewport(maxScroll) {
   const itemHeight = ITEM_HEIGHT;
-  const viewportSize = getViewportSize();
+  const viewportSize = this.props.__viewportRuler.getViewportSize();
   
   const topSpaceAvailable = this.state.triggerRect.top - SELECT_PANEL_VIEWPORT_PADDING;
   const bottomSpaceAvailable =
