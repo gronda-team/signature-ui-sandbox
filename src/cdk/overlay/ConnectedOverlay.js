@@ -6,18 +6,15 @@ import { stack } from '../../lib/core/components/util';
 import Overlay from './Overlay';
 import { ESC, ESCAPE } from '../keycodes/keys';
 import FlexibleConnectedPositionStrategy from './position/FlexibleConnectedPositionStrategy';
+import RepositionScrollStrategy from './scroll/RepositionScrollStrategy';
 
 class ConnectedOverlay extends React.Component {
   constructor() {
     super();
 
-    this.state = {
-      positionStrategy: null,
-      scrollStrategy: null,
-    };
-
     this.overlay = React.createRef();
     this.positionStrategy = React.createRef();
+    this.scrollStrategy = React.createRef();
   }
 
   /**
@@ -92,6 +89,10 @@ class ConnectedOverlay extends React.Component {
       minHeight={this.props.minHeight}
       ref={this.overlay}
     >
+      <RepositionScrollStrategy
+        overlay={this.overlay.current}
+        ref={this.scrollStrategy}
+      />
       <FlexibleConnectedPositionStrategy
         origin={this.props.origin}
         onPositionChange={this.emitPositionChange}
