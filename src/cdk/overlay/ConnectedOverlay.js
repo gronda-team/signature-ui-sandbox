@@ -6,7 +6,6 @@ import { stack } from '../../lib/core/components/util';
 import Overlay from './Overlay';
 import { ESC, ESCAPE } from '../keycodes/keys';
 import FlexibleConnectedPositionStrategy from './position/FlexibleConnectedPositionStrategy';
-import RepositionScrollStrategy from './scroll/RepositionScrollStrategy';
 
 class ConnectedOverlay extends React.Component {
   constructor() {
