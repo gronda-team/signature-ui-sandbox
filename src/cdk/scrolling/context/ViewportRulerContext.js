@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import {getDisplayName} from '../../util';
 
 const ViewportContextPropTypes = PropTypes.shape({
   getViewportSize: PropTypes.func,
@@ -19,23 +20,39 @@ const ViewportContextDefaultProps = {
 };
 
 const {
-  Provider: ViewportRulerProvider, Consumer: ViewportRulerConsumer
+  Provider: ViewportRulerProvider,
+  Consumer: ViewportRulerConsumer,
 } = React.createContext(ViewportContextDefaultProps);
 
 ViewportRulerConsumer.displayName = 'ViewportRuler';
 
 function withViewportRuler(Component) {
-  function WithViewportRuler(props) {
-    return (
-      <ViewportRulerConsumer>
-        { value => <Component {...props} __viewportRuler={value} />}
-      </ViewportRulerConsumer>
-    )
+  // Must be a class component since refs can't exist on functional components
+  class WithViewportRuler extends React.Component {
+    render() {
+      const { forwardedRef, ...restProps } = this.props;
+      return (
+        <ViewportRulerConsumer>
+          { value => (
+            <Component
+              {...restProps}
+              __viewportRuler={value}
+              ref={forwardedRef}
+            />
+          )}
+        </ViewportRulerConsumer>
+      );
+    }
   }
+
+  // Create a forward ref to pass any refs through
+  function forwardRef(props, ref) {
+    return <WithViewportRuler {...props} forwardedRef={ref} />
+  }
+
+  forwardRef.displayName = `WithViewportRuler(${getDisplayName(Component)})`;
   
-  WithViewportRuler.displayName = `WithViewportRuler(${Component.displayName})`;
-  
-  return WithViewportRuler;
+  return React.forwardRef(forwardRef);
 }
 
 export {
