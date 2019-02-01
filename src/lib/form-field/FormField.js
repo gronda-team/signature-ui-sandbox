@@ -209,7 +209,7 @@ export default class FormField extends React.Component {
 
 FormField.propTypes = {
   /** The appearance */
-  appearance: PropTypes.oneOf(['standard', 'fill']),
+  appearance: PropTypes.oneOf(['outline', 'fill']),
 };
 
 FormField.defaultProps = {
