@@ -86,8 +86,11 @@ ${subscriptLabelIconMixin}
 
 // The label itself
 export const FormFieldLabel = styled.label`
+position: absolute;
+left: 0;
 font: inherit;
-pointer-events: none;  // We shouldn't catch mouse events (let them through).
+cursor: pointer;
+pointer-events: auto;
 
 // Put ellipsis text overflow.
 width: 100%;
@@ -98,16 +101,14 @@ transition: transform ${EASE_OUT.DURATION} ${EASE_OUT.CURVE},
             color ${EASE_OUT.DURATION} ${EASE_OUT.CURVE},
             width ${EASE_OUT.DURATION} ${EASE_OUT.CURVE};
 
-// Hide the label initially, and only show it when it's floating or the control is empty.
-display: none;
-
 [dir=rtl] & {
-  transform-origin: 100% 0;
   left: auto;
   right: 0;
 }
 
-[data-value-status=filled] & { transition: none; }
+[data-disabled=true] & {
+  cursor: default;
+}
 `;
 
 export const FormFieldRequiredMarker = styled.span.attrs({
