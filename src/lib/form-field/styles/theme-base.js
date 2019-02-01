@@ -1,7 +1,8 @@
 import { css } from 'styled-components';
-import { GREEN, RED } from '../../../cdk/theme/colors';
+import { GREY, GREEN, RED } from '../../../cdk/theme/colors';
 import {SelectArrowWrapper} from '../../select/styles';
 
+const DEFAULT_TEXT = GREY[900];
 const PRIMARY = GREEN[500];
 const WARN = RED[500];
 const REQUIRED_LABEL_COLOR = WARN;
@@ -9,9 +10,19 @@ const REQUIRED_LABEL_COLOR = WARN;
 // Required mixin theming for all appearances
 export const formFieldBaseThemeMixin = (components) => {
   const {
+    FormFieldLabel,
+    FormFieldHint,
     FormFieldRequiredMarker,
   } = components;
   return css`
+  ${FormFieldLabel} {
+    color: ${DEFAULT_TEXT};
+  }
+  
+  ${FormFieldHint} {
+    color: ${DEFAULT_TEXT};
+  }
+  
   &[data-focused=true] ${FormFieldRequiredMarker} {
     color: ${REQUIRED_LABEL_COLOR};
   }
