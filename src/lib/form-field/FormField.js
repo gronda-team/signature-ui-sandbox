@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import UIMachine from './UIMachine';
 import {
-  FormFieldFix,
+  FormFieldPrefix, FormFieldSuffix,
   FormFieldFlex, FormFieldHintSpacer, FormFieldHintWrapper, FormFieldInfix, FormFieldLabel, FormFieldLabelWrapper,
   FormFieldRequiredMarker, FormFieldRoot,
   FormFieldSubscriptWrapper,
@@ -183,14 +183,14 @@ export default class FormField extends React.Component {
               innerRef={this.getConnectionContainer}
             >
               <FormFieldBar>
-                { prefix ? <FormFieldFix>{ prefix }</FormFieldFix> : null }
+                { prefix ? <FormFieldPrefix>{ prefix }</FormFieldPrefix> : null }
                 <FormFieldInfix>
                   { // don't pass through the hints, otherwise it'll show up twice
                     this.getFlatChildren()
                   }
                   { this.props.appearance !== 'outline' ? this.renderLabel() : null }
                 </FormFieldInfix>
-                { suffix ? <FormFieldFix>{ suffix }</FormFieldFix> : null }
+                { suffix ? <FormFieldSuffix>{ suffix }</FormFieldSuffix> : null }
               </FormFieldBar>
               { this.props.appearance === 'outline' ?
                 // render the label as a child of FormFieldFlex for properly aligning label
