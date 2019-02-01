@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { TRUNCATE } from '../../core/styles/common';
 import { EASE_OUT } from '../../core/styles/animation';
@@ -7,6 +7,7 @@ import outlineThemeThunk from './theme-outline';
 import fillAppearanceThunk from './appearance-fill';
 import fillThemeThunk from './theme-fill';
 import typography from './typography';
+import {SELECT_PLACEHOLDER_ARROW_SPACE} from '../../select/styles';
 
 // Min amount of space between start and end hint.
 const HINT_MIN_SPACE = 1; // em
@@ -21,13 +22,24 @@ export const FormFieldWrapper = styled.div`
 position: relative;
 `;
 
+// Common styles between FormFieldFlex and FormFieldBar
+const flexUsableMixin = css`
+box-sizing: border-box;
+align-items: baseline;
+width: 100%;
+`;
+
 // We use a flex layout to baseline align the prefix and suffix elements.
 // The underline is outside of it so it can cover all of the elements under this flex container.
 export const FormFieldFlex = styled.div`
+${flexUsableMixin}
+display: block;
+`;
+
+// Bar for handling appropriate spacing with labels + absolute positioning
+export const FormFieldBar = styled.div`
+${flexUsableMixin}
 display: inline-flex;
-align-items: baseline;
-box-sizing: border-box;
-width: 100%;
 `;
 
 // prefix and suffix
@@ -45,20 +57,34 @@ min-width: 0;
 width: ${DEFAULT_INFIX_WIDTH}px;
 `;
 
+// Controls icon styling in subscript wrapper and label wrapper
+const subscriptLabelIconMixin = css`
+i {
+  width: 1em;
+  height: 1em;
+  font-size: inherit;
+  vertical-align: baseline;
+}
+`;
+
 // Used to hide the label overflow on IE, since IE doesn't take transform into account when
 // determining overflow.
 export const FormFieldLabelWrapper = styled.span`
+position: absolute;
+left: 0;
 box-sizing: content-box;
 width: 100%;
 overflow: hidden;
 pointer-events: none;  // We shouldn't catch mouse events (let them through).
+
+[dir=rtl] & {
+  left: auto;
+  right: 0;
+}
+${subscriptLabelIconMixin}
 `;
 
-
-// The label itself. This is invisible unless it is. The logic to show it is
-// basically `empty || (float && (!empty || focused))`. Float is dependent on the
-// `floatingPlaceholder` property.
-// The label is after the form field control, but needs to be aligned top-left of the infix <div>.
+// The label itself
 export const FormFieldLabel = styled.label`
 font: inherit;
 pointer-events: none;  // We shouldn't catch mouse events (let them through).
@@ -89,25 +115,12 @@ export const FormFieldRequiredMarker = styled.span.attrs({
 })`
 `;
 
-export const FormFieldUnderline = styled.span`
-position: absolute;
-width: 100%;
-// Need this so that the underline doesn't block the hover effect.
-pointer-events: none;
-// We transform the height slightly higher to fix inconsistent underline height for some DPIs.
-// Without this we observed that at zoom levels between 50% and 100% some form-field underlines
-// would disappear. The issue appears to be related to fractional pixels since (e.g. underlines
-// with their top at x.6 would disappear, but ones with there top at x.7 were fine). The exact
-// fractions that caused problems seemed to depend on the screen resolution and zoom level. We
-// experimentally discovered that adding a very slight scale factor fixes the issue.
-transform: scaleY(1.0001);
-`;
-
 export const FormFieldSubscriptWrapper = styled.div`
 position: absolute;
 box-sizing: border-box;
 width: 100%;
 overflow: hidden; // prevents multi-line errors from overlapping the control
+${subscriptLabelIconMixin}
 `;
 
 // Clears the floats on the hints. This is necessary for the hint animation to work.
@@ -122,9 +135,7 @@ FormFieldHint.propTypes = { align: PropTypes.oneOf(['start', 'end']) };
 FormFieldHint.defaultProps = { align: 'start' };
 
 // Spacer used to make sure start and end hints have enough space between them.
-export const FormFieldHintSpacer = styled.div.attrs({
-  'aria-hidden': true,
-})`
+export const FormFieldHintSpacer = styled.div`
 flex: 1 0 ${HINT_MIN_SPACE}em;
 `;
 
@@ -154,8 +165,21 @@ const fillTheme = fillThemeThunk(components);
 export const FormFieldRoot = styled.div`
 display: inline-block;
 position: relative;
+
+// Avoid problems with text-align
 text-align: left;
 [dir=rtl] & { text-align: right; }
+
+&[data-field-type=select] {
+  &[data-disabled=false] ${FormFieldFlex} {
+    cursor: pointer;
+  }
+  
+  ${FormFieldLabel} {
+    width: calc(100% - ${SELECT_PLACEHOLDER_ARROW_SPACE}px);
+  }
+}
+
 &[data-appearance=outline] { ${outlineTheme} ${outlineStyle} }
 &[data-appearance=fill] { ${fillStyle} ${fillTheme} }
 ${typography(components)}

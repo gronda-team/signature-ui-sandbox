@@ -7,6 +7,12 @@ import {ChevronIcon} from '../../core/icons';
 import selectThemeThunk from './theme';
 
 const SELECT_ARROW_MARGIN = 4; // px
+const SELECT_ARROW_SIZE = 8; // px
+
+// For use in FormField
+export const SELECT_PLACEHOLDER_ARROW_SPACE = 2 * (
+  SELECT_ARROW_SIZE + SELECT_ARROW_MARGIN
+); // px
 
 export const SelectTrigger = styled.div`
 display: inline-table;
