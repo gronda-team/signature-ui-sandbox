@@ -8,15 +8,26 @@ const AVAILABLE_COLORS = ['primary', 'secondary'];
 
 storiesOf('Button', module)
   .add('Available styles', () => (
-    <div>
+    <table>
+      <tbody>
+      <tr>
+        <td><code>appearance:</code></td>
+        { AVAILABLE_BUTTON_APPEARANCES.map(appearance => (
+          <th key={appearance} scope="col"><code>{ appearance }</code></th>
+        ))}
+      </tr>
       { AVAILABLE_COLORS.map(color => (
-        <div key={color}>
+        <tr key={color}>
+          <th scope="row"><code>color: { color }</code></th>
           { AVAILABLE_BUTTON_APPEARANCES.map(appearance => (
-            <Button color={color} appearance={appearance} key={appearance}>
-              { color }, { appearance }
-            </Button>
+            <td key={appearance}>
+              <Button color={color} appearance={appearance}>
+                { color }, { appearance }
+              </Button>
+            </td>
           ))}
-        </div>
+        </tr>
       )) }
-    </div>
+      </tbody>
+    </table>
   ));
