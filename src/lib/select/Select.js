@@ -16,6 +16,7 @@ import {SelectionModel} from '../../cdk/collections';
 import {withPlatformConsumer} from '../../cdk/platform';
 import {hasModifierKey} from '../../cdk/keycodes/modifiers';
 import { OptionParentProvider } from '../core/option';
+import {SelectArrow, SelectArrowWrapper} from './styles';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
@@ -393,12 +394,9 @@ class Select extends React.Component {
           innerRef={this.getTriggerEl}
         >
           <SelectValue>{ this.renderSelectValue() }</SelectValue>
-          { /*
-          todo: add arrow symbol
           <SelectArrowWrapper>
             <SelectArrow />
           </SelectArrowWrapper>
-          */}
         </SelectTrigger>
         <ConnectedOverlay
           lockPosition

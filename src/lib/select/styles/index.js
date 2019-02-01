@@ -3,7 +3,10 @@ import { USER_SELECT } from '../../core/styles/vendor';
 import { TRUNCATE } from '../../core/styles/common';
 import { MENU_BASE } from '../../core/styles/menu-common';
 import { EASE_OUT } from '../../core/styles/animation';
+import {ChevronIcon} from '../../core/icons';
 import selectThemeThunk from './theme';
+
+const SELECT_ARROW_MARGIN = 4; // px
 
 export const SelectTrigger = styled.div`
 display: inline-table;
@@ -25,6 +28,19 @@ ${TRUNCATE}
 `;
 
 export const SelectValueText = styled.span`${TRUNCATE}`;
+
+export const SelectArrowWrapper = styled.div`
+display: table-cell;
+vertical-align: middle;
+
+[data-appearance=outline] & {
+  transform: translateY(-25%);
+}
+`;
+
+export const SelectArrow = styled(ChevronIcon)`
+margin: 0 ${SELECT_ARROW_MARGIN}px;
+`;
 
 export const SelectPanel = styled.div`
 ${MENU_BASE(8)}
