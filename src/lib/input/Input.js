@@ -112,7 +112,7 @@ const buildInputType = (tag = 'input') => {
     render() {
       const {
         id, placeholder, disabled, required, type,
-        __formFieldControl, ...restProps,
+        __formFieldControl, ...restProps
       } = this.props;
       // todo: aria-invalid
       return (
