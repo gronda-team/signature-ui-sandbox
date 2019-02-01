@@ -32,7 +32,7 @@ export const formFieldBaseThemeMixin = (components) => {
  */
 export const formFieldLabelPositioning = (fontScale, infixPadding, infixMarginTop) => css`
 transform: translateY(${-infixMarginTop - infixPadding}em) scale(${fontScale});
-width: 100% / ${fontScale};
+width: calc(100% / ${fontScale});
 `;
 
 /**

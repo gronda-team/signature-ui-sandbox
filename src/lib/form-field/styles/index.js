@@ -101,6 +101,8 @@ pointer-events: auto;
 width: 100%;
 ${TRUNCATE}
 
+& * { ${TRUNCATE} }
+
 transform-origin: 0 0;
 transition: transform ${EASE_OUT.DURATION} ${EASE_OUT.CURVE},
             color ${EASE_OUT.DURATION} ${EASE_OUT.CURVE},
@@ -191,6 +193,6 @@ text-align: left;
 ${formFieldBaseThemeMixin({ FormFieldRequiredMarker })}
 ${typographyThunk(components)}
 
-&[data-appearance=outline] { ${outlineTheme} ${outlineStyle} ${outlineTypography} }
+&[data-appearance=outline] {${outlineStyle} ${outlineTheme} ${outlineTypography} }
 &[data-appearance=fill] { ${fillStyle} ${fillTheme} ${fillTypography} }
 `;
