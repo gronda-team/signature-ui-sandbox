@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import UIMachine from './states';
+import UIMachine from './UIMachine';
 import {
   FormFieldFix,
   FormFieldFlex, FormFieldHintSpacer, FormFieldHintWrapper, FormFieldInfix, FormFieldLabel, FormFieldLabelWrapper,
@@ -10,7 +10,7 @@ import {
   FormFieldUnderline,
   FormFieldWrapper,
 } from './styles/index';
-import { Provider as FormFieldControlProvider } from './context/FormFieldUIMachine';
+import { Provider as FormFieldControlProvider } from './context/UIMachineContext';
 import { byInternalType } from '../core/components/util';
 
 export default class FormField extends React.Component {

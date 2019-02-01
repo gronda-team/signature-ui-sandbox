@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field/context/FormFieldUIMachine';
+import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field/context/UIMachineContext';
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../../cdk/platform';
 import { BaseInput, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
