@@ -170,6 +170,7 @@ export default class FormField extends React.Component {
     return (
       <FormFieldRoot
         {...this.props}
+        data-invalid={false}
         data-appearance={this.props.appearance}
         data-disabled={this.isDisabled().toString()}
         data-focus={this.isFocused() ? 'focused' : 'idle'}

@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { TRUNCATE } from '../../core/styles/common';
 import { EASE_OUT } from '../../core/styles/animation';
 import outlineAppearanceThunk from './outline-style';
-import outlineThemeThunk from './outline-theme';
+import { outlineThemeThunk, outlineTypographyThunk } from './outline-theme';
 import fillAppearanceThunk from './fill-style';
-import fillThemeThunk from './fill-theme';
-import typography from './typography';
+import { fillThemeThunk, fillTypographyThunk} from './fill-theme';
 import {SELECT_PLACEHOLDER_ARROW_SPACE} from '../../select/styles';
+import {formFieldBaseThemeMixin, typographyThunk } from './theme-base';
 
 // Min amount of space between start and end hint.
 const HINT_MIN_SPACE = 1; // em
@@ -43,11 +43,16 @@ display: inline-flex;
 `;
 
 // prefix and suffix
-export const FormFieldFix = styled.div`
+const FormFieldFix = styled.div`
 white-space: nowrap;
 flex: none;
 position: relative;
 `;
+
+export const FormFieldPrefix = FormFieldFix.withComponent('div');
+FormFieldPrefix.defaultProps = { '__sui-internal-type': 'Prefix' };
+export const FormFieldSuffix = FormFieldFix.withComponent('div');
+FormFieldSuffix.defaultProps = { '__sui-internal-type': 'Suffix' };
 
 export const FormFieldInfix = styled.div`
 display: block;
@@ -147,21 +152,23 @@ export const Error = styled.div`display: block;`;
 Root component, composed with the custom styles
  */
 const components = {
-  FieldFix: FormFieldFix,
-  FieldFlex: FormFieldFlex,
-  FieldLabel: FormFieldLabel,
-  FieldInfix: FormFieldInfix,
-  FieldLabelWrapper: FormFieldLabelWrapper,
-  FieldSubscriptWrapper: FormFieldSubscriptWrapper,
-  FieldRequiredMarker: FormFieldRequiredMarker,
-  FieldWrapper: FormFieldWrapper,
+  FormFieldBar,
+  FormFieldPrefix,
+  FormFieldSuffix,
+  FormFieldInfix,
+  FormFieldLabel,
+  FormFieldLabelWrapper,
+  FormFieldSubscriptWrapper,
+  FormFieldWrapper,
 };
 // outline theme
 const outlineStyle = outlineAppearanceThunk(components);
 const outlineTheme = outlineThemeThunk(components);
+const outlineTypography = outlineTypographyThunk(components);
 // fill theme
 const fillStyle = fillAppearanceThunk(components);
 const fillTheme = fillThemeThunk(components);
+const fillTypography = fillTypographyThunk(components);
 
 export const FormFieldRoot = styled.div`
 display: inline-block;
@@ -181,7 +188,9 @@ text-align: left;
   }
 }
 
-&[data-appearance=outline] { ${outlineTheme} ${outlineStyle} }
-&[data-appearance=fill] { ${fillStyle} ${fillTheme} }
-${typography(components)}
+${formFieldBaseThemeMixin({ FormFieldRequiredMarker })}
+${typographyThunk(components)}
+
+&[data-appearance=outline] { ${outlineTheme} ${outlineStyle} ${outlineTypography} }
+&[data-appearance=fill] { ${fillStyle} ${fillTheme} ${fillTypography} }
 `;

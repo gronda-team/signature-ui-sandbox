@@ -1,50 +1,56 @@
 import { css } from 'styled-components';
 import { GREEN, GREY, RED } from '../../../cdk/theme/colors';
+import {formFieldLabelPositioning} from './theme-base';
 
-const idleFilledOutline = GREY[500];
-const idleFilledBackground = GREY[300];
-const idleEmptyOutline = idleFilledBackground;
-const idleEmptyBackground = GREY[100];
-const disabledOutline = idleEmptyOutline;
-const disabledBackground = GREY[100];
-const activeOutline = GREEN[300];
-const activeBackground = GREEN[100];
-const errorOutline = RED[500];
-const requiredMarker = errorOutline;
+/**
+ * Colors TBD
+ */
 
-const fillThemeThunk = (components) => {
-  const { FieldRequiredMarker, FieldFlex } = components;
+export const fillThemeThunk = (components) => {
+  const { FormFieldFlex, FormFieldLabel } = components;
   return css`
-  &[data-focus=focused] {
-    ${FieldRequiredMarker} { color: ${requiredMarker}; }
-    ${FieldFlex} {
-      border-color: ${activeOutline};
-      background-color: ${activeBackground};
-    }
-  }
-  
-  &[data-focus=idle][data-disabled=false] {
-    &[data-value=filled] {
-      ${FieldFlex} {
-        border-color: ${idleFilledOutline};
-        background-color: ${idleFilledBackground};
-      }
-    }
-    &[data-value=empty] {
-      ${FieldFlex} {
-        border-color: ${idleEmptyOutline};
-        background-color: ${idleEmptyBackground};
-      }
-    }
+  ${FormFieldFlex} {
+    background-color: rgba(0, 0, 0, 0.04);
   }
   
   &[data-disabled=true] {
-    ${FieldFlex} {
-      background-color: ${disabledBackground};
-      border-color: ${disabledOutline};
+    ${FormFieldFlex} {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    ${FormFieldLabel} {
+      color: rgba(0, 0, 0, 0.17);
     }
   }
   `;
 };
 
-export default fillThemeThunk;
+export const fillTypographyThunk = (components) => {
+  const { FormFieldInfix, FormFieldLabel } = components;
+
+  const LINE_HEIGHT = 1.125; // em
+  // The amount to scale the font for the floating label and subscript.
+  const SUBSCRIPT_FONT_SCALE = 0.75;
+  // The padding on top of the infix.
+  const INFIX_PADDING_TOP = 0.25; // em
+  // The padding below the infix.
+  const INFIX_PADDING_BOTTOM = 0.75; // em
+  // The margin applied to the form-field-infix to reserve space for the floating label.
+  const INFIX_MARGIN_TOP = LINE_HEIGHT * SUBSCRIPT_FONT_SCALE; // em
+  // Font size to use for the for the prefix and suffix icons.
+  const FILL_LABEL_OFFSET = -0.5; // em
+
+  return css`
+  ${FormFieldInfix} {
+    padding: ${INFIX_PADDING_TOP}em 0 ${INFIX_PADDING_BOTTOM}em;
+  }
+  
+  ${FormFieldLabel} {
+    top: ${INFIX_MARGIN_TOP + INFIX_PADDING_TOP}em;
+    margin-top: ${FILL_LABEL_OFFSET}em;
+    ${formFieldLabelPositioning(
+      SUBSCRIPT_FONT_SCALE, INFIX_PADDING_TOP + FILL_LABEL_OFFSET, INFIX_MARGIN_TOP,
+    )}
+  }
+  `;
+};
