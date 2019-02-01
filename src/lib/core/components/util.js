@@ -13,13 +13,13 @@ export function stack(...wrappers) {
 /*
 Filter child component types by child.props.__sui-internal-type
  */
-export const byInternalType = type => child => {
+export const byInternalType = (...types) => child => {
   const t = _.get(child.props, '__sui-internal-type');
-  if (_.isArray(type)) {
+  if (types.length > 1) {
     // if it's an array we want to match a set of types
     return type.indexOf(t) > -1;
   }
-  return t === type;
+  return t === _.head(types || []);
 };
 
 /*
