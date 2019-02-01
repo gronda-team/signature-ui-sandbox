@@ -2,10 +2,10 @@ import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { TRUNCATE } from '../../core/styles/common';
 import { EASE_OUT } from '../../core/styles/animation';
-import outlineAppearanceThunk from './appearance-outline';
-import outlineThemeThunk from './theme-outline';
-import fillAppearanceThunk from './appearance-fill';
-import fillThemeThunk from './theme-fill';
+import outlineAppearanceThunk from './outline-style';
+import outlineThemeThunk from './outline-theme';
+import fillAppearanceThunk from './fill-style';
+import fillThemeThunk from './fill-theme';
 import typography from './typography';
 import {SELECT_PLACEHOLDER_ARROW_SPACE} from '../../select/styles';
 
