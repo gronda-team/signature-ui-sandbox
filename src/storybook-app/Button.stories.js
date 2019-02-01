@@ -30,4 +30,17 @@ storiesOf('Button', module)
       )) }
       </tbody>
     </table>
+  ))
+  .add('as <a /> tags', () => (
+    <div>
+      { AVAILABLE_BUTTON_APPEARANCES.map(appearance => (
+        <Button
+          is="a"
+          appearance={appearance}
+          href="https://www.google.com"
+        >
+          I'm feeling lucky
+        </Button>
+      ))}
+    </div>
   ));
