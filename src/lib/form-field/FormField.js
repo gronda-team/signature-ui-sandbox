@@ -11,6 +11,7 @@ import {
 } from './styles/index';
 import { Provider as FormFieldControlProvider } from './context/UIMachineContext';
 import { byInternalType } from '../core/components/util';
+import {FormFieldBar} from './styles';
 
 const toArray = React.Children.toArray;
 
@@ -174,25 +175,27 @@ export default class FormField extends React.Component {
         data-focus={this.isFocused() ? 'focused' : 'idle'}
         data-value={this.isFilled() ? 'filled' : 'empty'}
       >
-        { this.props.appearance === 'outline' ?
-          // render the label as a child of FormFieldFlex for properly aligning label
-          this.renderLabel() :
-          null
-        }
         <FormFieldWrapper>
           <FormFieldControlProvider value={this.state}>
             <FormFieldFlex
               onClick={this.state.containerClick}
               innerRef={this.getConnectionContainer}
             >
-              { prefix ? <FormFieldFix>{ prefix }</FormFieldFix> : null }
-              <FormFieldInfix>
-                { // don't pass through the hints, otherwise it'll show up twice
-                  this.getFlatChildren()
-                }
-                { this.props.appearance !== 'outline' ? this.renderLabel() : null }
-              </FormFieldInfix>
-              { suffix ? <FormFieldFix>{ suffix }</FormFieldFix> : null }
+              <FormFieldBar>
+                { prefix ? <FormFieldFix>{ prefix }</FormFieldFix> : null }
+                <FormFieldInfix>
+                  { // don't pass through the hints, otherwise it'll show up twice
+                    this.getFlatChildren()
+                  }
+                  { this.props.appearance !== 'outline' ? this.renderLabel() : null }
+                </FormFieldInfix>
+                { suffix ? <FormFieldFix>{ suffix }</FormFieldFix> : null }
+              </FormFieldBar>
+              { this.props.appearance === 'outline' ?
+                // render the label as a child of FormFieldFlex for properly aligning label
+                this.renderLabel() :
+                null
+              }
             </FormFieldFlex>
             <FormFieldSubscriptWrapper>
               { this.renderSubscript() }
