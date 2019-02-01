@@ -161,12 +161,12 @@ class Overlay extends React.Component {
     if (this.props.scrollStrategy) {
       this.props.scrollStrategy.disable();
     }
-    
+
     if (_.has(this.state, 'host.parentNode')) {
       this.state.host.parentNode.removeChild(this.state.host);
     }
     
-    this.setState({ previousHostParent: null });
+    this.setState({ attached: false, previousHostParent: null });
   };
   
   /*
@@ -189,8 +189,8 @@ class Overlay extends React.Component {
   };
   
   render() {
+    if (!this.state.attached) return null;
     const host = this.state.pane;
-    const root = host || document.body;
     return (
       <React.Fragment>
         { this.state.renderDummyOverlay ?
@@ -203,7 +203,7 @@ class Overlay extends React.Component {
         { this.state.renderDummyBackdrop ?
           <OverlayBackdrop innerRef={this.getDummyBackdrop} /> : null
         }
-        { ReactDOM.createPortal(this.props.children, root) }
+        { ReactDOM.createPortal(this.props.children, host) }
       </React.Fragment>
     )
   }
