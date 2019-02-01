@@ -28,7 +28,9 @@
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "devDependencies": {
+    "@babel/core": "^7.2.2",
     "@storybook/react": "^4.1.11",
+    "babel-loader": "^8.0.5",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
     "react-test-renderer": "^16.7.0"
