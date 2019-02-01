@@ -24,9 +24,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "flow": "flow"
+    "flow": "flow",
+    "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "devDependencies": {
+    "@storybook/react": "^4.1.11",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
     "react-test-renderer": "^16.7.0"
