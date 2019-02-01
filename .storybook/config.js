@@ -1,5 +1,10 @@
 import * as React from 'react';
 import { configure, addDecorator } from '@storybook/react';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft,
+  faEye, faEyeSlash,
+} from '@fortawesome/free-solid-svg-icons'
 import {Platform} from '../src/cdk/platform';
 import {OverlayContainer} from '../src/cdk/overlay';
 import {FocusMonitor} from '../src/cdk/a11y';
@@ -17,6 +22,11 @@ addDecorator(story => (
     </OverlayContainer>
   </Platform>
 ));
+
+/**
+ * Add any FontAwesome icons we want
+ */
+library.add(faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft, faEye, faEyeSlash);
 
 /**
  * Dynamically load the stories from src/storybook-app folder,
