@@ -10,7 +10,7 @@ import {
   withSelectionModelConsumer,
 } from '../../cdk/collections/selection-model';
 import { BACKSPACE, END, HOME } from '../../cdk/keycodes/keys';
-import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field/control';
+import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field/context/FormFieldUIMachine';
 import { TagListProvider } from './context';
 import { TagListRoot } from './styles/index';
 import { byInternalType, stack, toValue } from '../core/components/util';

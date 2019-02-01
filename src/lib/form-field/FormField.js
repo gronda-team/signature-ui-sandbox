@@ -10,7 +10,7 @@ import {
   FormFieldUnderline,
   FormFieldWrapper,
 } from './styles/index';
-import { Provider as FormFieldControlProvider } from './control';
+import { Provider as FormFieldControlProvider } from './context/FormFieldUIMachine';
 import { byInternalType } from '../core/components/util';
 
 export default class FormField extends React.Component {
