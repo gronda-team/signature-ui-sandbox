@@ -96,6 +96,7 @@ left: 0;
 font: inherit;
 cursor: pointer;
 pointer-events: auto;
+display: flex; // to ensure that the div doesn't push the star onto next line
 
 // Put ellipsis text overflow.
 width: 100%;
@@ -118,9 +119,7 @@ transition: transform ${EASE_OUT.DURATION} ${EASE_OUT.CURVE},
 }
 `;
 
-export const FormFieldRequiredMarker = styled.span.attrs({
-  'aria-hidden': true,
-})`
+export const FormFieldRequiredMarker = styled.span`
 `;
 
 export const FormFieldSubscriptWrapper = styled.div`
