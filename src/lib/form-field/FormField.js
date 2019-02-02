@@ -173,7 +173,7 @@ export default class FormField extends React.Component {
         data-invalid={false}
         data-appearance={this.props.appearance}
         data-disabled={this.isDisabled().toString()}
-        data-focus={this.isFocused() ? 'focused' : 'idle'}
+        data-focused={this.isFocused()}
         data-value={this.isFilled() ? 'filled' : 'empty'}
       >
         <FormFieldWrapper>

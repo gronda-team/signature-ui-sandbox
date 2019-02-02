@@ -19,7 +19,11 @@ const buildInputType = (tag = 'input') => {
   class InputLike extends React.Component {
     constructor(props) {
       super(props);
-      
+
+      this.state = {
+        focused: false,
+      };
+
       this.DEFAULT_ID = _.uniqueId('sui-input:');
     }
     
@@ -34,7 +38,7 @@ const buildInputType = (tag = 'input') => {
       this.updateRequired(this.props.required);
       this.updateValue();
       // set the onContainerClick
-      this.props.__formFieldControl.setContainerClick(this.focus);
+      this.props.__formFieldControl.setContainerClick(this.onContainerClick);
       // handle the iOS bug
       handleIOSQuirk.call(this);
     }
@@ -102,10 +106,31 @@ const buildInputType = (tag = 'input') => {
           'CLEAR' : 'FILL'
       );
     };
-  
+
+    /** Handle the container click for the form field */
+    onContainerClick = () => {
+      // Do not re-focus the input element if the element is already focused. Otherwise it can happen
+      // that someone clicks on a time input and the cursor resets to the "hours" field while the
+      // "minutes" field was actually clicked
+      if (!this.state.focused) {
+        this.focus();
+      }
+    };
+
+    /** Progammatically focus the input component */
     focus = () => {
       if (this.INPUT) {
         this.INPUT.focus();
+      }
+    };
+
+    /** Handle the UI focus change for the form field */
+    handleFocusChange = isFocused => () => {
+      if (this.INPUT && !this.props.readOnly && isFocused !== this.state.focused) {
+        this.setState({ focused: isFocused });
+        this.props.__formFieldControl.transitionUi(
+          isFocused ? 'FOCUS' : 'BLUR',
+        );
       }
     };
     
@@ -126,6 +151,8 @@ const buildInputType = (tag = 'input') => {
           aria-describedby={this.getAriaDescribedBy()}
           aria-invalid={false}
           aria-required={required.toString()}
+          onFocus={this.handleFocusChange(true)}
+          onBlur={this.handleFocusChange(false)}
           innerRef={this.getInputRef}
         />
       );
@@ -161,7 +188,7 @@ const InputDefaultProps = {
   disabled: false,
   required: false,
   type: 'text',
-  value: '',
+  value: undefined,
 };
 
 Input.propTypes = {
