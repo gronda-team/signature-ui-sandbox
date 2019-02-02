@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import {getDisplayName} from '../../util';
 
 const KeyboardDispatcherPropTypes = PropTypes.shape({
   add: PropTypes.func,
@@ -19,17 +20,32 @@ const {
 KeyboardDispatcherConsumer.displayName = 'KeyboardDispatcher';
 
 function withKeyboardDispatcher(Component) {
-  function WithKeyboardDispatcher(props) {
-    return (
-      <KeyboardDispatcherConsumer>
-        { value => <Component {...props} __keyboardDispatcher={value} />}
-      </KeyboardDispatcherConsumer>
-    )
+  // Must be a class component since refs can't exist on functional components
+  class WithKeyboardDispatcher extends React.Component {
+    render() {
+      const { forwardedRef, ...restProps } = this.props;
+      return (
+        <KeyboardDispatcherConsumer>
+          { value => (
+            <Component
+              {...restProps}
+              __keyboardDispatcher={value}
+              ref={forwardedRef}
+            />
+          )}
+        </KeyboardDispatcherConsumer>
+      );
+    }
   }
+
+  // Create a forward ref to pass any refs through
+  function forwardRef(props, ref) {
+    return <WithKeyboardDispatcher {...props} forwardedRef={ref} />;
+  }
+
+  forwardRef.displayName = `WithKeyboardDispatcher(${getDisplayName(Component)})`;
   
-  WithKeyboardDispatcher.displayName = `WithKeyboardDispatcher(${Component.displayName})`;
-  
-  return WithKeyboardDispatcher;
+  return React.forwardRef(forwardRef);
 }
 
 export {
