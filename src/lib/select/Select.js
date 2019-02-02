@@ -70,6 +70,7 @@ class Select extends React.Component {
     
     this.DEFAULT_ID = _.uniqueId('sui-select:');
     this.POSITIONS = DEFAULT_POSITIONS;
+    this.connectedOverlay = React.createRef();
     this.selectionModel = React.createRef();
     this.keyManager = React.createRef();
   }
@@ -411,6 +412,7 @@ class Select extends React.Component {
           onAttached={this.onAttached}
           onDetached={this.close}
           onPositionChange={this.handleOverlayPositionChange}
+          ref={this.connectedOverlay}
         >
           <SelectPanel
             style={{
@@ -764,43 +766,46 @@ function calculateOverlayScroll(selectedIndex, scrollBuffer, maxScroll) {
  * content width in order to constrain the panel within the viewport.
  */
 function calculateOverlayOffsetX() {
-  const overlayRect = this.PANEL.getBoundingClientRect();
-  const viewportSize = this.props.__viewportRuler.getViewportSize();
-  const rtl = isRtl.call(this);
-  const paddingWidth = SELECT_PANEL_PADDING_X * 2;
-  
-  // Adjust the offset, depending on the option padding.
-  let selectedValue = _.head(this.selectionModel.current.selected());
-  let selected = _.get(
-    selectedValue ? getOptionIndexFromValue(selectedValue) : 0
-  );
-  let offsetX = selected && !_.isNil(selected.props, 'group') ? SELECT_PANEL_INDENT_PADDING_X : SELECT_PANEL_PADDING_X;
-  
-  // Invert the offset in LTR.
-  if (!rtl) {
-    offsetX *= -1;
-  }
-  
-  // Determine how much the select overflows on each side.
-  const leftOverflow = 0 - (overlayRect.left + offsetX - (rtl ? paddingWidth : 0));
-  const rightOverflow = overlayRect.right + offsetX - viewportSize.width
-    + (rtl ? 0 : paddingWidth);
-  
-  // If the element overflows on either side, reduce the offset to allow it to fit.
-  if (leftOverflow > 0) {
-    offsetX += leftOverflow + SELECT_PANEL_VIEWPORT_PADDING;
-  } else if (rightOverflow > 0) {
-    offsetX -= rightOverflow + SELECT_PANEL_VIEWPORT_PADDING;
-  }
-  
-  // Set the offset directly in order to avoid having to go through change detection and
-  // potentially triggering "changed after it was checked" errors. Round the value to avoid
-  // blurry content in some browsers.
-  this.setState({
-    offsetX: Math.round(offsetX),
-    // todo: somehow update position
-  });
-  // this.overlayDir.overlayRef.updatePosition();
+  window.setTimeout(() => {
+    const overlayRect = this.PANEL.getBoundingClientRect();
+    const viewportSize = this.props.__viewportRuler.getViewportSize();
+    const rtl = isRtl.call(this);
+    const paddingWidth = SELECT_PANEL_PADDING_X * 2;
+
+    // Adjust the offset, depending on the option padding.
+    let selectedValue = _.head(this.selectionModel.current.selected());
+    let selected = _.get(
+      selectedValue ? getOptionIndexFromValue(selectedValue) : 0
+    );
+    let offsetX = selected && !_.isNil(selected.props, 'group') ? SELECT_PANEL_INDENT_PADDING_X : SELECT_PANEL_PADDING_X;
+
+    // Invert the offset in LTR.
+    if (!rtl) {
+      offsetX *= -1;
+    }
+
+    // Determine how much the select overflows on each side.
+    const leftOverflow = 0 - (overlayRect.left + offsetX - (rtl ? paddingWidth : 0));
+    const rightOverflow = overlayRect.right + offsetX - viewportSize.width
+      + (rtl ? 0 : paddingWidth);
+
+    // If the element overflows on either side, reduce the offset to allow it to fit.
+    if (leftOverflow > 0) {
+      offsetX += leftOverflow + SELECT_PANEL_VIEWPORT_PADDING;
+    } else if (rightOverflow > 0) {
+      offsetX -= rightOverflow + SELECT_PANEL_VIEWPORT_PADDING;
+    }
+
+    // Set the offset directly in order to avoid having to go through change detection and
+    // potentially triggering "changed after it was checked" errors. Round the value to avoid
+    // blurry content in some browsers.
+    this.setState({
+      offsetX: Math.round(offsetX),
+      // todo: somehow update position
+    });
+
+    this.connectedOverlay.current.overlay.current.updatePosition();
+  }, 0);
 }
 
 /**
