@@ -19,12 +19,20 @@ class AutofillMonitor extends React.Component {
     super();
     
     this.state = {
-      allIds: [], // reactive entry point because window.Map isn't reactive
+      monitoredElements: [], // contain all of the listeners here
     };
-    
-    this.MONITORED_ELEMENTS = new Map();
   }
-  
+
+  /**
+   * Lifecycle
+   */
+  componentWillUnmount() {
+    // Remove all listeners
+    this.state.monitoredElements.forEach(({ id }) => {
+      this.stopMonitoring(id);
+    });
+  }
+
   /**
    * Derived data
    */
@@ -39,61 +47,62 @@ class AutofillMonitor extends React.Component {
   /** Monitor for changes in the autofill state of the given input element. */
   monitor = ({ element, callback, id }) => {
     if (!this.props.__platform.is('browser')) return;
-    
-    // Check if we're already monitoring this element.
-    if (this.MONITORED_ELEMENTS.has(element)) return;
-    
-    // Generate a new ID for callback
-    const defaultId = id || _.uniqueId('sui-autofill-monitor:');
+
+    const existingInfo = _.find(this.state.monitoredElements, { id });
+    if (existingInfo) return;
+
+    // Add the important styling
+    element.dataset.autofillMonitored = 'true';
     
     // Animation events fire on initial element render, we check for the presence of the autofill
     // CSS class to make sure this is a real change in state, not just the initial render before
     // we fire off events.
     const listener = (event) => {
       // debug: unsure if this returns `true` or `"true"`
-      const elementAutofillStatus = _.get(element, ['dataset', 'autofilled']);
-      console.log(elementAutofillStatus);
+      const elementAutofillStatus = _.get(element.dataset, 'autofilled','null');
       if (
-        event.animationName === TEXT_FIELD_ANIMATION_START.getName()
+        event.animationName.indexOf(TEXT_FIELD_ANIMATION_START.getName()) > -1
         && elementAutofillStatus !== 'true'
       ) {
+        // If we're animating, then the callback should be called with true
         callback({ target: event.target, isAutofilled: true });
       } else if (
-        event.animationName === TEXT_FIELD_ANIMATION_END.getName()
+        event.animationName.indexOf(TEXT_FIELD_ANIMATION_END.getName()) > -1
         && elementAutofillStatus === 'true'
       ) {
+        // Otherwise, call the callback with false
         callback({ target: event.target, isAutofilled: false });
       }
     };
     // create element info
     const info = {
       element,
-      id: defaultId,
+      id,
       // create unlistener here so componentWillUnmount can trigger it
       unlisten: () => element.removeEventListener('animationstart', listener, LISTENER_OPTIONS),
     };
     
     this.setState(state => ({
-      // trigger a change
-      allIds: [...state.allIds, defaultId],
+      monitoredElements: [...state.monitoredElements, info],
     }), () => {
       // set it on the next tick
-      this.MONITORED_ELEMENTS.set(element, info);
       element.addEventListener('animationstart', listener, LISTENER_OPTIONS);
+
+      delete element.dataset.autofillMonitored;
     });
   };
   
   /** Stops monitoring an element and removes all focus classes. */
-  stopMonitoring = (element) => {
-    const elementInfo = this.ELEMENT_INFO.get(element);
+  stopMonitoring = (id) => {
+    const index = _.findIndex(this.state.monitoredElements, { id });
     
-    if (elementInfo) {
+    if (index > -1) {
+      const elementInfo = this.state.monitoredElements[index];
       elementInfo.unlisten();
       this.setState((state) => {
-        const id = elementInfo.id;
-        return {
-          allIds: _.without(state.allIds, id),
-        };
+        const monitoredElements = [...state.monitoredElements];
+        monitoredElements.splice(index, 1);
+        return { monitoredElements };
       });
     }
   };
