@@ -169,14 +169,14 @@ class Input extends React.Component {
 
   render() {
     const {
-      id, placeholder, disabled, required, type,
+      as, id, placeholder, disabled, required, type,
       readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
     return (
       <this.INPUT_TYPE
         {...restProps}
-        type={tag === 'input' ? type : undefined}
+        type={as === 'input' ? type : undefined}
         id={this.getId()}
         placeholder={placeholder}
         disabled={disabled}
@@ -259,16 +259,6 @@ StackedInput.propTypes = InputPropTypes;
 StackedInput.defaultProps = InputDefaultProps;
 
 export default StackedInput;
-
-const StackedTextArea = stack(
-  withFormFieldConsumer,
-  withPlatformConsumer,
-)(TextArea);
-
-StackedTextArea.propTypes = InputPropTypes;
-StackedTextArea.defaultProps = InputDefaultProps;
-
-export { StackedTextArea as TextArea };
 
 /**
  * Private methods
