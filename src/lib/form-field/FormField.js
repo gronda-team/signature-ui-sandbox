@@ -211,6 +211,8 @@ export default class FormField extends React.Component {
 FormField.propTypes = {
   /** The appearance */
   appearance: PropTypes.oneOf(['outline', 'fill']),
+  /** Whether the required marker (*) should be shown */
+  hideRequiredMarker: PropTypes.bool,
 };
 
 FormField.defaultProps = {
@@ -222,4 +224,5 @@ FormField.defaultProps = {
    */
   '__sui-internal-type': 'FormField',
   appearance: 'outline',
+  hideRequiredMarker: false,
 };
