@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import {getDisplayName} from '../../../cdk/util';
 
 export const FormFieldPropTypes = PropTypes.shape({
   ui: PropTypes.shape({}),
@@ -44,12 +45,30 @@ export const FormFieldDefaultProps = {
 export const { Provider, Consumer } = React.createContext(FormFieldDefaultProps);
 
 export function withFormFieldConsumer(Component) {
-  return props => (
-    <Consumer>
-      { context => (
-        <Component {...props} __formFieldControl={context} />
-      ) }
-    </Consumer>
-  )
-}
+  // Must be a class component since refs can't exist on functional components
+  class WithFormFieldControl extends React.Component {
+    render() {
+      const { forwardedRef, ...restProps } = this.props;
+      return (
+        <Consumer>
+          { control => (
+            <Component
+              {...props}
+              __formFieldControl={control}
+              ref={forwardedRef}
+            />
+          ) }
+        </Consumer>
+      );
+    }
+  }
 
+  // Create a forward ref to pass any refs through
+  function forwardRef(props, ref) {
+    return <WithFormFieldControl {...props} forwardedRef={ref} />;
+  }
+
+  forwardRef.displayName = `WithFormFieldControl(${getDisplayName(Component)})`;
+
+  return React.forwardRef(forwardRef);
+}
