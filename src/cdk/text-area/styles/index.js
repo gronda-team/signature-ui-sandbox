@@ -17,6 +17,9 @@ export const TEXT_FIELD_ANIMATION_START = keyframes`
 export const TEXT_FIELD_ANIMATION_END = keyframes`/*!*/`;
 
 export const TEXT_FIELD_AUTOFILL_MONITOR = css`
-&[data-autofill-monitored]:-webkit-autofill { animation-name: ${TEXT_FIELD_ANIMATION_START}; }
-&[data-autofill-monitored]:-webkit-autofill { animation-name: ${TEXT_FIELD_ANIMATION_END}; }
+&[data-autofill-monitored]:-webkit-autofill {
+  animation-name: ${TEXT_FIELD_ANIMATION_START};
+  animation-fill-mode: both;
+}
+&[data-autofill-monitored]:not(:-webkit-autofill) { animation-name: ${TEXT_FIELD_ANIMATION_END}; }
 `;
