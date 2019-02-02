@@ -11,6 +11,7 @@ export const FormFieldPropTypes = PropTypes.shape({
   setId: PropTypes.func,
   setPlaceholder: PropTypes.func,
   setContainerClick: PropTypes.func,
+  setControlType: PropTypes.func,
   describedByIds: PropTypes.arrayOf(PropTypes.string),
   changeDescribedByIds: PropTypes.func,
 });
@@ -32,6 +33,8 @@ export const FormFieldDefaultProps = {
   setPlaceholder: _.noop,
   // set container click
   setContainerClick: _.noop,
+  // set what the control type is (required for styling)
+  setControlType: _.noop,
   // described by IDs
   describedByIds: [],
   // change described by IDs

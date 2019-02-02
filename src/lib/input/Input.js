@@ -8,186 +8,230 @@ import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 
-/*
-Higher order component.
-
-The input and text area components are identical, with a caveat.
+/**
+ * The input and text area components contain very similar behavior
+ * but are marked by a handful of differences depending on the end
+ * consumer.
  */
-const buildInputType = (tag = 'input') => {
-  const InputLikeRoot = tag === 'input' ?
-    BaseInput : BaseTextArea;
-  class InputLike extends React.Component {
-    constructor(props) {
-      super(props);
+class Input extends React.Component {
+  constructor(props) {
+    super(props);
 
-      this.state = {
-        focused: false,
-      };
+    this.state = {
+      focused: false,
+    };
 
-      this.DEFAULT_ID = _.uniqueId('sui-input:');
-    }
-    
-    /*
-    Lifecycle
-     */
-    componentDidMount() {
-      // set the state machine, context, etc.
-      this.updateDisabled(this.props.disabled);
-      this.updateId();
-      this.updatePlaceholder();
-      this.updateRequired(this.props.required);
+    // Determine the type to show. this is NOT reactive
+    this.INPUT_TYPE = _.toLower(props.as) === 'input' ?
+      BaseInput :
+      BaseTextArea;
+
+    this.DEFAULT_ID = _.uniqueId('sui-input:');
+  }
+
+  /**
+   * Lifecycle
+   */
+  componentDidMount() {
+    // set the state machine, context, etc.
+    this.updateDisabled(this.props.disabled);
+    this.updateId();
+    this.updatePlaceholder();
+    this.updateRequired(this.props.required);
+    this.updateValue();
+
+    // set the onContainerClick
+    this.props.__formFieldControl.setContainerClick(this.onContainerClick);
+    this.props.__formFieldControl.setControlType(this.props.as);
+
+    // handle the iOS bug
+    handleIOSQuirk.call(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!!prevProps.value !== !!this.props.value) {
+      // Update whether or not we have a value inside
       this.updateValue();
-      // set the onContainerClick
-      this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-      // handle the iOS bug
-      handleIOSQuirk.call(this);
     }
-    
-    componentDidUpdate(prevProps) {
-      if (_.isEmpty(prevProps.value) !== _.isEmpty(this.props.value)) {
-        this.updateValue();
-      }
-      
-      if (prevProps.disabled !== this.props.disabled) {
-        // update disabled value
-        this.updateDisabled(this.props.disabled);
-      }
-      
-      if (this.getId(prevProps) !== this.getId()) {
-        this.updateId();
-      }
-      
-      if (prevProps.placeholder !== this.props.placeholder) {
-        this.updatePlaceholder(this.props.placeholder);
-      }
-      
-      if (prevProps.required !== this.props.required) {
-        this.updateRequired(this.props.required);
-      }
+
+    if (prevProps.disabled !== this.props.disabled) {
+      // update disabled value
+      this.updateDisabled(this.props.disabled);
     }
-    
-    /*
-    Derived data
-     */
-    getInputRef = (input) => {
-      this.INPUT = input;
-    };
-    
-    getId = (props = this.props) => props.id || this.DEFAULT_ID;
-    
-    getAriaDescribedBy = () => this.props.__formFieldControl.describedByIds.join(' ');
-  
-    /*
-    Actions
-     */
-    updateDisabled = (isDisabled) => {
-      // transition it in the <FormField /> component
-      this.props.__formFieldControl.transitionUi(isDisabled ? 'DISABLE' : 'ENABLE');
-    };
-  
-    updateRequired = (isRequired) => {
-      // transition it in the <FormField /> component
-      this.props.__formFieldControl.transitionUi(isRequired ? 'REQUIRE' : 'UNREQUIRE');
-    };
-  
-    updateId = () => {
-      // setting ID to either the default one or the one we get from props
-      this.props.__formFieldControl.setId(this.getId());
-    };
-  
-    updatePlaceholder = (placeholder) => {
-      this.props.__formFieldControl.setPlaceholder(placeholder);
-    };
-  
-    // update the value associated with the input field
-    updateValue = () => {
-      this.props.__formFieldControl.transitionUi(
-        _.toString(this.props.value) === '' ?
-          'CLEAR' : 'FILL'
-      );
-    };
 
-    /** Handle the container click for the form field */
-    onContainerClick = () => {
-      // Do not re-focus the input element if the element is already focused. Otherwise it can happen
-      // that someone clicks on a time input and the cursor resets to the "hours" field while the
-      // "minutes" field was actually clicked
-      if (!this.state.focused) {
-        this.focus();
-      }
-    };
+    if (this.getId(prevProps) !== this.getId()) {
+      this.updateId();
+    }
 
-    /** Progammatically focus the input component */
-    focus = () => {
-      if (this.INPUT) {
-        this.INPUT.focus();
-      }
-    };
+    if (prevProps.placeholder !== this.props.placeholder) {
+      this.updatePlaceholder(this.props.placeholder);
+    }
 
-    /** Handle the UI focus change for the form field */
-    handleFocusChange = isFocused => () => {
-      if (this.INPUT && !this.props.readOnly && isFocused !== this.state.focused) {
-        this.setState({ focused: isFocused });
-        this.props.__formFieldControl.transitionUi(
-          isFocused ? 'FOCUS' : 'BLUR',
-        );
-      }
-    };
-    
-    render() {
-      const {
-        id, placeholder, disabled, required, type,
-        __formFieldControl, ...restProps
-      } = this.props;
-      // todo: aria-invalid
-      return (
-        <InputLikeRoot
-          {...restProps}
-          type={tag === 'input' ? type : undefined}
-          id={this.getId()}
-          placeholder={placeholder}
-          disabled={disabled}
-          required={required}
-          aria-describedby={this.getAriaDescribedBy()}
-          aria-invalid={false}
-          aria-required={required.toString()}
-          onFocus={this.handleFocusChange(true)}
-          onBlur={this.handleFocusChange(false)}
-          innerRef={this.getInputRef}
-        />
-      );
+    if (prevProps.required !== this.props.required) {
+      this.updateRequired(this.props.required);
     }
   }
-  
-  return InputLike;
-};
 
-const Input = buildInputType('input');
-const TextArea = buildInputType('textarea');
+  componentWillUnmount() {
+    this.props.__autofillMonitor.stopMonitoring(this.DEFAULT_ID);
+  }
+
+  /**
+   * Derived data
+   */
+  /** Get the root input element */
+  getInputRef = (input) => {
+    this.INPUT = input;
+    if (this.INPUT) {
+      // Set the autofill status for the global autofill monitor
+      this.props.__autofillMonitor.monitor({
+        id: this.DEFAULT_ID,
+        element: input,
+        callback: (event) => {
+          // Set the autofill control in the form field control
+          this.props.__formFieldControl.transition(
+            event.isAutofilled ?
+              'AUTOFILL' :
+              'UNAUTOFILL',
+          );
+        },
+      });
+    }
+  };
+
+  /** Get the appropriate id for the input. Defaults to DEFAULT_ID */
+  getId = (props = this.props) => props.id || this.DEFAULT_ID;
+
+  /** Get the describedByIds from the FormFieldControl's hints */
+  getAriaDescribedBy = () => this.props.__formFieldControl.describedByIds.join(' ');
+
+  /**
+   * Actions
+   */
+  /** Update the form field's disabled state */
+  updateDisabled = (isDisabled) => {
+    // transition it in the <FormField /> component
+    this.props.__formFieldControl.transitionUi(isDisabled ? 'DISABLE' : 'ENABLE');
+  };
+
+  /** Update the form field's required state */
+  updateRequired = (isRequired) => {
+    // transition it in the <FormField /> component
+    this.props.__formFieldControl.transitionUi(isRequired ? 'REQUIRE' : 'UNREQUIRE');
+  };
+
+  /** Update the form field's ID (for the label) */
+  updateId = () => {
+    // setting ID to either the default one or the one we get from props
+    this.props.__formFieldControl.setId(this.getId());
+  };
+
+  /** Update the form field's default placeholder if no label available */
+  updatePlaceholder = (placeholder) => {
+    this.props.__formFieldControl.setPlaceholder(placeholder);
+  };
+
+  /** update the value associated with the input field */
+  updateValue = () => {
+    this.props.__formFieldControl.transitionUi(
+      _.toString(this.props.value) === '' ?
+        'CLEAR' : 'FILL'
+    );
+  };
+
+  /** Handle the container click for the form field */
+  onContainerClick = () => {
+    // Do not re-focus the input element if the element is already focused. Otherwise it can happen
+    // that someone clicks on a time input and the cursor resets to the "hours" field while the
+    // "minutes" field was actually clicked
+    if (!this.state.focused) {
+      this.focus();
+    }
+  };
+
+  /** Progammatically focus the input component */
+  focus = () => {
+    if (this.INPUT) {
+      this.INPUT.focus();
+    }
+  };
+
+  /** Handle the UI focus change for the form field */
+  handleFocusChange = isFocused => () => {
+    if (this.INPUT && !this.props.readOnly && isFocused !== this.state.focused) {
+      this.setState({ focused: isFocused });
+      this.props.__formFieldControl.transitionUi(
+        isFocused ? 'FOCUS' : 'BLUR',
+      );
+    }
+  };
+
+  render() {
+    const {
+      id, placeholder, disabled, required, type,
+      readOnly, __formFieldControl, ...restProps
+    } = this.props;
+    // todo: aria-invalid
+    return (
+      <this.INPUT_TYPE
+        {...restProps}
+        type={tag === 'input' ? type : undefined}
+        id={this.getId()}
+        placeholder={placeholder}
+        disabled={disabled}
+        readOnly={readOnly}
+        required={required}
+        aria-describedby={this.getAriaDescribedBy()}
+        aria-invalid={false}
+        aria-required={required.toString()}
+        onFocus={this.handleFocusChange(true)}
+        onBlur={this.handleFocusChange(false)}
+        innerRef={this.getInputRef}
+      />
+    );
+  }
+}
 
 const InputPropTypes = {
+  /** The id associated with the input field */
   id: PROP_TYPE_STRING_OR_NUMBER,
+  /** The DOM node type, either a textarea or an input */
+  as: PropTypes.oneOf(['textarea', 'input']),
+  /** Placeholder -- required for FormFieldControl */
   placeholder: PROP_TYPE_STRING_OR_NUMBER,
+  /** Whether or not the field is disabled -- FormFieldControl */
   disabled: PropTypes.bool,
+  /** Whether the field is disabled -- FormFieldControl */
   required: PropTypes.bool,
+  /** Whether the input is read-only */
+  readOnly: PropTypes.bool,
+  /** Associated only with as="input" fields */
   type: function(props, propName, componentName) {
+    // Don't bother if it's a textarea
+    if (_.toLower(props.as) === 'textarea') return null;
+
     const type = props[propName];
     if (!type || !_.isString(type)) {
       return new Error('<' + componentName + ' /> should have a `type` prop as a string.');
     } else if (INVALID_INPUT_TYPES.indexOf(type) > -1) {
       return new Error('Invalid prop `' + propName + ' for `<' + componentName + ' />.');
     }
+
     return null;
   },
+  /** The value */
   value: PROP_TYPE_STRING_OR_NUMBER,
 };
 
 const InputDefaultProps = {
   id: '',
+  as: 'input',
   placeholder: '',
   disabled: false,
   required: false,
+  readOnly: false,
   type: 'text',
+  /** Undefined in case they want to have it uncontrolled */
   value: undefined,
 };
 
