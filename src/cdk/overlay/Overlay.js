@@ -39,7 +39,7 @@ class Overlay extends React.Component {
    */
   componentDidUpdate(prevProps) {
     if (!_.isEqual(_.pick(prevProps, PROP_CSS_FIELDS), _.pick(this.props, PROP_CSS_FIELDS))) {
-      updateElementSize.call(this.props);
+      updateElementSize.call(this, this.props);
     }
   }
   
@@ -81,6 +81,16 @@ class Overlay extends React.Component {
       pane,
       created: true,
     });
+
+    /**
+     * Save the pane and host styles bound to this component
+     * so that React won't throw an error when we try to update
+     * host/pane style like this.state.host.style = ...
+     */
+    // References the same object, so it doesn't get cloned
+    this.HOST_STYLE = host.style;
+    this.PANE_STYLE = pane.style;
+    console.log(host, pane);
   };
   
   /** Attaches content to the overlay + creates backdrop */
@@ -108,7 +118,7 @@ class Overlay extends React.Component {
     this.setState({ attached: true }, () => {
       this.updatePosition();
       Object.assign(
-        this.state.pane.style,
+        this.PANE_STYLE,
         { display: 'block' },
       );
 
@@ -144,7 +154,7 @@ class Overlay extends React.Component {
       attached: false,
     }, () => {
       Object.assign(
-        this.state.pane.style,
+        this.PANE_STYLE,
         { display: 'none' },
       );
       this.props.__keyboardDispatcher.remove(this.OVERLAY_ID);
@@ -390,11 +400,8 @@ function detachBackdrop() {
 
 /** Updates the size of the overlay element based on the overlay config. */
 function updateElementSize(props = this.props) {
-  const style = this.state.pane.style;
-  
   Object.assign(
-    this.state.pane.style,
-    style,
+    this.PANE_STYLE,
     PROP_CSS_FIELDS.reduce((s, key) => {
       const value = _.get(props, key);
       if (!_.isNil(value)) {
@@ -407,7 +414,7 @@ function updateElementSize(props = this.props) {
 
 /** Toggles the pointer events for the overlay pane element. */
 function togglePointerEvents(enable = false) {
-  this.state.pane.style.pointerEvents = enable ?
+  this.PANE_STYLE.pointerEvents = enable ?
     'auto' : 'none';
 }
 

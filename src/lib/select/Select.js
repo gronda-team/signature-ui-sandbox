@@ -17,6 +17,7 @@ import {withPlatformConsumer} from '../../cdk/platform';
 import {hasModifierKey} from '../../cdk/keycodes/modifiers';
 import { OptionParentProvider } from '../core/option';
 import {SelectArrow, SelectArrowWrapper} from './styles';
+import {ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler} from '../../cdk/scrolling';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
@@ -428,7 +429,7 @@ class Select extends React.Component {
   }
 }
 
-Select.propTypes = {
+const SelectPropTypes = {
   /** Whether filling out the select is required in the form. */
   required: PropTypes.bool,
   /** The placeholder displayed in the trigger of the select. */
@@ -459,10 +460,9 @@ Select.propTypes = {
   onTouched: PropTypes.func,
   /** delimiter for trigger value + multiple */
   delimiter: PropTypes.string,
-  __formFieldControl: FormFieldPropTypes,
 };
 
-Select.defaultProps = {
+const SelectDefaultProps = {
   required: false,
   placeholder: '',
   multiple: false,
@@ -478,7 +478,18 @@ Select.defaultProps = {
   tabIndex: 0,
   onTouched: null,
   delimiter: ',',
+};
+
+Select.propTypes = {
+  ...SelectPropTypes,
+  __formFieldControl: FormFieldPropTypes,
+  __viewportRuler: ViewportRulerPropTypes,
+};
+
+Select.defaultProps = {
+  ...SelectDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
+  __viewportRuler: ViewportRulerDefaultProps,
 };
 
 /**
@@ -502,10 +513,16 @@ const DEFAULT_POSITIONS = [
   },
 ];
 
-export default stack(
+const StackedSelect = stack(
   withFormFieldConsumer,
+  withViewportRuler,
   withPlatformConsumer,
 )(Select);
+
+StackedSelect.propTypes = SelectPropTypes;
+StackedSelect.defaultProps = SelectDefaultProps;
+
+export default StackedSelect;
 
 /**
  * Private methods to be used inside the Select component
@@ -747,7 +764,7 @@ function calculateOverlayScroll(selectedIndex, scrollBuffer, maxScroll) {
  * content width in order to constrain the panel within the viewport.
  */
 function calculateOverlayOffsetX() {
-  const overlayRect = this.PANE.getBoundingClientRect();
+  const overlayRect = this.PANEL.getBoundingClientRect();
   const viewportSize = this.props.__viewportRuler.getViewportSize();
   const rtl = isRtl.call(this);
   const paddingWidth = SELECT_PANEL_PADDING_X * 2;

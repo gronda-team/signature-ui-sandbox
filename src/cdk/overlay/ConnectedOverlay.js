@@ -245,7 +245,9 @@ export default ConnectedOverlay;
  */
 /** Create an overlay */
 function createOverlay() {
-  this.overlay.current.setState({
+  const overlay = this.overlay.current;
+  overlay.create();
+  overlay.setState({
     onOverlayKeyDown: this.handleOverlayKeyDown,
   });
 }
@@ -258,19 +260,22 @@ function attachOverlay() {
   } else {
     overlay.updateSize();
   }
-  
-  // Attach if it isn't already
-  if (!overlay.state.attached) {
-    overlay.attach();
-    _.invoke(this.props, 'onAttached');
-  }
 
-  if (this.props.backdrop) {
-    // Set it manually
-    this.overlay.current.setState({
-      backdropClick: this.props.backdropClick,
-    });
-  }
+  /** Wait till next tick to try and query state.host */
+  window.setTimeout(() => {
+    // Attach if it isn't already
+    if (!overlay.state.attached) {
+      overlay.attach();
+      _.invoke(this.props, 'onAttached');
+    }
+
+    if (this.props.backdrop) {
+      // Set it manually
+      this.overlay.current.setState({
+        backdropClick: this.props.backdropClick,
+      });
+    }
+  }, 0);
 }
 
 /** Detaches the overlay and unsubscribes to backdrop clicks if backdrop exists */
