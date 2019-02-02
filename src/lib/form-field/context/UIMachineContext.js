@@ -42,7 +42,10 @@ export const FormFieldDefaultProps = {
   changeDescribedByIds: _.noop,
 };
 
-export const { Provider, Consumer } = React.createContext(FormFieldDefaultProps);
+export const {
+  Provider: FormFieldControlProvider,
+  Consumer: FormFieldControlConsumer,
+} = React.createContext(FormFieldDefaultProps);
 
 export function withFormFieldConsumer(Component) {
   // Must be a class component since refs can't exist on functional components
@@ -50,15 +53,15 @@ export function withFormFieldConsumer(Component) {
     render() {
       const { forwardedRef, ...restProps } = this.props;
       return (
-        <Consumer>
+        <FormFieldControlConsumer>
           { control => (
             <Component
-              {...props}
+              {...restProps}
               __formFieldControl={control}
               ref={forwardedRef}
             />
           ) }
-        </Consumer>
+        </FormFieldControlConsumer>
       );
     }
   }
