@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FormField, Suffix, Prefix, Label, Hint } from '../lib/form-field';
 import { Input } from '../lib/input';
+import PrefixSuffix from './FormField/PrefixSuffix';
 
 storiesOf('FormField', module)
   .add('Available styles', () => (
@@ -28,4 +29,7 @@ storiesOf('FormField', module)
         </FormField>
       </p>
     </div>
+  ))
+  .add('Prefixes and suffixes', () => (
+    <PrefixSuffix />
   ));
