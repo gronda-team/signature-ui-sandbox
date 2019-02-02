@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { FormFieldHint } from './styles';
-import { withFormFieldConsumer } from './context/UIMachineContext';
+import { withFormFieldConsumer } from './context/FormFieldContext';
 
 class Hint extends React.Component {
   constructor() {

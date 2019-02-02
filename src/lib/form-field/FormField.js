@@ -9,7 +9,7 @@ import {
   FormFieldSubscriptWrapper,
   FormFieldWrapper,
 } from './styles/index';
-import { Provider as FormFieldControlProvider } from './context/UIMachineContext';
+import { FormFieldControlProvider } from './context/FormFieldContext';
 import { byInternalType } from '../core/components/util';
 import {FormFieldBar} from './styles';
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { FormFieldPropTypes, FormFieldDefaultProps, withFormFieldConsumer } from '../form-field/context/UIMachineContext';
+import { FormFieldPropTypes, FormFieldDefaultProps, withFormFieldConsumer } from '../form-field';
 import { ListKeyManager } from '../../cdk/a11y';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
 import {ARROW_DOWN, ARROW_KEYS, ARROW_UP, DOWN, END, ENTER, HOME, SPACE, SPACEBAR, UP} from '../../cdk/keycodes/keys';
