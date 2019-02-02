@@ -27,11 +27,14 @@ export default class FormField extends React.Component {
       // these are essentially passed down as context
       ui: UIMachine.initialState.value,
       id: '',
+      /** The control type, i.e., select, input, textarea, etc. */
+      type: null,
       placeholder: '',
       containerClick: _.noop,
       setId: this.setControl('id'), // function that expects a value
       setPlaceholder: this.setControl('placeholder'),
       setContainerClick: this.setControl('containerClick'),
+      setControlType: this.setControl('type'),
       transitionUi: this.transition,
       changeDescribedByIds: this.changeDescribedByIds,
       describedByIds: [],
@@ -175,6 +178,7 @@ export default class FormField extends React.Component {
         data-disabled={this.isDisabled().toString()}
         data-focused={this.isFocused()}
         data-value={this.isFilled() ? 'filled' : 'empty'}
+        data-field-type={this.state.type}
       >
         <FormFieldWrapper>
           <FormFieldControlProvider value={this.state}>
