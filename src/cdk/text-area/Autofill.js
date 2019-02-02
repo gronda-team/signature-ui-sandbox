@@ -61,13 +61,13 @@ class AutofillMonitor extends React.Component {
       // debug: unsure if this returns `true` or `"true"`
       const elementAutofillStatus = _.get(element.dataset, 'autofilled','null');
       if (
-        event.animationName.indexOf(TEXT_FIELD_ANIMATION_START.getName()) > -1
+        event.animationName.indexOf(TEXT_FIELD_ANIMATION_START) > -1
         && elementAutofillStatus !== 'true'
       ) {
         // If we're animating, then the callback should be called with true
         callback({ target: event.target, isAutofilled: true });
       } else if (
-        event.animationName.indexOf(TEXT_FIELD_ANIMATION_END.getName()) > -1
+        event.animationName.indexOf(TEXT_FIELD_ANIMATION_END) > -1
         && elementAutofillStatus === 'true'
       ) {
         // Otherwise, call the callback with false
