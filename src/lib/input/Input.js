@@ -7,6 +7,7 @@ import { BaseInput, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
+import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor} from '../../cdk/text-area';
 
 /**
  * The input and text area components contain very similar behavior
@@ -237,17 +238,20 @@ const InputDefaultProps = {
 
 Input.propTypes = {
   ...InputPropTypes,
+  __autofillMonitor: AutofillMonitorPropTypes,
   __formFieldControl: FormFieldPropTypes,
   __platform: PlatformPropTypes,
 };
 
 Input.defaultProps = {
   ...InputDefaultProps,
+  __autofillMonitor: AutofillMonitorDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
   __platform: PlatformDefaultProps,
 };
 
 const StackedInput = stack(
+  withAutofillMonitor,
   withFormFieldConsumer,
   withPlatformConsumer,
 )(Input);
