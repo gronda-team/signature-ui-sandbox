@@ -45,18 +45,18 @@ export const UIMachine = Machine({
         },
         'required': {
           on: { UNREQUIRE: 'optional' },
-        }
-      }
-    }
-  },
-  'autofilled-status': {
-    initial: 'not-autofilled',
-    states: {
-      'not-autofilled': {
-        on: { AUTOFILL: 'autofilled' },
+        },
       },
-      'autofilled': {
-        on: { UNAUTOFILL: 'not-autofilled' },
+    },
+    'autofilled-status': {
+      initial: 'empty',
+      states: {
+        'empty': {
+          on: { AUTOFILL: 'filled' },
+        },
+        'filled': {
+          on: { REMOVE_AUTOFILL: 'empty' },
+        },
       },
     },
   },
