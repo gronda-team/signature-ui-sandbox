@@ -27,7 +27,13 @@ export const formFieldBaseThemeMixin = (components) => {
     color: ${REQUIRED_LABEL_COLOR};
   }
   
-  &[data-autofilled=true][data-focused=true] {
+  &[data-autofilled=true] {
+    ${FormFieldLabel} {
+      color: ${PRIMARY};
+    }
+  }
+  
+  &[data-field-type=select][data-focused=true] {
     ${SelectArrowWrapper} > svg {
       stroke: ${PRIMARY};
     }
