@@ -21,11 +21,11 @@ const FILL_SUBSCRIPT_PADDING = FILL_SIDE_PADDING / FILL_SUBSCRIPT_FONT_SCALE; //
 
 const fillAppearanceThunk = (components) => {
   const {
-    FormFieldFlex,
+    FormFieldBar,
     FormFieldSubscriptWrapper,
   } = components;
   return css`
-  ${FormFieldFlex} {
+  ${FormFieldBar} {
     border-radius: ${FILL_BORDER_RADIUS}px;
     padding: ${FILL_LINE_SPACING}em ${FILL_SIDE_PADDING}em 0;
   }

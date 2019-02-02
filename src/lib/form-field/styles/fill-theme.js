@@ -7,14 +7,14 @@ import {formFieldLabelPositioning} from './theme-base';
  */
 
 export const fillThemeThunk = (components) => {
-  const { FormFieldFlex, FormFieldLabel } = components;
+  const { FormFieldBar, FormFieldLabel } = components;
   return css`
-  ${FormFieldFlex} {
+  ${FormFieldBar} {
     background-color: rgba(0, 0, 0, 0.04);
   }
   
   &[data-disabled=true] {
-    ${FormFieldFlex} {
+    ${FormFieldBar} {
       background-color: rgba(0, 0, 0, 0.02);
     }
     
