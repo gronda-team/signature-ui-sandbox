@@ -8,6 +8,7 @@ import {
 import {Platform} from '../src/cdk/platform';
 import {OverlayContainer} from '../src/cdk/overlay';
 import {FocusMonitor} from '../src/cdk/a11y';
+import { AutofillMonitor } from '../src/cdk/text-area';
 
 /**
  * Add the important global DI containers
@@ -17,7 +18,9 @@ addDecorator(story => (
   <Platform>
     <OverlayContainer>
       <FocusMonitor>
-        { story() }
+        <AutofillMonitor>
+          { story() }
+        </AutofillMonitor>
       </FocusMonitor>
     </OverlayContainer>
   </Platform>
