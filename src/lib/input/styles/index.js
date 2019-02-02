@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 import inputTheme from './theme';
 import { EASE_OUT } from '../../core/styles/animation';
 import { PLACEHOLDER } from '../../core/styles/vendor';
+import {TEXT_FIELD_AUTOFILL_MONITOR} from '../../../cdk/text-area/styles';
 
 const baseInput = css`
 // Font needs to be inherited, because by default <input> has a system font.
@@ -98,7 +99,10 @@ ${PLACEHOLDER(`
     // from overlapping when the label comes back down.
     transition: none;
   `)}
-}`;
+}
+
+${TEXT_FIELD_AUTOFILL_MONITOR}
+`;
 
 export const BaseInput = styled.input`${baseInput} ${inputTheme}`;
 
