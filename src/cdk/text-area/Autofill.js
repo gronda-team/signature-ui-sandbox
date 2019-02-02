@@ -116,3 +116,5 @@ AutofillMonitor.defaultProps = {
 };
 
 const StackedAutofillMonitor = withPlatformConsumer(AutofillMonitor);
+
+export default StackedAutofillMonitor;
