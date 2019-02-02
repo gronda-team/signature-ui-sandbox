@@ -52,7 +52,7 @@ class Overlay extends React.Component {
    */
   getDummyOverlay = (overlay) => {
     if (overlay) {
-      this.PANE = overlay;
+      this.DUMMY_PANE = overlay;
       /*
       We only want to steal the styled-components class names
       from the dummy container. Its rendering is inconsequential
@@ -64,7 +64,7 @@ class Overlay extends React.Component {
   
   getDummyBackdrop = (backdrop) => {
     if (backdrop) {
-      this.BACKDROP = backdrop;
+      this.DUMMY_BACKDROP = backdrop;
       this.setState({ renderDummyBackdrop: false });
     }
   };
@@ -88,13 +88,16 @@ class Overlay extends React.Component {
      * host/pane style like this.state.host.style = ...
      */
     // References the same object, so it doesn't get cloned
-    this.HOST_STYLE = host.style;
-    this.PANE_STYLE = pane.style;
-    console.log(host, pane);
+    this.HOST = host;
+    this.PANE = pane;
   };
   
   /** Attaches content to the overlay + creates backdrop */
   attach = () => {
+    if (this.props.positionStrategy) {
+      this.props.positionStrategy.attach();
+    }
+
     // Update the pane element with the given configuration.
     if (!this.state.host.parentElement && this.state.previousHostParent) {
       this.state.previousHostParent.appendChild(this.state.host);
@@ -118,7 +121,7 @@ class Overlay extends React.Component {
     this.setState({ attached: true }, () => {
       this.updatePosition();
       Object.assign(
-        this.PANE_STYLE,
+        this.PANE.style,
         { display: 'block' },
       );
 
@@ -154,7 +157,7 @@ class Overlay extends React.Component {
       attached: false,
     }, () => {
       Object.assign(
-        this.PANE_STYLE,
+        this.PANE.style,
         { display: 'none' },
       );
       this.props.__keyboardDispatcher.remove(this.OVERLAY_ID);
@@ -199,9 +202,7 @@ class Overlay extends React.Component {
   };
   
   render() {
-    if (!this.state.attached) return null;
-    const host = this.state.pane;
-    return (
+    if (!this.state.attached) return (
       <React.Fragment>
         { this.state.renderDummyOverlay ?
           /*
@@ -213,9 +214,10 @@ class Overlay extends React.Component {
         { this.state.renderDummyBackdrop ?
           <OverlayBackdrop innerRef={this.getDummyBackdrop} /> : null
         }
-        { ReactDOM.createPortal(this.props.children, host) }
       </React.Fragment>
-    )
+    );
+    const host = this.state.pane;
+    return ReactDOM.createPortal(this.props.children, host);
   }
 }
 
@@ -325,8 +327,8 @@ Creates the DOM element for an overlay and appends it to the overlay container.
 function createPaneElement(host) {
   const pane = document.createElement('div');
   pane.id = _.uniqueId('sui-overlay-pane:');
-  if (this.PANE) {
-    const classNames = Array.from(this.PANE.classList);
+  if (this.DUMMY_PANE) {
+    const classNames = Array.from(this.DUMMY_PANE.classList);
     classNames.forEach((className) => {
       pane.classList.add(className);
     });
@@ -345,8 +347,8 @@ be placed directly as a child of the host.
 */
 function attachBackdrop() {
   const backdrop = document.createElement('div');
-  if (this.BACKDROP) {
-    const classNames = Array.from(this.BACKDROP.classList);
+  if (this.DUMMY_BACKDROP) {
+    const classNames = Array.from(this.DUMMY_BACKDROP.classList);
     classNames.forEach((className) => {
       backdrop.classList.add(className);
     });
@@ -401,7 +403,7 @@ function detachBackdrop() {
 /** Updates the size of the overlay element based on the overlay config. */
 function updateElementSize(props = this.props) {
   Object.assign(
-    this.PANE_STYLE,
+    this.PANE.style,
     PROP_CSS_FIELDS.reduce((s, key) => {
       const value = _.get(props, key);
       if (!_.isNil(value)) {
@@ -414,7 +416,7 @@ function updateElementSize(props = this.props) {
 
 /** Toggles the pointer events for the overlay pane element. */
 function togglePointerEvents(enable = false) {
-  this.PANE_STYLE.pointerEvents = enable ?
+  this.PANE.style.pointerEvents = enable ?
     'auto' : 'none';
 }
 

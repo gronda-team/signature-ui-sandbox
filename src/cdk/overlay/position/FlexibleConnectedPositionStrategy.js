@@ -60,8 +60,6 @@ class FlexibleConnectedPositionStrategy extends React.Component {
    * Lifecycle
    */
   componentDidMount() {
-    // let the overlay trigger this guy's attach/apply/detach/dispose methods
-    this.props.__overlay.setPositionStrategy(this.state.provide);
     _.defer(() => {
       this.setState({ renderDummyBoundingBox: false });
     });
@@ -71,7 +69,7 @@ class FlexibleConnectedPositionStrategy extends React.Component {
     // If the last calculated position object isn't part of the positions anymore, clear
     // it in order to avoid it being picked up if the consumer tries to re-apply.
     if (!_.isEqual(prevProps.preferredPositions, this.props.preferredPositions)) {
-      if (this.props.positions.indexOf(this.state.lastPosition) === -1) {
+      if (this.props.preferredPositions.indexOf(this.state.lastPosition) === -1) {
         this.setState({ lastPosition: null });
       }
     }
@@ -83,21 +81,15 @@ class FlexibleConnectedPositionStrategy extends React.Component {
   }
   
   /**
-   * Refs
-   */
-  getDummyBoundingBox = (boundingBox) => {
-    this.DUMMY_BOUNDING_BOX = boundingBox;
-  };
-  
-  /**
    * Actions
    */
   /** Attaches this position strategy to an overlay. */
   attach = () => {
-    if (this.DUMMY_BOUNDING_BOX) {
-      const boundingBoxStyles = Array.from(this.DUMMY_BOUNDING_BOX.classList);
+    const boundingBox = this.props.overlay.state.host;
+    if (boundingBox) {
+      const boundingBoxStyles = Array.from(boundingBox.classList);
       boundingBoxStyles.forEach((className) => {
-        this.props.__overlay.host.classList.add(className);
+        this.props.overlay.state.host.classList.add(className);
       });
     }
     
@@ -155,7 +147,7 @@ class FlexibleConnectedPositionStrategy extends React.Component {
     // the overlay relative to the origin.
     // We use the viewport rect to determine whether a position would go off-screen.
     const originRect = this.props.origin.getBoundingClientRect();
-    const overlayRect = this.props.__overlay.pane.getBoundingClientRect();
+    const overlayRect = this.props.overlay.state.pane.getBoundingClientRect();
     const viewportRect = getNarrowedViewportRect.call(this);
     
     this.setState({ originRect, overlayRect, viewportRect });
@@ -259,9 +251,9 @@ class FlexibleConnectedPositionStrategy extends React.Component {
   dispose = () => {
     if (this.state.isDisposed) return;
     
-    if (this.props.__overlay.host) {
+    if (this.props.overlay.state.host) {
       // reset the host styles
-      Object.assign(this.props.__overlay.host.style, {
+      Object.assign(this.props.overlay.HOST.style, {
         top: '',
         left: '',
         right: '',
@@ -273,15 +265,15 @@ class FlexibleConnectedPositionStrategy extends React.Component {
       });
     }
     
-    if (this.props.__overlay.pane) {
+    if (this.props.overlay.state.pane) {
       resetOverlayElementStyles.call(this);
     }
     
-    if (this.props.__overlay.host && this.DUMMY_BOUNDING_BOX) {
-      const boundingBoxStyles = Array.from(this.DUMMY_BOUNDING_BOX.classList);
+    if (this.props.overlay.state.host) {
+      const boundingBoxStyles = Array.from(this.props.overlay.state.host.classList);
       // remove bounding box classes
       boundingBoxStyles.forEach((className) => {
-        this.props.__overlay.host.classList.remove(className);
+        this.props.overlay.state.host.classList.remove(className);
       });
     }
     
@@ -298,7 +290,7 @@ class FlexibleConnectedPositionStrategy extends React.Component {
     if (!this.state.isDisposed && (!this.props.__platform.is('browser'))) {
       this.setState({
         originRect: this.props.origin.getBoundingClientRect(),
-        overlayRect: this.props.__overlay.pane.getBoundingClientRect(),
+        overlayRect: this.props.overlay.state.pane.getBoundingClientRect(),
         viewportRect: getNarrowedViewportRect.call(this),
       }, () => {
         const lastPosition = this.state.lastPosition || _.head(this.props.preferredPositions);
@@ -308,22 +300,14 @@ class FlexibleConnectedPositionStrategy extends React.Component {
       });
     }
   };
-  
-  render() {
-    return (
-      <React.Fragment>
-        { this.state.renderDummyBoundingBox ?
-          <OverlayBoundingBox innerRef={this.getDummyBoundingBox} /> : null
-        }
-        <PositionStrategyProvider value={this.state.provide}>
-          { this.props.children }
-        </PositionStrategyProvider>
-      </React.Fragment>
-    );
-  }
+
+  /** Noop render because this is a reactive object */
+  render = () => null;
 }
 
 const FCPSPropTypes = {
+  /** The actual overlay to which this strategy is attached */
+  overlay: PropTypes.element,
   /** The origin element against which the overlay will be positioned. */
   origin: PropTypes.instanceOf(HTMLElement),
   /** Whether the overlay can be pushed on-screen on the initial open. */
@@ -350,6 +334,7 @@ const FCPSPropTypes = {
 };
 
 const FCPSDefaultProps = {
+  overlay: null,
   origin: null,
   canPush: true,
   growAfterOpen: false,
@@ -365,7 +350,6 @@ const FCPSDefaultProps = {
 
 FlexibleConnectedPositionStrategy.propTypes = {
   ...FCPSPropTypes,
-  __overlay: OverlayContextPropTypes,
   __overlayContainer: OverlayContainerPropTypes,
   __platform: PlatformPropTypes,
   __viewportRuler: ViewportContextPropTypes,
@@ -373,14 +357,12 @@ FlexibleConnectedPositionStrategy.propTypes = {
 
 FlexibleConnectedPositionStrategy.defaultProps = {
   ...FCPSDefaultProps,
-  __overlay: OverlayContextDefaultProps,
   __overlayContainer: OverlayContainerDefaultProps,
   __platform: PlatformDefaultProps,
   __viewportRuler: ViewportContextDefaultProps,
 };
 
 const StackedPositionStrategy = stack(
-  withOverlayConsumer,
   withOverlayContainerConsumer,
   withViewportRuler,
   withPlatformConsumer,
@@ -493,8 +475,8 @@ function canFitWithFlexibleDimensions(fit, point, viewport) {
   if (this.props.hasFlexibleDimensions) {
     const availableHeight = viewport.bottom - point.y;
     const availableWidth = viewport.right - point.x;
-    const minHeight = this.props.__overlay.minHeight;
-    const minWidth = this.props.__overlay.minWidth;
+    const minHeight = this.props.overlay.props.minHeight;
+    const minWidth = this.props.overlay.props.minWidth;
     
     const verticalFit = fit.fitsInViewportVertically ||
       (minHeight !== null && minHeight <= availableHeight);
@@ -590,7 +572,7 @@ function setTransformOrigin(position) {
   if (!this.props.transformOriginSelector) return;
   
   const elements =
-    this.props.__overlay.host.querySelectorAll(this.props.transformOriginSelector);
+    this.props.overlay.state.host.querySelectorAll(this.props.transformOriginSelector);
   let xOrigin;
   let yOrigin = position.overlayY;
   
@@ -712,8 +694,8 @@ function setBoundingBoxStyles(origin, position) {
     styles.bottom = styles.right = '';
     styles.width = styles.height = '100%';
   } else {
-    const maxHeight = this.props.__overlay.maxHeight;
-    const maxWidth = this.props.__overlay.maxWidth;
+    const maxHeight = this.props.overlay.props.maxHeight;
+    const maxWidth = this.props.overlay.props.maxWidth;
     
     Object.assign(
       styles,
@@ -753,14 +735,14 @@ function setBoundingBoxStyles(origin, position) {
   });
   
   Object.assign(
-    this.props.__overlay.host.style,
+    this.props.overlay.HOST.style,
     styles,
   );
 }
 
 /** Resets the styles for the bounding box so that a new positioning can be computed. */
 function resetBoundingBoxStyles() {
-  Object.assign(this.props.__overlay.host.style, {
+  Object.assign(this.props.overlay.HOST.style, {
     top: '0',
     left: '0',
     right: '0',
@@ -774,7 +756,7 @@ function resetBoundingBoxStyles() {
 
 /** Resets the styles for the overlay pane so that a new positioning can be computed. */
 function resetOverlayElementStyles() {
-  Object.assign(this.props.__overlay.pane.style, {
+  Object.assign(this.props.overlay.PANE.style, {
     top: '',
     left: '',
     bottom: '',
@@ -791,8 +773,8 @@ function setOverlayElementStyles(originPoint, position) {
     
     Object.assign(
       styles,
-      getExactOverlayY(position, originPoint, scrollPosition),
-      getExactOverlayX(position, originPoint, scrollPosition),
+      getExactOverlayY.call(this, position, originPoint, scrollPosition),
+      getExactOverlayX.call(this, position, originPoint, scrollPosition),
     );
   } else {
     styles.position = 'static';
@@ -820,15 +802,15 @@ function setOverlayElementStyles(originPoint, position) {
   // If a maxWidth or maxHeight is specified on the overlay, we remove them. We do this because
   // we need these values to both be set to "100%" for the automatic flexible sizing to work.
   // The maxHeight and maxWidth are set on the boundingBox in order to enforce the constraint.
-  if (this.props.hasFlexibleDimensions && this.props.__overlay.maxHeight) {
+  if (this.props.hasFlexibleDimensions && this.props.overlay.props.maxHeight) {
     styles.maxHeight = '';
   }
   
-  if (this.props.hasFlexibleDimensions && this.props.__overlay.maxWidth) {
+  if (this.props.hasFlexibleDimensions && this.props.overlay.props.maxWidth) {
     styles.maxWidth = '';
   }
   
-  Object.assign(this.props.__overlay.pane.style, styles);
+  Object.assign(this.props.overlay.PANE.style, styles);
 }
 
 /** Gets the exact top/bottom for the overlay when not using flexible sizing or when pushing. */
@@ -906,7 +888,7 @@ function getExactOverlayX(position, originPoint, scrollPosition) {
 function getScrollVisibility() {
   // Note: needs fresh rects since the position could've changed.
   const originBounds = this.props.origin.getBoundingClientRect();
-  const overlayBounds =  this.props.__overlay.pane.getBoundingClientRect();
+  const overlayBounds =  this.props.overlay.state.pane.getBoundingClientRect();
   
   const scrollContainerBounds = this.props.scrollables.map(scrollable => {
     return scrollable.getBoundingClientRect();
@@ -948,7 +930,7 @@ function getNarrowedViewportRect() {
 
 /** Whether the we're dealing with an RTL context */
 function isRtl() {
-  return this.props.__overlay.direction === 'rtl';
+  return this.props.overlay.props.dir === 'rtl';
 }
 
 /** Determines whether the overlay uses exact or flexible positioning. */
@@ -968,13 +950,13 @@ function getOffset(position, axis) {
 
 /** Adds a single CSS class or an array of classes on the overlay panel. */
 function addPanelClasses(cssClasses) {
-  if (this.props.__overlay.pane) {
+  if (this.props.overlay.state.pane) {
     const classes = _.castArray(cssClasses);
     this.setState(state => ({
       appliedPanelClasses: _.uniq([...state.appliedPanelClasses, ...classes]),
     }), () => {
       classes.forEach((cssClass) => {
-        this.props.__overlay.pane.classList.add(cssClass);
+        this.props.overlay.state.pane.classList.add(cssClass);
       });
     });
   }
@@ -982,11 +964,11 @@ function addPanelClasses(cssClasses) {
 
 /** Clears the classes that the position strategy has applied from the overlay panel. */
 function clearPanelClasses() {
-  if (this.props.__overlay.pane) {
+  if (this.props.overlay.state.pane) {
     const classes = this.state.appliedPanelClasses;
     this.setState({ appliedPanelClasses: [] }, () => {
       classes.forEach((cssClass) => {
-        this.props.__overlay.pane.classList.remove(cssClass);
+        this.props.overlay.state.pane.classList.remove(cssClass);
       });
     });
   }

@@ -78,23 +78,14 @@ class ConnectedOverlay extends React.Component {
   render() {
     const ScrollStrategy = this.props.scrollStrategy;
     return (
-      <Overlay
-        direction={this.props.dir}
-        positionStrategy={this.positionStrategy.current}
-        scrollStrategy={this.scrollStrategy.current}
-        backdrop={this.props.backdrop}
-        width={this.props.width}
-        height={this.props.height}
-        minWidth={this.props.minWidth}
-        minHeight={this.props.minHeight}
-        ref={this.overlay}
-      >
+      <React.Fragment>
         <ScrollStrategy
           overlay={this.overlay.current}
           ref={this.scrollStrategy}
         />
         <FlexibleConnectedPositionStrategy
           origin={this.props.origin}
+          overlay={this.overlay.current}
           onPositionChange={this.emitPositionChange}
           preferredPositions={this.getFinalPositions()}
           hasFlexibleDimensions={this.props.flexibleDimensions}
@@ -104,8 +95,20 @@ class ConnectedOverlay extends React.Component {
           positionLocked={this.props.lockPosition}
           ref={this.positionStrategy}
         />
-        { this.props.children }
-      </Overlay>
+        <Overlay
+          direction={this.props.dir}
+          positionStrategy={this.positionStrategy.current}
+          scrollStrategy={this.scrollStrategy.current}
+          backdrop={this.props.backdrop}
+          width={this.props.width}
+          height={this.props.height}
+          minWidth={this.props.minWidth}
+          minHeight={this.props.minHeight}
+          ref={this.overlay}
+        >
+          { this.props.children }
+        </Overlay>
+      </React.Fragment>
     );
   };
 }
