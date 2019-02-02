@@ -7,10 +7,16 @@ needed to prevent LibSass from stripping the keyframes out.
   Based on: https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
  */
 
-export const TEXT_FIELD_ANIMATION_START = keyframes`/*!*/`;
+/** Disable the yellow background when inputs are autofilled */
+export const TEXT_FIELD_ANIMATION_START = keyframes`
+  to {
+    color: currentColor;
+    background: transparent;
+  }
+`;
 export const TEXT_FIELD_ANIMATION_END = keyframes`/*!*/`;
 
 export const TEXT_FIELD_AUTOFILL_MONITOR = css`
-&:-webkit-autofill { animation-name: ${TEXT_FIELD_ANIMATION_START}; }
-&:-webkit-autofill { animation-name: ${TEXT_FIELD_ANIMATION_END}; }
+&[data-autofill-monitored]:-webkit-autofill { animation-name: ${TEXT_FIELD_ANIMATION_START}; }
+&[data-autofill-monitored]:-webkit-autofill { animation-name: ${TEXT_FIELD_ANIMATION_END}; }
 `;
