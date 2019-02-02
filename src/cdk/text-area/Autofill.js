@@ -5,7 +5,7 @@ import {
   normalizePassiveListenerOptions,
 } from '../platform';
 import { TEXT_FIELD_ANIMATION_END, TEXT_FIELD_ANIMATION_START } from './styles/index';
-import { AutoFillProvider } from './context';
+import { AutofillProvider } from './context/AutofillContext';
 
 const LISTENER_OPTIONS = normalizePassiveListenerOptions({ passive: true });
 
@@ -14,7 +14,7 @@ const LISTENER_OPTIONS = normalizePassiveListenerOptions({ passive: true });
  * Based on the following blog post:
  * https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
  */
-class AutoFillMonitor extends React.Component {
+class AutofillMonitor extends React.Component {
   constructor() {
     super();
     
@@ -51,18 +51,18 @@ class AutoFillMonitor extends React.Component {
     // we fire off events.
     const listener = (event) => {
       // debug: unsure if this returns `true` or `"true"`
-      const elementAutoFillStatus = _.get(element, ['dataset', 'autofilled']);
-      console.log(elementAutoFillStatus);
+      const elementAutofillStatus = _.get(element, ['dataset', 'autofilled']);
+      console.log(elementAutofillStatus);
       if (
         event.animationName === TEXT_FIELD_ANIMATION_START.getName()
-        && elementAutoFillStatus !== 'true'
+        && elementAutofillStatus !== 'true'
       ) {
-        callback({ target: event.target, isAutoFilled: true });
+        callback({ target: event.target, isAutofilled: true });
       } else if (
         event.animationName === TEXT_FIELD_ANIMATION_END.getName()
-        && elementAutoFillStatus === 'true'
+        && elementAutofillStatus === 'true'
       ) {
-        callback({ target: event.target, isAutoFilled: false });
+        callback({ target: event.target, isAutofilled: false });
       }
     };
     // create element info
@@ -100,19 +100,19 @@ class AutoFillMonitor extends React.Component {
   
   render() {
     return (
-      <AutoFillProvider value={this.providerValue()}>
+      <AutofillProvider value={this.providerValue()}>
         { this.props.children }
-      </AutoFillProvider>
+      </AutofillProvider>
     )
   }
 }
 
-AutoFillMonitor.propTypes = {
+AutofillMonitor.propTypes = {
   __platform: PlatformPropTypes,
 };
 
-AutoFillMonitor.defaultProps = {
+AutofillMonitor.defaultProps = {
   __platform: PlatformDefaultProps,
 };
 
-const StackedAutoFillMonitor = withPlatformConsumer(AutoFillMonitor);
+const StackedAutofillMonitor = withPlatformConsumer(AutofillMonitor);
