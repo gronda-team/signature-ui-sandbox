@@ -79,7 +79,10 @@ class AutofillMonitor extends React.Component {
       element,
       id,
       // create unlistener here so componentWillUnmount can trigger it
-      unlisten: () => element.removeEventListener('animationstart', listener, LISTENER_OPTIONS),
+      unlisten: () => {
+        element.removeEventListener('animationstart', listener, LISTENER_OPTIONS);
+        delete element.dataset.autofillMonitored;
+      },
     };
     
     this.setState(state => ({
@@ -87,8 +90,6 @@ class AutofillMonitor extends React.Component {
     }), () => {
       // set it on the next tick
       element.addEventListener('animationstart', listener, LISTENER_OPTIONS);
-
-      delete element.dataset.autofillMonitored;
     });
   };
   
