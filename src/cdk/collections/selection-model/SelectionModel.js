@@ -81,7 +81,7 @@ class SelectionModel extends React.Component {
   };
 
   /** Simple wrap-around component */
-  render = () => this.props.children;
+  render = () => null;
 }
 
 SelectionModel.propTypes = {

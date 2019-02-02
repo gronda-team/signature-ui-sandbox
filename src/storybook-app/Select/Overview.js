@@ -27,7 +27,7 @@ class Overview extends React.Component {
       <div style={{ width: '400px', margin: '100px auto' }}>
         <FormField>
           <Label>Continent</Label>
-          <Select onChange={this.selectContinent}>
+          <Select placeholder="Favorite continent" onChange={this.selectContinent}>
             { this.OPTIONS.map(option => (
               <Option key={option.value} value={option.value}>
                 { option.viewValue }

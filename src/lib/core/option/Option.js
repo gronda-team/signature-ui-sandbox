@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { OptionRoot, OptionText } from './styles/index';
 import { ENTER, SPACE, SPACEBAR } from '../../../cdk/keycodes/keys';
 import {withOptionParentConsumer} from './context/OptionParent';
+import { stack } from '../components/util';
 
 class Option extends React.Component {
   constructor() {
@@ -135,7 +136,7 @@ Option.defaultProps = {
 };
 
 const StackedOption = stack(
-  withOptionGroupConsumer,
+  // withOptionGroupConsumer,
   withOptionParentConsumer,
 )(Option);
 
