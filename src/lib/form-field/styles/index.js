@@ -160,6 +160,7 @@ const components = {
   FormFieldLabel,
   FormFieldLabelWrapper,
   FormFieldSubscriptWrapper,
+  FormFieldRequiredMarker,
   FormFieldWrapper,
 };
 // outline theme
@@ -189,7 +190,7 @@ text-align: left;
   }
 }
 
-${formFieldBaseThemeMixin({ FormFieldRequiredMarker })}
+${formFieldBaseThemeMixin(components)}
 ${typographyThunk(components)}
 
 &[data-appearance=outline] {${outlineStyle} ${outlineTheme} ${outlineTypography} }

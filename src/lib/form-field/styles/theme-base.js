@@ -23,8 +23,10 @@ export const formFieldBaseThemeMixin = (components) => {
     color: ${DEFAULT_TEXT};
   }
   
-  &[data-focused=true] ${FormFieldRequiredMarker} {
-    color: ${REQUIRED_LABEL_COLOR};
+  &[data-focused=true] {
+    ${FormFieldRequiredMarker} {
+      color: ${REQUIRED_LABEL_COLOR};
+    }
   }
   
   &[data-autofilled=true] {
