@@ -90,10 +90,10 @@ class Input extends React.Component {
         element: input,
         callback: (event) => {
           // Set the autofill control in the form field control
-          this.props.__formFieldControl.transition(
+          this.props.__formFieldControl.transitionUi(
             event.isAutofilled ?
               'AUTOFILL' :
-              'UNAUTOFILL',
+              'REMOVE_AUTOFILL',
           );
         },
       });
@@ -105,6 +105,9 @@ class Input extends React.Component {
 
   /** Get the describedByIds from the FormFieldControl's hints */
   getAriaDescribedBy = () => this.props.__formFieldControl.describedByIds.join(' ');
+
+  /** Check whether or not the autofilled monitor is true */
+  isAutofilled = () => _.get(this.props.__formFieldControl, ['ui', 'autofilled-status']) === 'filled';
 
   /**
    * Actions
@@ -185,6 +188,7 @@ class Input extends React.Component {
         aria-describedby={this.getAriaDescribedBy()}
         aria-invalid={false}
         aria-required={required.toString()}
+        data-autofilled={this.isAutofilled()}
         onFocus={this.handleFocusChange(true)}
         onBlur={this.handleFocusChange(false)}
         innerRef={this.getInputRef}

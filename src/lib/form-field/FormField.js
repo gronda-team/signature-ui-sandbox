@@ -100,6 +100,7 @@ export default class FormField extends React.Component {
   isFilled = () => _.get(this.state.ui, 'value') === 'filled';
   isDisabled = () => _.get(this.state.ui, 'field') === 'disabled';
   isRequired = () => _.get(this.state.ui, 'required-status') === 'required';
+  isAutofilled = () => _.get(this.state.ui, 'autofilled-status') === 'filled';
 
   /** messages */
   getDisplayedMessages = () => this.props.errorState ? 'error' : 'hint';
@@ -175,6 +176,7 @@ export default class FormField extends React.Component {
         {...this.props}
         data-invalid={false}
         data-appearance={this.props.appearance}
+        data-autofilled={this.isAutofilled()}
         data-disabled={this.isDisabled().toString()}
         data-focused={this.isFocused()}
         data-value={this.isFilled() ? 'filled' : 'empty'}
