@@ -385,7 +385,19 @@ function detachBackdrop() {
     backdrop.parentNode.removeChild(backdrop);
   
     backdrop.dataset.shade = undefined; // toggle it off
-    this.setState({ backdrop: null }, () => {
+    this.setState(state => {
+      /**
+       * If we open up the same overlay before the backdrop
+       * can officially be disposed, we would still have the
+       * older backdrop and won't be able to add a new one.
+       *
+       * This was found when tests were done where overlays
+       * were closed and then reopened immediately before the
+       * 500 ms (see below) could finish executing.
+       */
+      if (state.backdrop === backdrop) return { backdrop: null };
+      return null;
+    }, () => {
       window.clearTimeout(timeoutId);
     });
   };
