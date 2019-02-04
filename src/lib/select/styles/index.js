@@ -35,17 +35,23 @@ ${TRUNCATE}
 
 export const SelectValueText = styled.span`${TRUNCATE}`;
 
+export const SelectArrow = styled(ChevronIcon)`
+stroke-width: 1pt;
+margin: 0 ${SELECT_ARROW_MARGIN}px;
+`;
+
 export const SelectArrowWrapper = styled.div`
 display: table-cell;
 vertical-align: middle;
 
 [data-appearance=outline] & {
-  transform: translateY(-25%);
+  // transform: translateY(-25%);
 }
-`;
 
-export const SelectArrow = styled(ChevronIcon)`
-margin: 0 ${SELECT_ARROW_MARGIN}px;
+${SelectArrow} {
+  height: 10px;
+  width: 16px;
+}
 `;
 
 export const SelectPlaceholder = styled.div`
@@ -55,10 +61,11 @@ transition: color ${EASE_OUT.DURATION} ${EASE_OUT.DURATION} ${EASE_OUT.CURVE};
 `;
 
 const components = {
-  SelectTrigger: SelectTrigger,
-  SelectValue: SelectValue,
-  SelectValueText: SelectValueText,
-  SelectPlaceholder: SelectPlaceholder,
+  SelectArrow,
+  SelectTrigger,
+  SelectValue,
+  SelectValueText,
+  SelectPlaceholder,
 };
 
 export const SelectPanel = styled.div`

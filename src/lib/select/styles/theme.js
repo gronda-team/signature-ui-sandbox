@@ -2,12 +2,18 @@ import { css } from 'styled-components';
 import { GREY } from '../../../cdk/theme/colors';
 
 const PLACEHOLDER_COLOR = GREY[500];
+const ARROW_STROKE = GREY[700];
 
 export const selectRootThemeThunk = (components) => {
-  const { SelectPlaceholder } = components;
+  const { SelectPlaceholder, SelectArrow } = components;
   return css`  
   ${SelectPlaceholder} {
     color: ${PLACEHOLDER_COLOR};
+  }
+  
+  ${SelectArrow} {
+    fill: none;
+    stroke: ${ARROW_STROKE};
   }
   
   &[aria-disabled=true] { color: ${GREY[500]}; }
