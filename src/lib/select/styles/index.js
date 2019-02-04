@@ -4,7 +4,7 @@ import { TRUNCATE } from '../../core/styles/common';
 import { MENU_BASE } from '../../core/styles/menu-common';
 import { EASE_OUT } from '../../core/styles/animation';
 import {ChevronIcon} from '../../core/icons';
-import selectThemeThunk from './theme';
+import selectThemeThunk, {selectPanelThemeThunk, selectRootThemeThunk} from './theme';
 
 const SELECT_ARROW_MARGIN = 4; // px
 const SELECT_ARROW_SIZE = 8; // px
@@ -48,34 +48,31 @@ export const SelectArrow = styled(ChevronIcon)`
 margin: 0 ${SELECT_ARROW_MARGIN}px;
 `;
 
-export const SelectPanel = styled.div`
-${MENU_BASE(8)}
-padding-top: 0;
-padding-bottom: 0;
-max-height: $mat-select-panel-max-height;
-min-width: 100%; // prevents some animation twitching and test inconsistencies in IE11
-`;
-
 export const SelectPlaceholder = styled.div`
 // Delay the transition until the label has animated about a third of the way through, in
 // order to prevent the placeholder from overlapping for a split second.
 transition: color ${EASE_OUT.DURATION} ${EASE_OUT.DURATION} ${EASE_OUT.CURVE};
 `;
 
-export const SelectContent = styled.div``;
-
 const components = {
-  Trigger: SelectTrigger,
-  Value: SelectValue,
-  ValueText: SelectValueText,
-  Panel: SelectPanel,
-  Placeholder: SelectPlaceholder,
-  Content: SelectContent,
+  SelectTrigger: SelectTrigger,
+  SelectValue: SelectValue,
+  SelectValueText: SelectValueText,
+  SelectPlaceholder: SelectPlaceholder,
 };
+
+export const SelectPanel = styled.div`
+${MENU_BASE(8)}
+padding-top: 0;
+padding-bottom: 0;
+max-height: $mat-select-panel-max-height;
+min-width: 100%; // prevents some animation twitching and test inconsistencies in IE11
+${selectPanelThemeThunk(components)}
+`;
 
 export const SelectRoot = styled.div`
 display: inline-block;
 width: 100%;
 outline: none;
-${selectThemeThunk(components)}
+${selectRootThemeThunk(components)}
 `;
