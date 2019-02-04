@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { USER_SELECT } from '../../core/styles/vendor';
 import { TRUNCATE } from '../../core/styles/common';
-import { MENU_BASE } from '../../core/styles/menu-common';
+import {MENU_BASE, OVERLAY_MAX_HEIGHT} from '../../core/styles/menu-common';
 import { EASE_OUT } from '../../core/styles/animation';
 import {ChevronIcon} from '../../core/icons';
-import selectThemeThunk, {selectPanelThemeThunk, selectRootThemeThunk} from './theme';
+import {selectPanelThemeThunk, selectRootThemeThunk} from './theme';
 
 const SELECT_ARROW_MARGIN = 4; // px
 const SELECT_ARROW_SIZE = 8; // px
@@ -72,7 +72,7 @@ export const SelectPanel = styled.div`
 ${MENU_BASE(8)}
 padding-top: 0;
 padding-bottom: 0;
-max-height: $mat-select-panel-max-height;
+max-height: ${OVERLAY_MAX_HEIGHT}px;
 min-width: 100%; // prevents some animation twitching and test inconsistencies in IE11
 ${selectPanelThemeThunk(components)}
 `;
