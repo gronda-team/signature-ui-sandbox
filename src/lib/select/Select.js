@@ -153,12 +153,11 @@ class Select extends React.Component {
   
   /** Closes the overlay panel and focuses the host element. */
   close = () => {
-    this.setState((state) => {
-      if (state.panelOpen) return { panelOpen: false };
-      return null;
-    }, () => {
-      this.oncePositionChange = _.once(this.onPositionChange);
-    });
+    if (this.state.panelOpen) {
+      this.setState({ panelOpen: false }, () => {
+        this.oncePositionChange = _.once(this.onPositionChange);
+      });
+    }
   };
   
   /** Handle when the user tabs out of the panel */
