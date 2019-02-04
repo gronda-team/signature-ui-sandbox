@@ -18,6 +18,12 @@ class ConnectedOverlay extends React.Component {
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    this.overlay.current.setState({
+      onBackdropClick: this.props.backdropClick,
+    });
+  }
+
   componentDidUpdate(prevProps) {
     if (this.positionStrategy.current) {
       if (prevProps.origin !== this.props.origin) {
@@ -30,7 +36,7 @@ class ConnectedOverlay extends React.Component {
     if (prevProps.backdropClick !== this.props.backdropClick) {
       // Set it manually if it changes
       this.overlay.current.setState({
-        backdropClick: this.props.backdropClick,
+        onBackdropClick: this.props.backdropClick,
       });
     }
     
