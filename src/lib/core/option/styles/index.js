@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 import optionThemeThunk from './theme';
-import { MENU_BASE, MENU_SIDE_PADDING } from '../../styles/menu-common';
+import { MENU_ITEM_BASE, MENU_SIDE_PADDING } from '../../styles/menu-common';
 import { USER_SELECT } from '../../styles/vendor';
 
 export const OptionGroupRoot = styled.div`
 `;
 
 export const OptionRoot = styled.div`
-${MENU_BASE()}
+${MENU_ITEM_BASE}
 position: relative;
 cursor: pointer;
 outline: none;

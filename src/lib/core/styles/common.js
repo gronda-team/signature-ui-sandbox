@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import { css } from 'styled-components';
 
 export const TRUNCATE = css`
 white-space: nowrap;
