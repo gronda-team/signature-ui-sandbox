@@ -702,7 +702,7 @@ function scrollActiveOptionIntoView() {
 
 /** Gets the index of the provided option in the option list. */
 function getOptionIndexFromValue(option) {
-  return this.getOptions().reduce((result, current, index: number) => {
+  return this.getOptions().reduce((result, current, index) => {
     return result === undefined ? (option === _.get(current.props, 'value') ? index : undefined) : result;
   }, undefined);
 }
