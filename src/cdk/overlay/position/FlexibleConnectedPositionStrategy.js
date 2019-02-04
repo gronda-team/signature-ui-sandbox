@@ -287,14 +287,14 @@ class FlexibleConnectedPositionStrategy extends React.Component {
    * allows one to re-align the panel without changing the orientation of the panel.
    */
   reapplyLastPosition = () => {
-    if (!this.state.isDisposed && (!this.props.__platform.is('browser'))) {
+    if (!this.state.isDisposed && (!this.props.__platform || this.props.__platform.is('browser'))) {
       this.setState({
         originRect: this.props.origin.getBoundingClientRect(),
         overlayRect: this.props.overlay.state.pane.getBoundingClientRect(),
         viewportRect: getNarrowedViewportRect.call(this),
       }, () => {
         const lastPosition = this.state.lastPosition || _.head(this.props.preferredPositions);
-        const originPoint = getOriginPoint.call(this.state.originRect, lastPosition);
+        const originPoint = getOriginPoint.call(this, this.state.originRect, lastPosition);
         
         applyPosition.call(this, lastPosition, originPoint);
       });
@@ -818,7 +818,7 @@ function getExactOverlayY(position, originPoint, scrollPosition) {
   // Reset any existing styles. This is necessary in case the
   // preferred position has changed since the last `apply`.
   let styles = { top: null, bottom: null };
-  let overlayPoint = getOverlayPoint.call(this, originPoint, this._overlayRect, position);
+  let overlayPoint = getOverlayPoint.call(this, originPoint, this.state.overlayRect, position);
   
   if (this.state.isPushed) {
     overlayPoint = pushOverlayOnScreen.call(this, overlayPoint, this.state.overlayRect, scrollPosition);
@@ -873,7 +873,7 @@ function getExactOverlayX(position, originPoint, scrollPosition) {
   // from the right edge of the viewport rather than the left edge.
   if (horizontalStyleProperty === 'right') {
     const documentWidth = document.documentElement.clientWidth;
-    styles.right = `${documentWidth - (overlayPoint.x + this._overlayRect.width)}px`;
+    styles.right = `${documentWidth - (overlayPoint.x + this.state.overlayRect.width)}px`;
   } else if (!_.isNil(overlayPoint.x)) {
     styles.left = `${overlayPoint.x}px`;
   }
