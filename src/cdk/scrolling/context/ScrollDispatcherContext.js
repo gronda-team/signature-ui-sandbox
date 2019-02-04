@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import {getDisplayName} from '../../util';
 
 const ScrollDispatcherPropTypes = PropTypes.shape({
   register: PropTypes.func,
@@ -20,17 +21,31 @@ const {
 } = React.createContext(ScrollDispatcherDefaultProps);
 
 function withScrollDispatcher(Component) {
-  function WithScrollDispatcher(props) {
-    return (
-      <ScrollDispatcherConsumer>
-        { value => <Component {...props} __scrollDispatcher={value} /> }
-      </ScrollDispatcherConsumer>
-    )
+  // Use a class to pass any refs down
+  class WithScrollDispatcher extends React.Component {
+    render() {
+      const { forwardedRef, ...restProps } = this.props;
+      return (
+        <ScrollDispatcherConsumer>
+          { value => (
+            <Component
+              {...restProps}
+              __scrollDispatcher={value}
+              ref={forwardedRef}
+            />
+          ) }
+        </ScrollDispatcherConsumer>
+      );
+    }
   }
+
+  function forwardRef(props, ref) {
+    return <WithScrollDispatcher {...props} forwardedRef={ref} />;
+  }
+
+  forwardRef.displayName = `WithScrollDispatcher(${getDisplayName(Component)})`;
   
-  WithScrollDispatcher.displayName = `WithScrollDispatcher(${Component.displayName})`;
-  
-  return WithScrollDispatcher;
+  return React.forwardRef(forwardRef);
 }
 
 export {
