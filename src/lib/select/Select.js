@@ -469,7 +469,7 @@ const SelectDefaultProps = {
   multiple: false,
   compareWith: (o1, o2) => o1 === o2,
   disableOptionCentering: false,
-  value: null,
+  value: undefined,
   'aria-label': '',
   'aria-labelledby': '',
   sortComparator: _.noop,
@@ -720,7 +720,11 @@ function calculateOverlayPosition() {
   // If no value is selected we open the popup to the first item.
   let selectedOptionOffset;
   const firstSelectionValue = _.head(this.selectionModel.current.selected());
-  if (this.isEmpty() || firstSelectionValue === null) {
+  if (
+    this.isEmpty()
+    || this.selectionModel.current.isEmpty()
+    || firstSelectionValue === null
+  ) {
     selectedOptionOffset = 0;
   } else {
     selectedOptionOffset = getOptionIndexFromValue.call(this, _.head(this.selectionModel.current.selected()));
