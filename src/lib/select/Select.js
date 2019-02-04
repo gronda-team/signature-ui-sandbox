@@ -718,9 +718,14 @@ function calculateOverlayPosition() {
   const maxScroll = scrollContainerHeight - panelHeight;
   
   // If no value is selected we open the popup to the first item.
-  let selectedOptionOffset =
-    this.isEmpty() ? 0 : getOptionIndexFromValue.call(this, _.head(this.selectionModel.current.selected()));
-  
+  let selectedOptionOffset;
+  const firstSelectionValue = _.head(this.selectionModel.current.selected());
+  if (this.isEmpty() || firstSelectionValue === null) {
+    selectedOptionOffset = 0;
+  } else {
+    selectedOptionOffset = getOptionIndexFromValue.call(this, _.head(this.selectionModel.current.selected()));
+  }
+
   selectedOptionOffset += countGroupLabelsBeforeOption(
     selectedOptionOffset, this.getOptions(), this.getOptionGroups(),
   );
@@ -728,12 +733,22 @@ function calculateOverlayPosition() {
   // We must maintain a scroll buffer so the selected option will be scrolled to the
   // center of the overlay panel rather than the top.
   const scrollBuffer = panelHeight / 2;
-  
-  this.setState({
-    scrollTop: calculateOverlayScroll.call(this, selectedOptionOffset, scrollBuffer, maxScroll),
-    offsetY: calculateOverlayOffsetY.call(this, selectedOptionOffset, scrollBuffer, maxScroll),
-  }, () => {
-    checkOverlayWithinViewport.call(this, maxScroll);
+
+  /**
+   * Calculate this on the next tick because the component
+   * doesn't have access to the panel's DOMRect value upon
+   * the first render.
+   *
+   * Opt to use requestAnimationFrame because setTimeout
+   * with a timeout of 0 will still show some panel jump.
+   */
+  window.requestAnimationFrame(() => {
+    this.setState({
+      scrollTop: calculateOverlayScroll.call(this, selectedOptionOffset, scrollBuffer, maxScroll),
+      offsetY: calculateOverlayOffsetY.call(this, selectedOptionOffset, scrollBuffer, maxScroll),
+    }, () => {
+      checkOverlayWithinViewport.call(this, maxScroll);
+    });
   });
 }
 
