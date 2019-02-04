@@ -1,8 +1,15 @@
 import { css } from 'styled-components';
 import { GREY } from '../../../cdk/theme/colors';
 
-export const selectRootThemeThunk = () => {
+const PLACEHOLDER_COLOR = GREY[500];
+
+export const selectRootThemeThunk = (components) => {
+  const { SelectPlaceholder } = components;
   return css`  
+  ${SelectPlaceholder} {
+    color: ${PLACEHOLDER_COLOR};
+  }
+  
   &[aria-disabled=true] { color: ${GREY[500]}; }
   `;
 };
@@ -16,7 +23,6 @@ export const selectRootThemeThunk = () => {
 export const selectPanelThemeThunk = (components) => {
   const {
     SelectValue,
-    SelectPlaceholder,
   } = components;
   return css`  
   & {
@@ -25,9 +31,5 @@ export const selectPanelThemeThunk = (components) => {
   
   ${SelectValue} {
     color: ${GREY[900]};
-  }
-  
-  ${SelectPlaceholder} {
-    color: ${GREY[700]};
   }`;
 };
