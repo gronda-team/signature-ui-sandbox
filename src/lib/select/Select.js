@@ -18,13 +18,14 @@ import {hasModifierKey} from '../../cdk/keycodes/modifiers';
 import { OptionParentProvider } from '../core/option';
 import {SelectArrow, SelectArrowWrapper} from './styles';
 import {ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler} from '../../cdk/scrolling';
+import {MENU_SIDE_PADDING} from '../core/styles/menu-common';
 
 /** The max height of the select's overlay panel */
 const SELECT_PANEL_MAX_HEIGHT = 160; // px
 /** The height of the select items in px. */
 const ITEM_HEIGHT = 32; // px
 /** The panel's padding on the x-axis */
-const SELECT_PANEL_PADDING_X = 20;
+const SELECT_PANEL_PADDING_X = MENU_SIDE_PADDING;
 /** The panel's x axis padding if it is indented (e.g. there is an option group). */
 const SELECT_PANEL_INDENT_PADDING_X = SELECT_PANEL_PADDING_X * 2;
 /**
@@ -177,11 +178,13 @@ class Select extends React.Component {
     // Easier for tests
     if (!this.props.disabled) {
       this.setState({ focused: true });
+      this.props.__formFieldControl.transitionUi('FOCUS');
     }
   };
   
   onBlur = () => {
     this.setState({ focused: false });
+    this.props.__formFieldControl.transitionUi('BLUR');
     if (!this.props.disabled && !this.state.panelOpen) {
       _.invoke(this.props, 'onTouched');
     }
