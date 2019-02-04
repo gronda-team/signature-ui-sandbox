@@ -10,6 +10,7 @@ import {OverlayContainer} from '../src/cdk/overlay';
 import {FocusMonitor} from '../src/cdk/a11y';
 import { AutofillMonitor } from '../src/cdk/text-area';
 import ViewportRuler from '../src/cdk/scrolling/ViewportRuler';
+import ScrollDispatcher from '../src/cdk/scrolling/ScrollDispatcher';
 
 /**
  * Add the important global DI containers
@@ -18,13 +19,15 @@ import ViewportRuler from '../src/cdk/scrolling/ViewportRuler';
 addDecorator(story => (
   <Platform>
     <ViewportRuler>
-      <OverlayContainer>
-        <FocusMonitor>
-          <AutofillMonitor>
-            { story() }
-          </AutofillMonitor>
-        </FocusMonitor>
-      </OverlayContainer>
+      <ScrollDispatcher>
+        <OverlayContainer>
+          <FocusMonitor>
+            <AutofillMonitor>
+              { story() }
+            </AutofillMonitor>
+          </FocusMonitor>
+        </OverlayContainer>
+      </ScrollDispatcher>
     </ViewportRuler>
   </Platform>
 ));
