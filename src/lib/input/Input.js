@@ -173,26 +173,34 @@ class Input extends React.Component {
   render() {
     const {
       as, id, placeholder, disabled, required, type,
-      readOnly, __formFieldControl, ...restProps
+      extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
     return (
-      <this.INPUT_TYPE
-        {...restProps}
-        type={as === 'input' ? type : undefined}
-        id={this.getId()}
-        placeholder={placeholder}
-        disabled={disabled}
-        readOnly={readOnly}
-        required={required}
-        aria-describedby={this.getAriaDescribedBy()}
-        aria-invalid={false}
-        aria-required={required.toString()}
-        data-autofilled={this.isAutofilled()}
-        onFocus={this.handleFocusChange(true)}
-        onBlur={this.handleFocusChange(false)}
-        innerRef={this.getInputRef}
-      />
+      <React.Fragment>
+        { extensions.indexOf('autocomplete') > -1 ? (
+          <AutocompleteInput />
+        ) : null }
+        { extensions.indexOf('tag-list') > -1 ? (
+          <div />
+        ) : null }
+        <this.INPUT_TYPE
+          {...restProps}
+          type={as === 'input' ? type : undefined}
+          id={this.getId()}
+          placeholder={placeholder}
+          disabled={disabled}
+          readOnly={readOnly}
+          required={required}
+          aria-describedby={this.getAriaDescribedBy()}
+          aria-invalid={false}
+          aria-required={required.toString()}
+          data-autofilled={this.isAutofilled()}
+          onFocus={this.handleFocusChange(true)}
+          onBlur={this.handleFocusChange(false)}
+          innerRef={this.getInputRef}
+        />
+      </React.Fragment>
     );
   }
 }
@@ -226,6 +234,10 @@ const InputPropTypes = {
   },
   /** The value */
   value: PROP_TYPE_STRING_OR_NUMBER,
+  /** Extensions like if it's an autocomplete or part of a tag list */
+  extensions: PropTypes.arrayOf(PropTypes.oneOf([
+    'autocomplete', 'tag-list',
+  ])),
 };
 
 const InputDefaultProps = {
@@ -238,6 +250,8 @@ const InputDefaultProps = {
   type: 'text',
   /** Undefined in case they want to have it uncontrolled */
   value: undefined,
+  /** List of default extensions to add behavior. Defaults to nothing */
+  extensions: [],
 };
 
 Input.propTypes = {
