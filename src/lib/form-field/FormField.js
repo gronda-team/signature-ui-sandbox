@@ -29,16 +29,22 @@ export default class FormField extends React.Component {
       id: '',
       /** The control type, i.e., select, input, textarea, etc. */
       type: null,
+      /** Different kinds of extensions that the form field requires */
+      extensions: {},
       placeholder: '',
       containerClick: _.noop,
       setId: this.setControl('id'), // function that expects a value
       setPlaceholder: this.setControl('placeholder'),
       setContainerClick: this.setControl('containerClick'),
       setControlType: this.setControl('type'),
+      setExtension: this.setExtensions,
+      getConnectionContainer: this.getConnectionContainer,
       transitionUi: this.transition,
       changeDescribedByIds: this.changeDescribedByIds,
       describedByIds: [],
     };
+
+    this.connectionContainer = React.createRef();
   }
   
   // Transitioning the UI state only
@@ -49,14 +55,6 @@ export default class FormField extends React.Component {
         null :
         { ui: nextUiState.value };
     });
-  };
-
-  /**
-   * Refs
-   */
-  /** The connection container to bind the autocomplete component */
-  getConnectionContainer = (flex) => {
-    this.CONNECTION_CONTAINER = flex;
   };
 
   /**
@@ -85,6 +83,9 @@ export default class FormField extends React.Component {
   /** Get the <Label /> child (only want one) */
   getLabel = () => _.head(toArray(this.props.children)
     .filter(byInternalType('Label')));
+
+  /** The connection container to bind the autocomplete component */
+  getConnectionContainer = () => this.connectionContainer.current;
 
   /** Has label children  */
   hasLabel = () => !_.isNil(this.getLabel());
@@ -119,6 +120,15 @@ export default class FormField extends React.Component {
       }
       return { describedByIds: ids };
     });
+  };
+
+  setExtensions = (key, value) => {
+    this.setState(state => ({
+      extensions: {
+        ...state.extensions,
+        [key]: value,
+      },
+    }));
   };
 
   /**
@@ -186,7 +196,7 @@ export default class FormField extends React.Component {
           <FormFieldControlProvider value={this.state}>
             <FormFieldFlex
               onClick={this.state.containerClick}
-              innerRef={this.getConnectionContainer}
+              innerRef={this.connectionContainer}
             >
               <FormFieldBar>
                 { prefix ? <FormFieldPrefix>{ prefix }</FormFieldPrefix> : null }

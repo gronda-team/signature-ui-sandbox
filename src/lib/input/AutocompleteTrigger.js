@@ -40,14 +40,15 @@ class AutocompleteTrigger extends React.Component {
 
     /** Set up the document listener */
     setupOutsideClickStream.call(this);
-
-    /** Set the value for the autocomplete */
-    this.getAutocomplete().setState({
-      onSelectionChange: onPanelClose.call(this),
-    });
   }
 
   componentDidUpdate(prevProps, prevState) {
+    /** Set the value for the autocomplete */
+    if (!prevProps.autocomplete && prevProps.autocomplete !== this.props.autocomplete) {
+      this.getAutocomplete().setState({
+        onSelectionChange: onPanelClose.call(this),
+      });
+    }
     /** Install the selection change listener when the overlay is created */
     if (prevState.overlayCreated !== this.state.overlayCreated) {
       if (this.state.overlayCreated) {
@@ -90,6 +91,12 @@ class AutocompleteTrigger extends React.Component {
   /** Get the autocomplete */
   getAutocomplete = () => this.props.autocomplete;
 
+  /** Get whether te panel is open or not */
+  getPanelOpen = () => {
+    if (!this.getAutocomplete()) return false;
+    return this.state.overlayAttached && this.getAutocomplete().state.showPanel;
+  };
+
   /** Get the autocomplete */
   getInput = () => this.props.input;
 
@@ -114,7 +121,7 @@ class AutocompleteTrigger extends React.Component {
 
   /** Get the attributes that are associated with the autocomplete */
   getExtendedAttributes = () => ({
-    autocomplete: this.props.autocomplete,
+    autocomplete: this.props.autocompleteAttribute,
     onFocusIn: this.handleFocus,
     role: this.props.autocompleteDisabled ?
       null : 'combobox',
@@ -282,7 +289,9 @@ const AutocompleteTriggerPropTypes = {
    */
   connectedTo: PropTypes.any,
   /** `autocomplete` attribute on the input element */
-  autocomplete: PropTypes.string,
+  autocompleteAttribute: PropTypes.string,
+  /** Actual autocomplete component reference */
+  autocomplete: PropTypes.any,
   /**
    * Whether the autocomplete is disabled. When it is, the form
    * element just behaves as a normal input.
@@ -292,7 +301,8 @@ const AutocompleteTriggerPropTypes = {
 
 const AutocompleteTriggerDefaultProps = {
   connectedTo: null,
-  autocomplete: 'off',
+  autocomplete: null,
+  autocompleteAttribute: 'off',
   autocompleteDisabled: null,
 };
 

@@ -218,7 +218,10 @@ class Input extends React.Component {
         { extensions.indexOf('autocomplete') > -1 ? (
           <AutocompleteTrigger
             input={this}
-            autocomplete={restProps.autocomplete}
+            autocomplete={
+              _.get(this.props.__formFieldControl, 'extensions.autocomplete')
+            }
+            autocompleteAttribute={restProps.autocomplete}
             autocompleteDisabled={restProps.autocompleteDisabled}
             ref={this.autocomplete}
           />

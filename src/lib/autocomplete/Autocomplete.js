@@ -2,12 +2,13 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {ListKeyManager} from '../../cdk/a11y';
-import {byInternalType} from '../core/components/util';
+import {byInternalType, stack} from '../core/components/util';
 import { Overlay } from '../../cdk/overlay';
 import FlexibleConnectedPositionStrategy from '../../cdk/overlay/position/FlexibleConnectedPositionStrategy';
 import RepositionScrollStrategy from '../../cdk/overlay/scroll/RepositionScrollStrategy';
 import { OptionParentProvider } from '../core/option';
 import {AutocompletePanel, AutocompletePanelRoot} from './styles';
+import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../form-field';
 
 const toArray = React.Children.toArray;
 
@@ -67,6 +68,13 @@ class Autocomplete extends React.Component {
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    /** Register this extension in the form field container */
+    if (this.props.__formFieldControl) {
+      this.props.__formFieldControl.setExtension('autocomplete', this);
+    }
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (this.PANEL && prevState.scrollTop !== this.state.scrollTop) {
       // Manually set the scrolltop position
@@ -135,6 +143,7 @@ class Autocomplete extends React.Component {
           ref={this.keyManager}
         />
         <FlexibleConnectedPositionStrategy
+          overlay={this.overlay.current}
           hasFlexibleDimensions={false}
           canPush={false}
           preferredPositions={this.PREFERRED_POSITIONS}
@@ -171,7 +180,7 @@ class Autocomplete extends React.Component {
   }
 }
 
-Autocomplete.propTypes = {
+const AutocompletePropTypes = {
   /**
    * Whether the first option is highlighted when the panel
    * is first open
@@ -179,14 +188,34 @@ Autocomplete.propTypes = {
   autoActiveFirstOption: PropTypes.bool,
   /** ID for the panel */
   id: PropTypes.string,
+  /** Fixed panel width */
+  panelWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
-Autocomplete.defaultProps = {
+const AutocompleteDefaultProps = {
   autoActiveFirstOption: false,
   id: null,
+  panelWidth: null,
 };
 
-export default Autocomplete;
+Autocomplete.propTypes = {
+  ...AutocompletePropTypes,
+  __formFieldControl: FormFieldPropTypes,
+};
+
+Autocomplete.propTypes = {
+  ...AutocompleteDefaultProps,
+  __formFieldControl: FormFieldDefaultProps,
+};
+
+const StackedAutocomplete = stack(
+  withFormFieldConsumer,
+)(Autocomplete);
+
+StackedAutocomplete.propTypes = AutocompletePropTypes;
+StackedAutocomplete.defaultProps = AutocompleteDefaultProps;
+
+export default StackedAutocomplete;
 
 /**
  * Private methods
@@ -198,6 +227,8 @@ function getPanelWidth() {
 
 /** Get the width of the input element so the panel width can match */
 function getHostWidth() {
-  return this.props.__formFieldControl.getConnectedElement()
-    .getBoundingClientRect().width;
+  const connectionContainer = this.props.__formFieldControl.getConnectionContainer();
+
+  if (!connectionContainer) return null;
+  return connectionContainer.getBoundingClientRect().width;
 }

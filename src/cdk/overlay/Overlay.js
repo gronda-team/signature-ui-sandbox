@@ -38,7 +38,7 @@ class Overlay extends React.Component {
    * Lifecycle
    */
   componentDidUpdate(prevProps) {
-    if (!_.isEqual(_.pick(prevProps, PROP_CSS_FIELDS), _.pick(this.props, PROP_CSS_FIELDS))) {
+    if (this.PANE && !_.isEqual(_.pick(prevProps, PROP_CSS_FIELDS), _.pick(this.props, PROP_CSS_FIELDS))) {
       updateElementSize.call(this, this.props);
     }
   }
