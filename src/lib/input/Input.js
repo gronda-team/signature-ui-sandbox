@@ -195,7 +195,8 @@ class Input extends React.Component {
 
     // Handle extensions
     if (isFocused) {
-      // tbd
+      // Focus
+      this.autocomplete.current.handleFocus();
     } else {
       // Blur
       if (this.autocomplete.current) {

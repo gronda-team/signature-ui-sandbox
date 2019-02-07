@@ -32,8 +32,6 @@ class AutocompleteTrigger extends React.Component {
       canOpenOnNextFocus: true,
       /** Old value of the native input. Used to work around issues with the `input` event on IE. */
       previousValue: null,
-      /** Whether the non-React compatible onFocusIn event listener has been installed */
-      attachedFocusInListener: false,
     };
 
     this.DEFAULT_ID = _.uniqueId('sui-autocomplete-trigger:');
@@ -53,21 +51,6 @@ class AutocompleteTrigger extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    /**
-     * In componentDidMount, the input has not mounted yet, so we can't install
-     * it there. Instead, we have to wait for the next update, where it
-     * returns true. However, we're passing an entire input component reference
-     * as a prop, we are not able to listen to when the component reference
-     * has mounted.
-     *
-     * Therefore, we must use an internal reference to check to see if the
-     * listener has been attached or not.
-     */
-    if (this.props.input.state.mounted && !this.state.attachedFocusInListener) {
-      this.props.input.EL.addEventListener('focusin', this.handleFocus);
-      this.setState({ attachedFocusInListener: true });
-    }
-
     /** Install the selection change listener when the overlay is created */
     if (prevState.overlayCreated !== this.state.overlayCreated) {
       if (this.state.overlayCreated) {
@@ -96,11 +79,6 @@ class AutocompleteTrigger extends React.Component {
   componentWillUnmount() {
     if (!_.isUndefined(window)) {
       window.removeEventListener('blur', this.windowBlurHandler);
-    }
-
-    /** Remove focusin listener (isn't supported by react) */
-    if (this.state.attachedFocusInListener) {
-      this.props.input.EL.removeEventListener('focusin', this.handleFocus);
     }
 
     /** Tear down the document listener */
