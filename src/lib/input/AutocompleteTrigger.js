@@ -53,13 +53,6 @@ class AutocompleteTrigger extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    /** Set the value for the autocomplete */
-    if (!prevProps.autocomplete && prevProps.autocomplete !== this.props.autocomplete) {
-      this.getAutocomplete().setState({
-        onSelectionChange: onPanelClose.call(this),
-      });
-    }
-
     /**
      * In componentDidMount, the input has not mounted yet, so we can't install
      * it there. Instead, we have to wait for the next update, where it
@@ -79,8 +72,8 @@ class AutocompleteTrigger extends React.Component {
     if (prevState.overlayCreated !== this.state.overlayCreated) {
       if (this.state.overlayCreated) {
         this.getAutocomplete().setState(state => ({
-          provide: {
-            ...state.provide,
+          service: {
+            ...state.service,
             onSelectionChange: onPanelClose.bind(this),
           },
         }));
@@ -91,8 +84,8 @@ class AutocompleteTrigger extends React.Component {
     if (prevState.overlayAttached !== this.state.overlayAttached) {
       if (this.state.overlayAttached) {
         this.getAutocomplete().setState(state => ({
-          provide: {
-            ...state.provide,
+          service: {
+            ...state.service,
             onTabOut: this.handleOverlayTabOut,
           },
         }));
@@ -189,13 +182,27 @@ class AutocompleteTrigger extends React.Component {
     });
 
     this.setState({
+      panelOpen: false,
       // Overlay will be detached (from this component's POV)
       overlayAttached: false,
     });
 
     const overlay = autocomplete.getOverlay();
     if (overlay.state.attached) {
-      overlay.detach();
+      /**
+       * This must be asynchronous or else the
+       * overlay will behave weirdly when selecting
+       * an option. In that case, the autocomplete
+       * will attempt to reopen the overlay (since
+       * the input is being refocused), and
+       * the overlay will not detach properly. Adding
+       * the requestAnimationFrame will ensure
+       * that detachment is the last possible
+       * action that the overlay will encounter when
+       * clicking on an option, occurring after all
+       * of the reopening attempts.
+       */
+      window.requestAnimationFrame(overlay.detach);
     }
   };
 
@@ -292,13 +299,8 @@ class AutocompleteTrigger extends React.Component {
   /** Handle the onTabOut method that's used in key manager */
   handleOverlayTabOut = () => {
     if (this.state.overlayAttached) {
-      emitPanelClose.call(this);
+      this.onPanelClose();
     }
-  };
-
-  /** Handle option selection, provided through OptionParent context */
-  onOptionSelectionChange = (event) => {
-    emitPanelClose.call(this, event);
   };
 
   /**
@@ -374,7 +376,7 @@ function onDocumentOutsideClick(event) {
     && (!formField || !formField.contains(clickTarget))
     && (!!overlay && !overlay.state.pane.contains(clickTarget))
   ) {
-    onPanelClose.call(this);
+    this.onPanelClose();
   }
 }
 
@@ -424,6 +426,25 @@ function scrollToOption() {
   autocomplete.setState({ scrollTop: newScrollPosition });
 }
 
+/**
+ * This method listens to a stream of panel closing actions and resets the
+ * stream every time the option list changes.
+ */
+function subscribeToClosingActions() {
+  /**
+   * We only want to do this once.
+   */
+  this.onPanelClose = _.once((event) => {
+    resetActiveItem.call(this);
+
+    if (this.state.panelOpen) {
+      this.getAutocomplete().getOverlay().updatePosition();
+    }
+
+    onPanelClose.call(this, event);
+  });
+}
+
 /** Destroy the autocomplete panel */
 function destroyPanel() {
   if (this.getAutocomplete().getOverlay()) {
@@ -463,10 +484,12 @@ function onPanelClose(event) {
 function setValueAndClose(event) {
   if (event && event.source) {
     clearPreviousSelectedOption.call(this, event.source);
-    setTriggerValue.call(this, event.value);
-    this.getInput().props.onChange(event.value);
+    setTriggerValue.call(this, event.source.props.value);
+    this.getInput().props.onChange({
+      target: this.getInput().EL,
+    });
     this.getInput().EL.focus();
-    this.getAutocomplete().emitSelectEvent(event.source);
+    // this.getAutocomplete().emitSelectEvent(event.source);
   }
 
   this.closePanel();
@@ -491,8 +514,8 @@ function attachOverlay() {
     overlay.create();
     this.setState({ overlayCreated: true });
     autocomplete.setState(state => ({
-      provide: {
-        ...state.provide,
+      service: {
+        ...state.service,
         onKeyDown: (event) => {
           const key = event.key;
           // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
@@ -502,7 +525,7 @@ function attachOverlay() {
             || ([UP, ARROW_UP].indexOf(key) > -1 && event.altKey)
           ) {
             resetActiveItem.call(this);
-            onPanelClose.call(this);
+            this.onPanelClose();
           }
         },
       },
@@ -528,7 +551,7 @@ function attachOverlay() {
   window.requestAnimationFrame(() => {
     if (!overlay.state.attached) {
       overlay.attach();
-      // this.closingActionsSubscriptions = this.subscribeToClosingActions();
+      subscribeToClosingActions.call(this);
     }
 
     const wasOpen = this.state.panelOpen;
