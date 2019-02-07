@@ -150,7 +150,7 @@ export default StackedOption;
  * Private methods
  */
 function emitSelectionChangeEvent(isUserInput = false) {
-  this.props.__optionGroup.onSelectionChange({
+  this.props.__parent.onSelectionChange({
     isUserInput,
     source: this,
   });
