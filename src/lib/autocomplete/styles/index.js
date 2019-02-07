@@ -16,7 +16,7 @@ width: 100%;
 border-bottom-left-radius: ${AUTOCOMPLETE_PANEL_BORDER_RADIUS}px;
 border-bottom-right-radius: ${AUTOCOMPLETE_PANEL_BORDER_RADIUS}px;
 
-&[data-visible=true] {
+[data-visible=true] & {
   visibility: visible;
 }
 

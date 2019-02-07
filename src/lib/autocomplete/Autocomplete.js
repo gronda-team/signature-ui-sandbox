@@ -20,8 +20,6 @@ class Autocomplete extends React.Component {
     super();
 
     this.state = {
-      /** Whether the autocomplete panel should be visible */
-      showPanel: false,
       /** Whether the panel is visible */
       isOpen: false,
       /** Distance from the top of the panel to the scrolled position */
@@ -95,7 +93,7 @@ class Autocomplete extends React.Component {
   getOverlay = () => _.get(this.overlay, 'current', {});
 
   /** Getter for whether or not the panel is open */
-  isOpen = () => this.state.isOpen && this.state.showPanel;
+  isOpen = () => this.state.isOpen && !!this.getOptions().length;
 
   /** Children */
   getChildren = (props = this.props) => toArray(props.children);
@@ -134,6 +132,8 @@ class Autocomplete extends React.Component {
       id, autoActiveFirstOption, children, ...restProps
     } = this.props;
 
+    const origin = this.props.__formFieldControl.getConnectionContainer() || null;
+
     return (
       <React.Fragment>
         <ListKeyManager
@@ -143,6 +143,7 @@ class Autocomplete extends React.Component {
           ref={this.keyManager}
         />
         <FlexibleConnectedPositionStrategy
+          origin={origin}
           overlay={this.overlay.current}
           hasFlexibleDimensions={false}
           canPush={false}

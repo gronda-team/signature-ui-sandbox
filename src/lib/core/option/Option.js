@@ -107,6 +107,7 @@ const OptionDefaultProps = {
   selected: false,
   disabled: false,
   id: null,
+  '__sui-internal-type': 'Option',
 };
 
 Option.propTypes = {

@@ -24,6 +24,16 @@ class AutocompleteTrigger extends React.Component {
       overlayCreated: false,
       // Get whether the autocomplete panel is attached
       overlayAttached: false,
+      /**
+       * Whether the autocomplete can open the next time it is focused. Used to prevent a focused,
+       * closed autocomplete from being reopened if the user switches to another browser tab and then
+       * comes back.
+       */
+      canOpenOnNextFocus: true,
+      /** Old value of the native input. Used to work around issues with the `input` event on IE. */
+      previousValue: null,
+      /** Whether the non-React compatible onFocusIn event listener has been installed */
+      attachedFocusInListener: false,
     };
 
     this.DEFAULT_ID = _.uniqueId('sui-autocomplete-trigger:');
@@ -49,6 +59,22 @@ class AutocompleteTrigger extends React.Component {
         onSelectionChange: onPanelClose.call(this),
       });
     }
+
+    /**
+     * In componentDidMount, the input has not mounted yet, so we can't install
+     * it there. Instead, we have to wait for the next update, where it
+     * returns true. However, we're passing an entire input component reference
+     * as a prop, we are not able to listen to when the component reference
+     * has mounted.
+     *
+     * Therefore, we must use an internal reference to check to see if the
+     * listener has been attached or not.
+     */
+    if (this.props.input.state.mounted && !this.state.attachedFocusInListener) {
+      this.props.input.EL.addEventListener('focusin', this.handleFocus);
+      this.setState({ attachedFocusInListener: true });
+    }
+
     /** Install the selection change listener when the overlay is created */
     if (prevState.overlayCreated !== this.state.overlayCreated) {
       if (this.state.overlayCreated) {
@@ -77,6 +103,11 @@ class AutocompleteTrigger extends React.Component {
   componentWillUnmount() {
     if (!_.isUndefined(window)) {
       window.removeEventListener('blur', this.windowBlurHandler);
+    }
+
+    /** Remove focusin listener (isn't supported by react) */
+    if (this.state.attachedFocusInListener) {
+      this.props.input.EL.removeEventListener('focusin', this.handleFocus);
     }
 
     /** Tear down the document listener */
@@ -122,7 +153,6 @@ class AutocompleteTrigger extends React.Component {
   /** Get the attributes that are associated with the autocomplete */
   getExtendedAttributes = () => ({
     autocomplete: this.props.autocompleteAttribute,
-    onFocusIn: this.handleFocus,
     role: this.props.autocompleteDisabled ?
       null : 'combobox',
     'aria-autocomplete': this.props.autocompleteDisabled ?
@@ -181,7 +211,7 @@ class AutocompleteTrigger extends React.Component {
     // refocused when they come back. In this case we want to skip the first focus event, if the
     // pane was closed, in order to avoid reopening it unintentionally.
     this.setState({
-      canOpenOnNextFocus: document.activeElement !== this.getInput().INPUT
+      canOpenOnNextFocus: document.activeElement !== this.getInput().EL
       || this.state.panelOpen,
     });
   };
@@ -192,7 +222,7 @@ class AutocompleteTrigger extends React.Component {
       this.setState({ canOpenOnNextFocus: true });
     } else if (this.canOpen()) {
       // Save the previous value
-      this.setState({ previousValue: this.getInput().INPUT.value });
+      this.setState({ previousValue: this.getInput().EL.value });
       // Attach the overlay
       attachOverlay.call(this);
     }
@@ -336,11 +366,11 @@ export default StackedAutocompleteTrigger;
 function onDocumentOutsideClick(event) {
   const clickTarget = event.target;
   const formField = _.get(this.props.__formFieldControl, 'el') || null;
-  const overlay = this.getOverlay();
+  const overlay = this.getAutocomplete().getOverlay();
 
   if (
     this.state.overlayAttached
-    && clickTarget !== this.getInput().INPUT.current
+    && clickTarget !== this.getInput().EL
     && (!formField || !formField.contains(clickTarget))
     && (!!overlay && !overlay.state.pane.contains(clickTarget))
   ) {
@@ -414,7 +444,7 @@ function setTriggerValue(value) {
   const inputValue = _.isNil(toDisplay) ? '' : toDisplay;
   if (this.getInput()) {
     /** Set it manually so that it can be used by input.props.change */
-    this.getInput().INPUT.current.value = inputValue;
+    this.getInput().EL.value = inputValue;
   }
 
   this.setState({ previousValue: inputValue });
@@ -435,7 +465,7 @@ function setValueAndClose(event) {
     clearPreviousSelectedOption.call(this, event.source);
     setTriggerValue.call(this, event.value);
     this.getInput().props.onChange(event.value);
-    this.getInput().INPUT.current.focus();
+    this.getInput().EL.focus();
     this.getAutocomplete().emitSelectEvent(event.source);
   }
 
@@ -495,20 +525,22 @@ function attachOverlay() {
     overlay.updateSize();
   }
 
-  if (!overlay.state.attached) {
-    overlay.attach();
-    // this.closingActionsSubscriptions = this.subscribeToClosingActions();
-  }
+  window.requestAnimationFrame(() => {
+    if (!overlay.state.attached) {
+      overlay.attach();
+      // this.closingActionsSubscriptions = this.subscribeToClosingActions();
+    }
 
-  const wasOpen = this.state.panelOpen;
+    const wasOpen = this.state.panelOpen;
 
-  autocomplete.setState({ isOpen: true });
-  this.setState({ overlayAttached: true });
+    autocomplete.setState({ isOpen: true });
+    this.setState({ overlayAttached: true });
 
-  /** Do another check here to see if we can emit */
-  if (this.state.panelOpen && wasOpen !== this.state.panelOpen) {
-    _.invoke(autocomplete, 'props.onOpened');
-  }
+    /** Do another check here to see if we can emit */
+    if (this.state.panelOpen && wasOpen !== this.state.panelOpen) {
+      _.invoke(autocomplete, 'props.onOpened');
+    }
+  });
 }
 
 /**

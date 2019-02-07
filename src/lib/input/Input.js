@@ -21,6 +21,7 @@ class Input extends React.Component {
 
     this.state = {
       focused: false,
+      mounted: false,
     };
 
     // Determine the type to show. this is NOT reactive
@@ -86,8 +87,9 @@ class Input extends React.Component {
    */
   /** Get the root input element */
   getInputRef = (input) => {
-    this.INPUT = input;
-    if (this.INPUT) {
+    this.EL = input;
+    this.setState({ mounted: !!input });
+    if (this.EL) {
       // Set the autofill status for the global autofill monitor
       this.props.__autofillMonitor.monitor({
         id: this.DEFAULT_ID,
@@ -177,14 +179,14 @@ class Input extends React.Component {
 
   /** Progammatically focus the input component */
   focus = () => {
-    if (this.INPUT) {
-      this.INPUT.focus();
+    if (this.EL) {
+      this.EL.focus();
     }
   };
 
   /** Handle the UI focus change for the form field */
   handleFocusChange = isFocused => () => {
-    if (this.INPUT && !this.props.readOnly && isFocused !== this.state.focused) {
+    if (this.EL && !this.props.readOnly && isFocused !== this.state.focused) {
       this.setState({ focused: isFocused });
       this.props.__formFieldControl.transitionUi(
         isFocused ? 'FOCUS' : 'BLUR',
@@ -333,8 +335,8 @@ export default StackedInput;
 // key. In order to get around this we need to "jiggle" the caret loose. Since this bug only
 // exists on iOS, we only bother to install the listener on iOS.
 function handleIOSQuirk() {
-  if (this.props.__platform.is('ios') && this.INPUT) {
-    this.INPUT.addEventListener('keyup', (event) => {
+  if (this.props.__platform.is('ios') && this.EL) {
+    this.EL.addEventListener('keyup', (event) => {
       const el = event.target;
       if (!el.value && !el.selectionStart && !el.selectionEnd) {
         // Note: Just setting `0, 0` doesn't fix the issue. Setting
