@@ -31,6 +31,8 @@ export default class FormField extends React.Component {
       type: null,
       /** Different kinds of extensions that the form field requires */
       extensions: {},
+      /** The root element */
+      el: null,
       placeholder: '',
       containerClick: _.noop,
       setId: this.setControl('id'), // function that expects a value
@@ -55,6 +57,13 @@ export default class FormField extends React.Component {
         null :
         { ui: nextUiState.value };
     });
+  };
+
+  /**
+   * Refs
+   */
+  getRoot = (el) => {
+    this.setState({ el });
   };
 
   /**
@@ -191,6 +200,7 @@ export default class FormField extends React.Component {
         data-focused={this.isFocused()}
         data-value={this.isFilled() ? 'filled' : 'empty'}
         data-field-type={this.state.type}
+        innerRef={this.getRoot}
       >
         <FormFieldWrapper>
           <FormFieldControlProvider value={this.state}>
