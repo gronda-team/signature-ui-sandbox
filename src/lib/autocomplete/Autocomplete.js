@@ -6,6 +6,8 @@ import {byInternalType} from '../core/components/util';
 import { Overlay } from '../../cdk/overlay';
 import FlexibleConnectedPositionStrategy from '../../cdk/overlay/position/FlexibleConnectedPositionStrategy';
 import RepositionScrollStrategy from '../../cdk/overlay/scroll/RepositionScrollStrategy';
+import { OptionParentProvider } from '../core/option';
+import {AutocompletePanel, AutocompletePanelRoot} from './styles';
 
 const toArray = React.Children.toArray;
 
@@ -51,7 +53,7 @@ class Autocomplete extends React.Component {
         // The overlay edge connected to the trigger should have squared corners, while
         // the opposite end has rounded corners. We apply a CSS class to swap the
         // border-radius based on the overlay position.
-        panelClass: 'mat-autocomplete-panel-above'
+        panelClass: 'sui-autocomplete-panel-opposite'
       }
     ];
 
@@ -151,6 +153,7 @@ class Autocomplete extends React.Component {
         >
           <AutocompletePanelRoot
             {...restProps}
+            data-visible={this.isOpen()}
           >
             <AutocompletePanel
               role="listbox"
