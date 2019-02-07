@@ -8,6 +8,7 @@ import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor} from '../../cdk/text-area';
+import AutocompleteTrigger from './AutocompleteTrigger';
 
 /**
  * The input and text area components contain very similar behavior
@@ -28,6 +29,9 @@ class Input extends React.Component {
       BaseTextArea;
 
     this.DEFAULT_ID = _.uniqueId('sui-input:');
+
+    // Get the extension refs
+    this.autocomplete = React.createRef();
   }
 
   /**
@@ -143,6 +147,24 @@ class Input extends React.Component {
     );
   };
 
+  /** Handle onChange with extensions */
+  onChange = (event) => {
+    if (this.autocomplete.current) {
+      this.autocomplete.current.handleInput(event);
+    }
+
+    _.invoke(this.props, 'onChange', event);
+  };
+
+  /** Handle keydown events for extensions */
+  onKeyDown = (event) => {
+    if (this.autocomplete.current) {
+      this.autocomplete.current.handleKeyDown(event);
+    }
+
+    _.invoke(this.props, 'onKeyDown', event);
+  };
+
   /** Handle the container click for the form field */
   onContainerClick = () => {
     // Do not re-focus the input element if the element is already focused. Otherwise it can happen
@@ -168,6 +190,16 @@ class Input extends React.Component {
         isFocused ? 'FOCUS' : 'BLUR',
       );
     }
+
+    // Handle extensions
+    if (isFocused) {
+      // tbd
+    } else {
+      // Blur
+      if (this.autocomplete.current) {
+        this.autocomplete.current.onTouched();
+      }
+    }
   };
 
   render() {
@@ -176,16 +208,27 @@ class Input extends React.Component {
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
+
+    const autocompleteAttributes = this.autocomplete.current ?
+      this.autocomplete.current.getExtendedAttributes() :
+      {};
+
     return (
       <React.Fragment>
         { extensions.indexOf('autocomplete') > -1 ? (
-          <AutocompleteInput />
+          <AutocompleteTrigger
+            input={this}
+            autocomplete={restProps.autocomplete}
+            autocompleteDisabled={restProps.autocompleteDisabled}
+            ref={this.autocomplete}
+          />
         ) : null }
         { extensions.indexOf('tag-list') > -1 ? (
           <div />
         ) : null }
         <this.INPUT_TYPE
           {...restProps}
+          {...autocompleteAttributes}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
@@ -196,6 +239,8 @@ class Input extends React.Component {
           aria-invalid={false}
           aria-required={required.toString()}
           data-autofilled={this.isAutofilled()}
+          onChange={this.onChange}
+          onKeyDown={this.onKeyDown}
           onFocus={this.handleFocusChange(true)}
           onBlur={this.handleFocusChange(false)}
           innerRef={this.getInputRef}

@@ -114,7 +114,8 @@ class AutocompleteTrigger extends React.Component {
 
   /** Get the attributes that are associated with the autocomplete */
   getExtendedAttributes = () => ({
-    autocomplete: this.props.autocompleteAttribute,
+    autocomplete: this.props.autocomplete,
+    onFocusIn: this.handleFocus,
     role: this.props.autocompleteDisabled ?
       null : 'combobox',
     'aria-autocomplete': this.props.autocompleteDisabled ?
@@ -211,7 +212,6 @@ class AutocompleteTrigger extends React.Component {
     // See: https://connect.microsoft.com/IE/feedback/details/885747/
     if (this.state.previousValue !== value) {
       this.setState({ previousValue: value });
-      _.invoke(this.getInput(), 'props.onChange');
 
       if (this.canOpen() && document.activeElement === target) {
         this.openPanel();
