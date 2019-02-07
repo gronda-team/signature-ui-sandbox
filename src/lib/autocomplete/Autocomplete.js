@@ -121,7 +121,7 @@ class Autocomplete extends React.Component {
 
   /** Get the provider parent to determine what to do on selection change */
   providerValue = () => ({
-    onSelectionChange: this.state.onSelectionChange,
+    onSelectionChange: this.state.service.onSelectionChange,
   });
 
   /**
