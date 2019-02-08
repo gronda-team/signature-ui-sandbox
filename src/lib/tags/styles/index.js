@@ -1,9 +1,9 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import FILL from '../../core/styles/layout-common';
 import { EASE_IN_OUT } from '../../core/styles/animation';
-import { BaseInput } from '../../input/styles/index';
 import Close from '../../core/icons/Close';
 import { themeThunk } from './theme';
+import {BaseInput} from '../../input/styles';
 
 const TAG_MIN_HEIGHT = 28;
 const TAG_BORDER_RADIUS = 3;
@@ -104,12 +104,6 @@ ${TagClose} {
 ${themeThunk(components)}
 `;
 
-export const TagListInput = BaseInput.extend`
-width: ${TAG_INPUT_WIDTH}px;
-margin: ${TAG_INPUT_MARGIN}px;
-flex: 1 0 ${TAG_INPUT_WIDTH}px;
-`;
-
 export const TagListRoot = styled.div`
 display: flex;
 flex-direction: row;
@@ -117,7 +111,13 @@ flex-wrap: wrap;
 align-items: center;
 margin: -${TAGS_TAG_MARGIN}px;
 
-${TagListInput}, ${TagRoot} {
+${BaseInput} {
+  width: ${TAG_INPUT_WIDTH}px;
+  margin: ${TAG_INPUT_MARGIN}px;
+  flex: 1 0 ${TAG_INPUT_WIDTH}px;
+}
+
+${BaseInput}, ${TagRoot} {
   margin: ${TAGS_TAG_MARGIN}px;
 }
 
