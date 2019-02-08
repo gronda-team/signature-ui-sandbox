@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { FormField, Label, Hint } from '../../lib/form-field';
 import { Input } from '../../lib/input';
 import { TagList, Tag } from '../../lib/tags';
@@ -10,7 +11,7 @@ class WithAutocomplete extends React.Component {
 
     this.state = {
       value: '',
-      list: ['Bananas'],
+      list: ['Bananas', 'Lettuce'],
     };
   }
 
@@ -18,12 +19,20 @@ class WithAutocomplete extends React.Component {
     this.setState({ value: event.target.value });
   };
 
-  removeItem = (value) => {
-    console.log(value);
+  removeItem = ({ value }) => {
+    this.setState(state => ({
+      list: _.without(state.list, value),
+    }));
   };
 
-  addItem = (value) => {
-    console.log(value);
+  addItem = ({ value }) => {
+    this.setState(state => ({
+      list: state.list.indexOf(value) === -1 ?
+        [...state.list, value] :
+        state.list,
+      value: state.list.indexOf(value) === -1 ?
+        '' : state.value,
+    }));
   };
 
   render() {
@@ -32,14 +41,14 @@ class WithAutocomplete extends React.Component {
         <Label>Grocery list</Label>
         <TagList>
           { this.state.list.map(item => (
-            <Tag key={item} removable onRemove={this.removeItem}>
+            <Tag value={item} key={item} removable onRemove={this.removeItem}>
               { item }
             </Tag>
           ))}
           <Input
             extensions={['tag-list']}
             tagListSeparatorKeyCodes={[ENTER, COMMA]}
-            onAddTag={this.addItem}
+            onTagEnd={this.addItem}
             value={this.state.value}
             onChange={this.updateText}
             placeholder="Items"
