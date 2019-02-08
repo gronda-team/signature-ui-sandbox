@@ -8,7 +8,7 @@ import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from
 import { TagListProvider } from './context/TagListContext';
 import { TagListRoot } from './styles/index';
 import { byInternalType, stack, toValue } from '../core/components/util';
-import { TagInputProvider } from './input-context';
+import { TagInputProvider } from './context/TagListInputContext';
 
 const toArray = React.Children.toArray;
 const count = React.Children.count;

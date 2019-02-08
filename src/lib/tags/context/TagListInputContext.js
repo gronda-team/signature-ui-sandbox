@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {getDisplayName} from '../../cdk/util';
+import {getDisplayName} from '../../../cdk/util';
 
 const TagInputContextPropTypes = PropTypes.shape({
   setTagInputState: PropTypes.func,

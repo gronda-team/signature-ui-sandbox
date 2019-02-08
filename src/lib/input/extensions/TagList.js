@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { TagListInput } from '../../tags/styles';
 import { ENTER } from '../../../cdk/keycodes/keys';
-import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../../tags/input-context';
+import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../../tags/context/TagListInputContext';
 
 class TagExtension extends React.Component {
   constructor() {
