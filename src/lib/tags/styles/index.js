@@ -109,16 +109,17 @@ display: flex;
 flex-direction: row;
 flex-wrap: wrap;
 align-items: center;
-margin: -${TAGS_TAG_MARGIN}px;
+margin: -${TAGS_TAG_MARGIN + 2}px;
 
 ${BaseInput} {
   width: ${TAG_INPUT_WIDTH}px;
   margin: ${TAG_INPUT_MARGIN}px;
   flex: 1 0 ${TAG_INPUT_WIDTH}px;
+  margin: ${TAGS_TAG_MARGIN}px;
 }
 
-${BaseInput}, ${TagRoot} {
-  margin: ${TAGS_TAG_MARGIN}px;
+${TagRoot} {
+  margin: 1px ${TAGS_TAG_MARGIN}px;
 }
 
 &[aria-orientation=vertical] {
