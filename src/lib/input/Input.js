@@ -9,7 +9,7 @@ import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor} from '../../cdk/text-area';
 import AutocompleteTrigger from './extensions/Autocomplete';
-import TagList from './extensions/TagList';
+import TagBehavior from './extensions/TagBehavior';
 
 /**
  * The input and text area components contain very similar behavior
@@ -237,7 +237,7 @@ class Input extends React.Component {
           />
         ) : null }
         { extensions.indexOf('tag-list') > -1 ? (
-          <TagList
+          <TagBehavior
             input={this}
             tagList={
               _.get(this.props.__formFieldControl, 'extensions.tagList')
@@ -250,7 +250,7 @@ class Input extends React.Component {
            * The attributes that are before the {...} spread attributes
            * are those that may be replaced by extension attributes.
            * E.g., tag list may add a disabled: true attribute when
-           * the <TagList> component is disabled.
+           * the <TagBehavior> component is disabled.
            */
         }
         <this.INPUT_TYPE
