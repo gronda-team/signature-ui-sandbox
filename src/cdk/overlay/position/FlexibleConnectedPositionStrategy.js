@@ -1,16 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { OverlayContextDefaultProps, OverlayContextPropTypes, withOverlayConsumer } from '../context/overlay';
 import {
   OverlayContainerDefaultProps, OverlayContainerPropTypes,
   withOverlayContainerConsumer,
 } from '../context/overlay-container';
 import { stack } from '../../../lib/core/components/util';
 import { PlatformDefaultProps, PlatformPropTypes, withPlatformConsumer } from '../../platform';
-import { ViewportContextDefaultProps, ViewportContextPropTypes, withViewportRuler } from '../../scrolling';
-import { OverlayBoundingBox } from '../styles/index';
-import { PositionStrategyProvider } from './context';
+import { ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler } from '../../scrolling';
 import {
   isElementClippedByScrolling,
   isElementScrolledOutsideView,
@@ -352,14 +349,14 @@ FlexibleConnectedPositionStrategy.propTypes = {
   ...FCPSPropTypes,
   __overlayContainer: OverlayContainerPropTypes,
   __platform: PlatformPropTypes,
-  __viewportRuler: ViewportContextPropTypes,
+  __viewportRuler: ViewportRulerPropTypes,
 };
 
 FlexibleConnectedPositionStrategy.defaultProps = {
   ...FCPSDefaultProps,
   __overlayContainer: OverlayContainerDefaultProps,
   __platform: PlatformDefaultProps,
-  __viewportRuler: ViewportContextDefaultProps,
+  __viewportRuler: ViewportRulerDefaultProps,
 };
 
 const StackedPositionStrategy = stack(
