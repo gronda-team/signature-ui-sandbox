@@ -34,6 +34,8 @@ class TagList extends React.Component {
       describedByIds: [],
       /** The input connected to this tag list */
       input: null,
+      /** Set the form field properties when it mounts */
+      setFormFieldProperties: false,
       /** Tag input information */
       __tagInput: { // TagList is the consumer
         id: null,
@@ -61,13 +63,18 @@ class TagList extends React.Component {
    * Lifecycle
    */
   componentDidMount() {
-    /** Set the onContainerClick fn */
-    this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    /** Register this guy as an extension */
-    this.props.__formFieldControl.setExtension('tagList', this);
   }
   
   componentDidUpdate(prevProps, prevState) {
+    /** Do one time setup for when formFieldControl mounts */
+    if (!this.state.setFormFieldProperties) {
+      /** Set the onContainerClick fn */
+      this.props.__formFieldControl.setContainerClick(this.onContainerClick);
+      /** Register this guy as an extension */
+      this.props.__formFieldControl.setExtension('tagList', this);
+      this.setState({ setFormFieldProperties: true });
+    }
+
     // Check to see if we have a destroyed chip and need to refocus
     const prevChildren = this.getTagChildren(prevProps);
     const thisChildren = this.getTagChildren();
