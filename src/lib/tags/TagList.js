@@ -1,14 +1,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {
-  ListKeyManagerDefaultProps, ListKeyManagerPropTypes, withListKeyConsumer,
-  withListKeyProvider,
-} from '../../cdk/a11y';
-import {
-  SelectionModelDefaultProps, SelectionModelPropTypes,
-  withSelectionModelConsumer,
-} from '../../cdk/collections/selection-model';
+import { ListKeyManager } from '../../cdk/a11y';
+import { SelectionModel } from '../../cdk/collections';
 import { BACKSPACE, END, HOME } from '../../cdk/keycodes/keys';
 import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field';
 import { TagListProvider } from './context/TagListContext';
@@ -55,22 +49,16 @@ class TagList extends React.Component {
     };
     
     this.DEFAULT_ID = _.uniqueId('sui-tag-list:');
+    this.handleTabOut = handleTabOut.bind(this);
+    // Refs
+    this.selectionModel = React.createRef();
+    this.keyManager = React.createRef();
   }
   
   /**
    * Lifecycle
    */
   componentDidMount() {
-    /** Set the tabOut function for when we tab out of the tag list */
-    this.props.__keyManager.setTabOutFn(handleTabOut.bind(this));
-    /** Set the list items for the key manager */
-    this.props.__keyManager.setItems(this.getTagChildren());
-    /** Set the configuration for key manager */
-    this.props.__keyManager.setConfig({
-      wrap: true,
-      vertical: true,
-      horizontal: 'ltr',
-    });
     /** Set the onContainerClick fn */
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
     /** Set the ID for the form field control */
@@ -92,7 +80,6 @@ class TagList extends React.Component {
     const prevChildren = this.getTagChildren(prevProps);
     const thisChildren = this.getTagChildren();
     if (prevChildren.length !== thisChildren.length) {
-      this.props.__keyManager.setItems(thisChildren);
       if (prevChildren.length > thisChildren.length) {
         // if we decreased the number of children we have to
         // update the last deleted index
@@ -107,16 +94,22 @@ class TagList extends React.Component {
    * Refs
    */
   getTagListRoot = (tagList) => {
-    this.TAG_LIST = tagList;
+    this.EL = tagList;
   };
   
   /**
    * Derived data
    */
-  // ID for the tag list element
+  /** Get the selection model without having to use .current */
+  getSelectionModel = () => this.selectionModel.current || {};
+
+  /** Get the key manager without having to use .current */
+  getKeyManager = () => this.keyManager.current || {};
+
+  /** ID for the tag list element */
   getId = (props = this.props) => props.id || this.DEFAULT_ID;
   
-  // form field ID
+  /** form field ID */
   getFormFieldId = (props = this.props, state = this.state) => {
     if (state.__tagInput.id) return state.__tagInput.id;
     return this.getId(props);
@@ -127,13 +120,13 @@ class TagList extends React.Component {
     && this.getChildrenCount() === 0
   );
   
-  // aria role
+  /** aria role */
   getRole = () => {
     if (this.isEmpty()) return null;
     return 'listbox';
   };
   
-  // aria described by
+  /** aria described by */
   getAriaDescribedBy = () => this.state.describedByIds.join(' ');
   
   getFinalTabIndex = () => {
@@ -216,14 +209,14 @@ class TagList extends React.Component {
         // do nothing
       } else if (this.getTagChildren().length > 0) {
         const target = event.target;
-        const children = _.filter(this.TAG_LIST.children, child => (
+        const children = _.filter(this.EL.children, child => (
           _.get(child, 'dataset.suiType') === 'tag'
         ));
         const index = _.findIndex(children, target);
         if (index > -1) {
-          this.props.__keyManager.setActiveItem(index);
+          this.getKeyManager().setActiveItem(index);
         } else {
-          this.props.__keyManager.setFirstItemActive();
+          this.getKeyManager().setFirstItemActive();
         }
       } else {
         focusInput.call(this);
@@ -238,7 +231,7 @@ class TagList extends React.Component {
   keyDown = (event) => {
     const target = event.target;
     const key = event.key;
-    const manager = this.props.__keyManager;
+    const manager = this.getKeyManager();
     // If they are on an empty input and hit backspace, focus the last tag
     if (key === BACKSPACE && this.isInputEmpty(target)) {
       manager.setLastItemActive();
@@ -268,8 +261,8 @@ class TagList extends React.Component {
       Must be deferred because we want to wait for the document to change
       focus
        */
-      if (!this.TAG_LIST.contains(document.activeElement)) {
-        this.props.__keyManager.setActiveItem(-1);
+      if (!this.EL.contains(document.activeElement)) {
+        this.getKeyManager().setActiveItem(-1);
       }
     });
     
@@ -312,39 +305,50 @@ class TagList extends React.Component {
       disabled,
       value,
       selectable,
-      __tagInput,
-      __keyManager,
-      __selectionModel,
       children,
       ...restProps
     } = this.props;
     return (
-      <TagListRoot
-        {...restProps}
-        id={this.getId()}
-        tabIndex={this.getFinalTabIndex()}
-        role={this.getRole()}
-        value={value}
-        aria-describedby={this.getAriaDescribedBy()}
-        aria-required={required}
-        aria-disabled={disabled}
-        aria-invalid={false}
-        aria-multiselectable={__selectionModel.multiple}
-        onFocus={this.focus}
-        onBlur={this.blur}
-        onKeyDown={this.keyDown}
-        innerRef={this.getTagListRoot}
-      >
-        <TagListProvider value={{
-          disabled,
-          selectable,
-          changeDescribedByIds: this.changeDescribedByIds
-        }}>
-          <TagInputProvider value={this.state.__tagInputProvider}>
-            { children }
-          </TagInputProvider>
-        </TagListProvider>
-      </TagListRoot>
+      <React.Fragment>
+        <ListKeyManager
+          onTabOut={this.handleTabOut}
+          items={this.getTagChildren()}
+          wrap
+          vertical
+          horizontal="ltr"
+          ref={this.keyManager}
+        />
+        <SelectionModel
+          multiple={this.props.multiple}
+          ref={this.selectionModel}
+        />
+        <TagListRoot
+          {...restProps}
+          id={this.getId()}
+          tabIndex={this.getFinalTabIndex()}
+          role={this.getRole()}
+          value={value}
+          aria-describedby={this.getAriaDescribedBy()}
+          aria-required={required}
+          aria-disabled={disabled}
+          aria-invalid={false}
+          aria-multiselectable={this.props.multiple}
+          onFocus={this.focus}
+          onBlur={this.blur}
+          onKeyDown={this.keyDown}
+          innerRef={this.getTagListRoot}
+        >
+          <TagListProvider value={{
+            disabled,
+            selectable,
+            changeDescribedByIds: this.changeDescribedByIds
+          }}>
+            <TagInputProvider value={this.state.__tagInputProvider}>
+              { children }
+            </TagInputProvider>
+          </TagListProvider>
+        </TagListRoot>
+      </React.Fragment>
     )
   }
 }
@@ -375,22 +379,15 @@ const TagListDefaultProps = {
 
 TagList.propTypes = {
   ...TagListPropTypes,
-  __keyManager: ListKeyManagerPropTypes,
-  __selectionModel: SelectionModelPropTypes,
   __formFieldControl: FormFieldPropTypes,
 };
 
 TagList.defaultProps = {
   ...TagListDefaultProps,
-  __keyManager: ListKeyManagerDefaultProps,
-  __selectionModel: SelectionModelDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
 };
 
 const StackedTagList = stack(
-  withListKeyConsumer,
-  withListKeyProvider,
-  withSelectionModelConsumer,
   withFormFieldConsumer,
 )(TagList);
 
@@ -425,7 +422,7 @@ function handleTabOut() {
 function originatesFromTag(event) {
   let currentElement = event.target;
   
-  while (currentElement && currentElement !== this.TAG_LIST) {
+  while (currentElement && currentElement !== this.EL) {
     if (_.get(currentElement, 'dataset.suiType') === 'tag') return true;
     
     currentElement = currentElement.parentElement;
@@ -448,9 +445,9 @@ function updateFocusForRemovedTags() {
     may not necessarily change. Setting it to -1 and then
     newTagIndex will ensure that the key manager will update
      */
-    this.props.__keyManager.setActiveItem(-1);
+    this.getKeyManager().setActiveItem(-1);
     _.defer(() => {
-      this.props.__keyManager.setActiveItem(newTagIndex);
+      this.getKeyManager().setActiveItem(newTagIndex);
     })
   }
   this.setState({ lastDestroyedTagIndex: null });
