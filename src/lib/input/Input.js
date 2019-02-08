@@ -34,6 +34,7 @@ class Input extends React.Component {
 
     // Get the extension refs
     this.autocomplete = React.createRef();
+    this.tagList = React.createRef();
   }
 
   /**
@@ -171,6 +172,10 @@ class Input extends React.Component {
       this.autocomplete.current.handleKeyDown(event);
     }
 
+    if (this.tagList.current) {
+      this.tagList.current.onKeyDown(event);
+    }
+
     _.invoke(this.props, 'onKeyDown', event);
   };
 
@@ -203,11 +208,21 @@ class Input extends React.Component {
     // Handle extensions
     if (isFocused) {
       // Focus
-      this.autocomplete.current.handleFocus();
+      if (this.autocomplete.current) {
+        this.autocomplete.current.handleFocus();
+      }
+
+      if (this.tagList.current) {
+        this.tagList.current.onFocus();
+      }
     } else {
       // Blur
       if (this.autocomplete.current) {
         this.autocomplete.current.onTouched();
+      }
+
+      if (this.tagList.current) {
+        this.tagList.current.onBlur();
       }
     }
   };
@@ -215,12 +230,18 @@ class Input extends React.Component {
   render() {
     const {
       as, id, placeholder, disabled, required, type,
+      autocomplete, autocompleteDisabled, // autocomplete props
+      tagListSeparatorKeyCodes, onTagEnd, tagListAddOnBlur, // tag list props
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
 
     const autocompleteAttributes = this.autocomplete.current ?
       this.autocomplete.current.getExtendedAttributes() :
+      {};
+
+    const tagListAttributes = this.tagList.current ?
+      this.tagList.current.getExtendedAttributes() :
       {};
 
     return (
@@ -231,14 +252,17 @@ class Input extends React.Component {
             autocomplete={
               _.get(this.props.__formFieldControl, 'extensions.autocomplete')
             }
-            autocompleteAttribute={restProps.autocomplete}
-            autocompleteDisabled={restProps.autocompleteDisabled}
+            autocompleteAttribute={autocomplete}
+            autocompleteDisabled={autocompleteDisabled}
             ref={this.autocomplete}
           />
         ) : null }
         { extensions.indexOf('tag-list') > -1 ? (
           <TagBehavior
             input={this}
+            tagListSeparatorKeyCodes={tagListSeparatorKeyCodes}
+            onTagEnd={onTagEnd}
+            tagListAddOnBlur={tagListAddOnBlur}
             tagList={
               _.get(this.props.__formFieldControl, 'extensions.tagList')
             }
@@ -257,6 +281,7 @@ class Input extends React.Component {
           disabled={disabled}
           {...restProps}
           {...autocompleteAttributes}
+          {...tagListAttributes}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}

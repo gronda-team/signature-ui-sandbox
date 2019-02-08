@@ -49,7 +49,8 @@ class TagExtension extends React.Component {
 
   /** Whether the input is disabled */
   getFinalDisabled = () => (
-    this.getInput().props.disabled || this.getTagList().props.disabled
+    _.get(this.getInput(), 'props.disabled')
+    || _.get(this.getTagList(), 'props.disabled')
   );
 
   /**
