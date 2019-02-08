@@ -13,14 +13,20 @@ class TagExtension extends React.Component {
     this.state = {
       /** Required for some handling logic in tag list */
       focused: false,
+      /** Required for one time setup for installing input in tag list */
+      setInputOnTagList: false,
     };
   }
 
   /**
    * Lifecycle
    */
-  componentDidMount() {
-    this.getTagList().setState({ input: this });
+  componentDidUpdate() {
+    /** One-time installation of context */
+    if (!this.state.setInputOnTagList && this.getTagList()) {
+      this.getTagList().setState({ inputExtension: this });
+      this.setState({ setInputOnTagList: true });
+    }
   }
   
   /**

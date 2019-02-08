@@ -32,8 +32,8 @@ class TagList extends React.Component {
       may use Tag.DEFAULT_ID. So we must manually register them here
        */
       describedByIds: [],
-      /** The input connected to this tag list */
-      input: null,
+      /** The input extension connected to this tag list */
+      inputExtension: null,
       /** Set the form field properties when it mounts */
       setFormFieldProperties: false,
       /** Tag input information */
@@ -106,7 +106,11 @@ class TagList extends React.Component {
   getKeyManager = () => this.keyManager.current || {};
 
   /** Get the input extension attached to this tag list */
-  getInput = () => this.state.input;
+  getInput = () => (
+    this.state.inputExtension ?
+      this.state.inputExtension.getInput() :
+      null
+  );
 
   /** ID for the tag list element */
   getId = (props = this.props) => props.id || this.DEFAULT_ID;
