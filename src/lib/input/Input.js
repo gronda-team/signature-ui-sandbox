@@ -9,6 +9,7 @@ import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor} from '../../cdk/text-area';
 import AutocompleteTrigger from './extensions/Autocomplete';
+import TagList from './extensions/TagList';
 
 /**
  * The input and text area components contain very similar behavior
@@ -114,6 +115,12 @@ class Input extends React.Component {
 
   /** Check whether or not the autofilled monitor is true */
   isAutofilled = () => _.get(this.props.__formFieldControl, ['ui', 'autofilled-status']) === 'filled';
+
+  /**
+   * Check whether or not the input is empty
+   * Used in the extension for tag lists
+   */
+  isEmpty = () => _.get(this.props.__formFieldControl, ['ui', 'value']) === 'empty';
 
   /**
    * Actions
@@ -230,15 +237,29 @@ class Input extends React.Component {
           />
         ) : null }
         { extensions.indexOf('tag-list') > -1 ? (
-          <div />
+          <TagList
+            input={this}
+            tagList={
+              _.get(this.props.__formFieldControl, 'extensions.tagList')
+            }
+            ref={this.tagList}
+          />
         ) : null }
+        {
+          /**
+           * The attributes that are before the {...} spread attributes
+           * are those that may be replaced by extension attributes.
+           * E.g., tag list may add a disabled: true attribute when
+           * the <TagList> component is disabled.
+           */
+        }
         <this.INPUT_TYPE
+          disabled={disabled}
           {...restProps}
           {...autocompleteAttributes}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
-          disabled={disabled}
           readOnly={readOnly}
           required={required}
           aria-describedby={this.getAriaDescribedBy()}

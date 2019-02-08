@@ -15,6 +15,13 @@ class TagExtension extends React.Component {
       focused: false,
     };
   }
+
+  /**
+   * Lifecycle
+   */
+  componentDidMount() {
+    this.getTagList().setState({ input: this });
+  }
   
   /**
    * Derived data
@@ -26,12 +33,12 @@ class TagExtension extends React.Component {
   getTagList = () => this.props.tagList;
 
   /** Get the non-null ID */
-  getId = (props = this.props) => props.id || this.DEFAULT_ID;
+  getId = () => this.getInput().getId();
 
   /** Get the extended attributes to be merged into this.props.input */
   getExtendedAttributes = () => ({
     disabled: this.getFinalDisabled(),
-    'aria-invalid': false,
+    'aria-invalid': false, // todo
   });
 
   /** Whether the input is disabled */
@@ -68,12 +75,12 @@ class TagExtension extends React.Component {
   /** Checks to see if there is a change event. */
   emitTagEnd = (event) => {
     if (!this.props.value && !_.isNil(event)) {
-      this.props.__tagListInput.keydown(event);
+      this.getTagList().keyDown(event);
     }
 
     if (_.isNil(event) || this.props.tagListSeparatorKeyCodes.indexOf(event.key) > -1) {
       // trigger the add tag listener
-      this.props.onTagEnd({ input: this.INPUT, value: this.props.value });
+      this.props.onTagEnd({ input: this.this.getInput().EL, value: this.props.value });
       if (event) {
         event.preventDefault();
       }
@@ -82,8 +89,8 @@ class TagExtension extends React.Component {
 
   /** programmatic focus invoker */
   focus = () => {
-    if (this.INPUT) {
-      this.INPUT.focus();
+    if (this.this.getInput().EL) {
+      this.this.getInput().EL.focus();
     }
   };
 

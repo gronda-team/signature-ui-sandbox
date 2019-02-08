@@ -32,6 +32,8 @@ class TagList extends React.Component {
       may use Tag.DEFAULT_ID. So we must manually register them here
        */
       describedByIds: [],
+      /** The input connected to this tag list */
+      input: null,
       /** Tag input information */
       __tagInput: { // TagList is the consumer
         id: null,
@@ -61,21 +63,11 @@ class TagList extends React.Component {
   componentDidMount() {
     /** Set the onContainerClick fn */
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    /** Set the ID for the form field control */
-    this.props.__formFieldControl.setId(this.getFormFieldId());
+    /** Register this guy as an extension */
+    this.props.__formFieldControl.setExtension('tagList', this);
   }
   
   componentDidUpdate(prevProps, prevState) {
-    // update the form field's ID
-    if (this.getFormFieldId(prevProps, prevState) !== this.getFormFieldId()) {
-      this.props.__formFieldControl.setId(this.getFormFieldId());
-    }
-    
-    // update the form field's placeholder
-    if (prevState.__tagInput.placeholder !== this.state.__tagInput.placeholder) {
-      this.props.__formFieldControl.setPlaceholder(this.state.__tagInput.placeholder);
-    }
-  
     // Check to see if we have a destroyed chip and need to refocus
     const prevChildren = this.getTagChildren(prevProps);
     const thisChildren = this.getTagChildren();
@@ -106,17 +98,18 @@ class TagList extends React.Component {
   /** Get the key manager without having to use .current */
   getKeyManager = () => this.keyManager.current || {};
 
+  /** Get the input extension attached to this tag list */
+  getInput = () => this.state.input;
+
   /** ID for the tag list element */
   getId = (props = this.props) => props.id || this.DEFAULT_ID;
   
-  /** form field ID */
-  getFormFieldId = (props = this.props, state = this.state) => {
-    if (state.__tagInput.id) return state.__tagInput.id;
-    return this.getId(props);
-  };
-  
   isEmpty = () => (
-    (!this.state.__tagInput.id || _.invoke(this.state.__tagInput, 'isEmpty'))
+    /**
+     * Empty if there's no input, if the input is empty, AND if there
+     * are no tag children
+     */
+    (!this.getInput() || this.getInput().isEmpty())
     && this.getChildrenCount() === 0
   );
   
@@ -221,9 +214,6 @@ class TagList extends React.Component {
       } else {
         focusInput.call(this);
       }
-      if (_.isFunction(this.props.onFocus)) {
-        this.props.onFocus(event);
-      }
     });
   };
   
@@ -244,18 +234,14 @@ class TagList extends React.Component {
         manager.setLastItemActive();
         event.preventDefault(); // no navigation
       } else {
-        manager.onKeydown(event);
+        manager.onKeyDown(event);
       }
-    }
-    
-    if (_.isFunction(this.props.onKeyDown)) {
-      this.props.onKeyDown(event);
     }
   };
   
   /** When blurred, mark the field as touched when focus moved outside the tag list. */
   blur = (event) => {
-    _.defer(() => {
+    window.setTimeout(() => {
       /*
       check to see if the next actively focused item is inside the tag list
       Must be deferred because we want to wait for the document to change
@@ -264,7 +250,7 @@ class TagList extends React.Component {
       if (!this.EL.contains(document.activeElement)) {
         this.getKeyManager().setActiveItem(-1);
       }
-    });
+    }, 0);
     
     if (!this.props.disabled) {
       if (this.state.__tagInput) {
@@ -276,17 +262,13 @@ class TagList extends React.Component {
           if (!this.state.focused && _.isFunction(this.props.onTouched)) {
             this.props.onTouched();
           }
-        });
+        }, 0);
       } else {
         // If there's no tag input, then mark the field as touched.
         if (_.isFunction(this.props.onTouched)) {
           this.props.onTouched();
         }
       }
-    }
-  
-    if (_.isFunction(this.props.onBlur) && event) {
-      this.props.onBlur(event);
     }
   };
   
