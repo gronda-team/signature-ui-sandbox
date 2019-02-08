@@ -87,7 +87,7 @@ class TagExtension extends React.Component {
 
     if (_.isNil(event) || this.props.tagListSeparatorKeyCodes.indexOf(event.key) > -1) {
       // trigger the add tag listener
-      this.props.onTagEnd({ input: this.this.getInput().EL, value: this.props.value });
+      this.props.onTagEnd({ input: this.getInput().EL, value: this.getInput().props.value });
       if (event) {
         event.preventDefault();
       }
