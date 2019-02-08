@@ -1,12 +1,12 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {ARROW_DOWN, ARROW_UP, DOWN, ENTER, ESC, ESCAPE, TAB, UP} from '../../cdk/keycodes/keys';
-import {countGroupLabelsBeforeOption, getOptionScrollPosition} from '../core/option/util';
-import {MENU_ITEM_HEIGHT, OVERLAY_MAX_HEIGHT} from '../core/styles/menu-common';
-import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../form-field';
-import {ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler} from '../../cdk/scrolling';
-import {stack} from '../core/components/util';
+import {ARROW_DOWN, ARROW_UP, DOWN, ENTER, ESC, ESCAPE, TAB, UP} from '../../../cdk/keycodes/keys';
+import {countGroupLabelsBeforeOption, getOptionScrollPosition} from '../../core/option/util';
+import {MENU_ITEM_HEIGHT, OVERLAY_MAX_HEIGHT} from '../../core/styles/menu-common';
+import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../../form-field';
+import {ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler} from '../../../cdk/scrolling';
+import {stack} from '../../core/components/util';
 
 /**
  * Class to include some extended behavior for the
@@ -15,7 +15,7 @@ import {stack} from '../core/components/util';
  * This is a no-op render, as it just provides some
  * rendering/opening/etc. logic for the Input component.
  */
-class AutocompleteTrigger extends React.Component {
+class AutocompleteExtension extends React.Component {
   constructor() {
     super();
 
@@ -290,7 +290,7 @@ class AutocompleteTrigger extends React.Component {
   }
 }
 
-const AutocompleteTriggerPropTypes = {
+const AutocompleteExtensionPropTypes = {
   /** Input component to which this is trigger is associated */
   input: PropTypes.any.isRequired,
   /**
@@ -309,34 +309,34 @@ const AutocompleteTriggerPropTypes = {
   autocompleteDisabled: PropTypes.bool,
 };
 
-const AutocompleteTriggerDefaultProps = {
+const AutocompleteExtensionDefaultProps = {
   connectedTo: null,
   autocomplete: null,
   autocompleteAttribute: 'off',
   autocompleteDisabled: null,
 };
 
-AutocompleteTrigger.propTypes = {
-  ...AutocompleteTriggerPropTypes,
+AutocompleteExtension.propTypes = {
+  ...AutocompleteExtensionPropTypes,
   __formFieldControl: FormFieldPropTypes,
   __viewportRuler: ViewportRulerPropTypes,
 };
 
-AutocompleteTrigger.defaultProps = {
-  ...AutocompleteTriggerDefaultProps,
+AutocompleteExtension.defaultProps = {
+  ...AutocompleteExtensionDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
   __viewportRuler: ViewportRulerDefaultProps,
 };
 
-const StackedAutocompleteTrigger = stack(
+const StackedAutocompleteExtension = stack(
   withFormFieldConsumer,
   withViewportRuler,
-)(AutocompleteTrigger);
+)(AutocompleteExtension);
 
-StackedAutocompleteTrigger.propTypes = AutocompleteTriggerPropTypes;
-StackedAutocompleteTrigger.defaultProps = AutocompleteTriggerDefaultProps;
+StackedAutocompleteExtension.propTypes = AutocompleteExtensionPropTypes;
+StackedAutocompleteExtension.defaultProps = AutocompleteExtensionDefaultProps;
 
-export default StackedAutocompleteTrigger;
+export default StackedAutocompleteExtension;
 
 /**
  * Private methods
