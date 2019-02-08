@@ -11,7 +11,7 @@ import {
 } from '../../cdk/collections/selection-model';
 import { BACKSPACE, END, HOME } from '../../cdk/keycodes/keys';
 import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field';
-import { TagListProvider } from './context';
+import { TagListProvider } from './context/TagListContext';
 import { TagListRoot } from './styles/index';
 import { byInternalType, stack, toValue } from '../core/components/util';
 import { TagInputProvider } from './input-context';

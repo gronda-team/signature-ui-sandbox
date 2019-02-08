@@ -12,7 +12,7 @@ import {
   withSelectionModelConsumer,
 } from '../../cdk/collections/selection-model';
 import { byInternalType, stack } from '../core/components/util';
-import { TagListContextDefaultProps, TagListContextPropTypes, withTagListConsumer } from './context';
+import { TagListContextDefaultProps, TagListContextPropTypes, withTagListConsumer } from './context/TagListContext';
 import Close from '../core/icons/Close';
 
 class Tag extends React.Component {
@@ -20,25 +20,20 @@ class Tag extends React.Component {
     super();
     
     this.state = {
-      /*
-      We have to keep hasFocus in state here because Tag.focus is both programmatic
-      (triggered via keyManager) and also a listener. If Tag.focus is called, then
-      it will trigger the same function twice.
+      /**
+       * We have to keep hasFocus in state here because Tag.focus is both programmatic
+       * (triggered via keyManager) and also a listener. If Tag.focus is called, then
+       * it will trigger the same function twice.
        */
       hasFocus: false,
     };
     
     this.DEFAULT_ID = _.uniqueId('sui-tag:');
   }
+
   /**
    * Lifecycle
    */
-  componentDidMount() {
-    this.props.__tagList.changeDescribedByIds({
-      added: this.getId(),
-    });
-  }
-  
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.__keyManager.activeItemIndex !== this.props.__keyManager.activeItemIndex) {
       const activeItem = this.props.__keyManager.activeItem;
@@ -47,28 +42,13 @@ class Tag extends React.Component {
         this.focus();
       }
     }
-    
-    // check the ID
-    if (this.getId(prevProps) !== this.getId()) {
-      this.props.__tagList.changeDescribedByIds({
-        added: this.getId(),
-        removed: this.getId(prevProps),
-      });
-    }
-  }
-  
-  componentWillUnmount() {
-    // remove the describedById
-    this.props.__tagList.changeDescribedByIds({
-      removed: this.getId(),
-    });
   }
   
   /**
    * Refs
    */
   getTagRoot = (tag) => {
-    this.TAG = tag;
+    this.EL = tag;
   };
   
   /**
@@ -101,7 +81,7 @@ class Tag extends React.Component {
     if (this.props.removable) {
       this.props.onRemove({
         value: this.props.value,
-        tag: this.TAG,
+        tag: this.EL,
       });
     }
   };
@@ -133,12 +113,12 @@ class Tag extends React.Component {
   
   /** Allows for programmatic focusing of the tag. */
   focus = () => {
-    if (!this.state.hasFocus && this.TAG) {
+    if (!this.state.hasFocus && this.EL) {
       /*
       call it programmatically because the tabIndex is -1 (does not receive
       natural focus from tab, but can receive focus when .focus() is called)
        */
-      this.TAG.focus();
+      this.EL.focus();
       if (_.isFunction(this.props.onFocus)) {
         this.props.onFocus();
       }
