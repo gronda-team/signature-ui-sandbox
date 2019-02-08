@@ -1,11 +1,11 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { TagListInput } from './styles/index';
-import { ENTER } from '../../cdk/keycodes/keys';
-import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from './input-context';
+import { TagListInput } from '../../tags/styles';
+import { ENTER } from '../../../cdk/keycodes/keys';
+import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../../tags/input-context';
 
-class TagInput extends React.Component {
+class TagExtension extends React.Component {
   constructor() {
     super();
     
@@ -141,7 +141,7 @@ class TagInput extends React.Component {
   }
 }
 
-const TagInputPropTypes = {
+const TagExtensionPropTypes = {
   /** Unique id for the input. */
   id: PropTypes.string,
   /** Whether the input is disabled. */
@@ -164,7 +164,7 @@ const TagInputPropTypes = {
   onChange: PropTypes.func,
 };
 
-const TagInputDefaultProps = {
+const TagExtensionDefaultProps = {
   id: null,
   disabled: false,
   placeholder: null,
@@ -175,19 +175,19 @@ const TagInputDefaultProps = {
   onChange: _.noop,
 };
 
-TagInput.propTypes = {
-  ...TagInputPropTypes,
+TagExtension.propTypes = {
+  ...TagExtensionPropTypes,
   __tagListInput: TagInputContextPropTypes,
 };
 
-TagInput.defaultProps = {
-  ...TagInputDefaultProps,
+TagExtension.defaultProps = {
+  ...TagExtensionDefaultProps,
   __tagListInput: TagInputContextDefaultProps,
 };
 
-const StackedTagInput = withTagInputConsumer(TagInput);
+const StackedTagExtension = withTagInputConsumer(TagExtension);
 
-StackedTagInput.propTypes = TagInputPropTypes;
-StackedTagInput.defaultProps = TagInputDefaultProps;
+StackedTagExtension.propTypes = TagExtensionPropTypes;
+StackedTagExtension.defaultProps = TagExtensionDefaultProps;
 
-export default StackedTagInput;
+export default StackedTagExtension;
