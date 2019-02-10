@@ -22,11 +22,11 @@ export const themeThunk = (components) => {
   background-color: ${inactiveBackground};
   color: ${inactiveForeground};
   
-  &:not([aria-disabled=true]) {
-    &:active {
-      bottom: 2px;
-    }
-    
+  &::after {
+    background-color: ${border};
+  }
+  
+  &:not([aria-disabled=true]) {    
     ${Close} {
       stroke: ${border};
       &:hover {

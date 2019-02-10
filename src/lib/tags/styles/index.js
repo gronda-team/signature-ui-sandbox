@@ -47,7 +47,6 @@ height: 1px;
 &::after {
   ${FILL}
   border-radius: inherit;
-  background-color: black;
   opacity: 0;
   content: '';
   pointer-events: none;
@@ -113,13 +112,12 @@ margin: -${TAGS_TAG_MARGIN + 2}px;
 
 ${BaseInput} {
   width: ${TAG_INPUT_WIDTH}px;
-  margin: ${TAG_INPUT_MARGIN}px;
+  margin: ${TAGS_TAG_MARGIN + 2}px;
   flex: 1 0 ${TAG_INPUT_WIDTH}px;
-  margin: ${TAGS_TAG_MARGIN}px;
 }
 
 ${TagRoot} {
-  margin: 1px ${TAGS_TAG_MARGIN}px;
+  margin: 1px 2px;
 }
 
 &[aria-orientation=vertical] {
