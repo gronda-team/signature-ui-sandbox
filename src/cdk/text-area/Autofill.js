@@ -4,7 +4,7 @@ import {
   withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes,
   normalizePassiveListenerOptions,
 } from '../platform';
-import { TEXT_FIELD_ANIMATION_END, TEXT_FIELD_ANIMATION_START } from './styles/index';
+import { AUTOFILL_ANIMATION_END, AUTOFILL_ANIMATION_START } from './styles/index';
 import { AutofillProvider } from './context/AutofillContext';
 
 const LISTENER_OPTIONS = normalizePassiveListenerOptions({ passive: true });
@@ -48,26 +48,31 @@ class AutofillMonitor extends React.Component {
   monitor = ({ element, callback, id }) => {
     if (!this.props.__platform.is('browser')) return;
 
-    const existingInfo = _.find(this.state.monitoredElements, { id });
+    // If we're already monitoring this ID, break
+    let existingInfo = _.find(this.state.monitoredElements, { id });
+    if (existingInfo) return;
+
+    // If we're already monitoring this element, break
+    existingInfo = _.find(this.state.monitoredElements, { element });
     if (existingInfo) return;
 
     // Add the important styling
-    element.dataset.autofillMonitored = 'true';
+    element.setAttribute('data-autofill-monitored', 'true');
     
     // Animation events fire on initial element render, we check for the presence of the autofill
     // CSS class to make sure this is a real change in state, not just the initial render before
     // we fire off events.
     const listener = (event) => {
       // debug: unsure if this returns `true` or `"true"`
-      const elementAutofillStatus = _.get(element.dataset, 'autofilled','null');
+      const elementAutofillStatus = element.getAttribute('data-autofilled');
       if (
-        event.animationName.indexOf(TEXT_FIELD_ANIMATION_START) > -1
+        event.animationName.indexOf(AUTOFILL_ANIMATION_START) > -1
         && elementAutofillStatus !== 'true'
       ) {
         // If we're animating, then the callback should be called with true
         callback({ target: event.target, isAutofilled: true });
       } else if (
-        event.animationName.indexOf(TEXT_FIELD_ANIMATION_END) > -1
+        event.animationName.indexOf(AUTOFILL_ANIMATION_END) > -1
         && elementAutofillStatus === 'true'
       ) {
         // Otherwise, call the callback with false
@@ -81,7 +86,8 @@ class AutofillMonitor extends React.Component {
       // create unlistener here so componentWillUnmount can trigger it
       unlisten: () => {
         element.removeEventListener('animationstart', listener, LISTENER_OPTIONS);
-        delete element.dataset.autofillMonitored;
+        element.removeAttribute('data-autofill-monitored');
+        element.removeAttribute('data-autofilled');
       },
     };
     
