@@ -62,9 +62,6 @@ class TagList extends React.Component {
   /**
    * Lifecycle
    */
-  componentDidMount() {
-  }
-  
   componentDidUpdate(prevProps, prevState) {
     /** Do one time setup for when formFieldControl mounts */
     if (!this.state.setFormFieldProperties) {
@@ -86,6 +83,12 @@ class TagList extends React.Component {
         // fix the tab index
         updateTabIndex.call(this, this.props);
       }
+    }
+
+    if (thisChildren.length ===  0 && _.get(this.getInput(), 'props.value') === '') {
+      this.props.__formFieldControl.transitionUi('CLEAR');
+    } else {
+      this.props.__formFieldControl.transitionUi('FILL');
     }
   }
   
