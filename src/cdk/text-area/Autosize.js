@@ -10,55 +10,56 @@ class TextAreaAutosize extends React.Component {
       /** Keep track of the previous textarea value to avoid resizing when the value hasn't changed. */
       previousValue: '',
       initialHeight: null,
-      /** Minimum number of rows in the textarea. */
-      minRows: null,
       /**
        * Value of minRows as of last resize. If the minRows has decreased, the
        * height of the textarea needs to be recomputed to reflect the new minimum. The maxHeight
        * does not have the same problem because it does not affect the textarea's scrollHeight.
        */
       previousMinRows: -1,
-      /** Maximum number of rows in the textarea. */
-      maxRows: null,
-      /** Whether autosizing is enabled or not */
-      enabled: true,
-      textAreaElement: null, // HTMLTextAreaElement
-      /** Cached height of a textarea with a single row. */
       cachedLineHeight: null,
       /** Consumable heights for the TextArea component */
       minHeight: null,
       maxHeight: null,
-      /** Consumed by the TextArea component */
-      provide: {
-        height: null,
-        setRows: this.setRows,
-        setElement: this.setElement,
-      },
     };
     
-    this.resizeListener = _.debounce(_.partial(this.resizeToFitContent, true));
+    this.resizeListener = _.debounce(_.partial(this.resizeToFitContent, true), 16);
   }
   
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    if (this.props.__platform.is('browser')) {
+      // Remember the height which we started with in case autosizing is disabled
+      this.setState({ initialHeight: _.get(this.props.input, 'style.height') });
+
+      this.resizeToFitContent();
+
+      window.addEventListener('resize', this.resizeListener);
+    }
+  }
+
   componentDidUpdate(prevProps, prevState) {
-    // listen to when we first have state.textArea
-    if (!prevState.textAreaElement && this.state.textAreaElement) {
+    if (this.props.__platform.is('browser')) {
+      this.resizeToFitContent();
+    }
+
+    // listen to when we first have props.input
+    if (!prevProps && this.props.input) {
       storeInitialHeight.call(this);
       this.resizeToFitContent();
     }
     
-    if (prevState.minRows !== this.state.minRows) {
+    if (prevProps.minRows !== this.props.minRows) {
       this.setMinHeight();
     }
     
-    if (prevState.maxRows !== this.state.maxRows) {
+    if (prevProps.maxRows !== this.props.maxRows) {
       this.setMaxHeight();
     }
     
-    if (prevState.enabled !== this.state.enabled) {
-      if (this.state.enabled) {
+    if (prevProps.enabled !== this.props.enabled) {
+      if (this.props.enabled) {
         // previously disable -> now enabled
         this.resizeToFitContent(true);
       } else {
@@ -72,46 +73,56 @@ class TextAreaAutosize extends React.Component {
       window.removeEventListener('resize', this.resizeListener);
     }
   }
-  
+
+  /**
+   * Derived data
+   */
+  /** Get the attributes that have to be placed onto this.props.input */
+  getExtendedAttributes = () => ({
+    // Textarea elements that have the directive applied should have a single row by default.
+    // Browsers normally show two rows by default and therefore this limits the minRows binding.
+    rows: 1,
+  });
+
   /**
    * Actions
    */
-  /** Privately set the number of rows that are used */
-  setRows = ({ min, max }) => {
-    this.setState({ minRows: min, maxRows: max });
-  };
-  
   /** Sets the minimum height of the textarea as determined by minRows. */
   setMinHeight = () => {
-    const minHeight = this.state.minRows && this.state.cachedLineHeight ?
-      `${this.state.minRows * this.state.cachedLineHeight}px` : null;
+    const minHeight = this.props.minRows && this.state.cachedLineHeight ?
+      `${this.props.minRows * this.state.cachedLineHeight}px` : null;
   
     if (minHeight) {
-      this.setState({ minHeight });
+      this.props.input.style.minHeight = minHeight;
     }
   };
   
   /** Sets the maximum height of the textarea as determined by maxRows. */
   setMaxHeight = () => {
-    const maxHeight = this.state.maxRows && this.state.cachedLineHeight ?
-      `${this.state.maxRows * this.state.cachedLineHeight}px` : null;
+    const maxHeight = this.props.maxRows && this.state.cachedLineHeight ?
+      `${this.props.maxRows * this.state.cachedLineHeight}px` : null;
   
     if (maxHeight) {
-      this.setState({ maxHeight });
+      this.props.input.style.maxHeight = maxHeight;
     }
   };
-  
+
+  /**
+   * Resize the textarea to fit its content.
+   * @param force Whether to force a height recalculation. By default the height will be
+   *    recalculated only if the value changed since the last call.
+   */
   resizeToFitContent = (force = false) => {
-    if (!this.state.enabled) return;
+    if (!this.props.enabled) return;
     cacheTextAreaLineHeight.call(this);
     
     if (!this.state.cachedLineHeight) return;
     
-    const textArea = this.state.textAreaElement;
+    const textArea = this.props.input;
     const value = textArea.value;
     // Only resize if the value or minRows have changed since these calculations can be expensive.
     if (
-      !force && this.state.minRows === this.state.previousMinRows
+      !force && this.props.minRows === this.state.previousMinRows
       && value === this.state.previousValue
     ) return;
     
@@ -143,6 +154,7 @@ class TextAreaAutosize extends React.Component {
     // Set style manually since we don't want these secret changes
     // to appear on the next paint
     textArea.style.cssText = existingStyle;
+    textArea.style.height = `${height}px`;
     
     textArea.placeholder = placeholderText;
   
@@ -164,47 +176,57 @@ class TextAreaAutosize extends React.Component {
       });
     }
     
-    this.setState(state => ({
+    this.setState({
       previousValue: value,
-      previousMinRows: state.minRows,
-      provide: {
-        ...state.provide,
-        height: `${height}px`,
-      },
-    }));
+      previousMinRows: props.minRows,
+    });
   };
   
   /** Reset the textArea to its original size */
   reset = () => {
+    // Do not try to change the textarea, if the initialHeight has not been determined yet
+    // This might potentially remove styles when reset() is called before ngAfterViewInit
     if (_.isUndefined(this.state.initialHeight)) return;
-    
-    this.setState(state => ({
-      provide: { ...state.provide, height: state.initialHeight },
-    }))
+
+    _.set(this.props.input, 'style.height', this.state.initialHeight);
   };
 }
 
+const TextAreaAutosizePropTypes = {
+  /** Textarea input el */
+  input: PropTypes.any,
+  /** Minimum number of rows in the textarea */
+  minRows: PropTypes.number,
+  /** Maximum number of rows in the textarea */
+  maxRows: PropTypes.number,
+  /** Whether autosizing is available or not */
+  enabled: PropTypes.bool,
+};
+
+const TextAreaAutosizeDefaultProps = {
+  input: null,
+  minRows: null,
+  maxRows: null,
+  enabled: true,
+};
+
 TextAreaAutosize.propTypes = {
+  ...TextAreaAutosizePropTypes,
   __platform: PlatformPropTypes,
 };
 
 TextAreaAutosize.defaultProps = {
+  ...TextAreaAutosizeDefaultProps,
   __platform: PlatformDefaultProps,
 };
+
+const StackedTextAreaAutosize = withPlatformConsumer(TextAreaAutosize);
+
+export default StackedTextAreaAutosize;
 
 /**
  * Private methods
  */
-function storeInitialHeight() {
-  if (this.props.__platform.is('browser')) {
-    // Remember the height which we started with in case autosizing is disabled
-    this.setState({ initialHeight: this.state.textAreaElement.style.height }, () => {
-      this.resizeToFitContent();
-      window.addEventListener('resize', this.resizeListener);
-    });
-  }
-}
-
 /**
  * Cache the height of a single-row textarea if it has not already been cached.
  *
@@ -214,11 +236,11 @@ function storeInitialHeight() {
  */
 function cacheTextAreaLineHeight() {
   if (this.state.cachedLineHeight) return;
-  
+
   // Use a clone element because we have to override some styles.
-  const textAreaClone = this.state.textAreaElement.cloneNode(false);
+  const textAreaClone = this.props.input.cloneNode(false);
   textAreaClone.rows = 1;
-  
+
   // Use `position: absolute` so that this doesn't cause a browser layout and use
   // `visibility: hidden` so that nothing is rendered. Clear any other styles that
   // would affect the height.
@@ -229,26 +251,33 @@ function cacheTextAreaLineHeight() {
   textAreaClone.style.height = '';
   textAreaClone.style.minHeight = '';
   textAreaClone.style.maxHeight = '';
-  
+
   // In Firefox it happens that textarea elements are always bigger than the specified amount
   // of rows. This is because Firefox tries to add extra space for the horizontal scrollbar.
   // As a workaround that removes the extra space for the scrollbar, we can just set overflow
   // to hidden. This ensures that there is no invalid calculation of the line height.
   // See Firefox bug report: https://bugzilla.mozilla.org/show_bug.cgi?id=33654
   textAreaClone.style.overflow = 'hidden';
-  
-  
+
+
   // append ghost node
-  this.textAreaElement.parentNode.appendChild(textAreaClone);
-  this.setState({ cachedLineHeight: textAreaClone.clientHeight });
-  // remove ghost node after caching line height
-  this.textAreaElement.parentNode.removeChild(textAreaClone);
-  
+  this.props.input.parentNode.appendChild(textAreaClone);
+  this.setState({ cachedLineHeight: textAreaClone.clientHeight }, () => {
+    // remove ghost node after caching line height
+    this.props.input.parentNode.removeChild(textAreaClone);
+  });
+
   // Min and max heights have to be re-calculated if the cached line height changes
   this.setMinHeight();
   this.setMaxHeight();
 }
 
-const StackedTextAreaAutosize = withPlatformConsumer(TextAreaAutosize);
-
-export default StackedTextAreaAutosize;
+function storeInitialHeight() {
+  if (this.props.__platform.is('browser')) {
+    // Remember the height which we started with in case autosizing is disabled
+    this.setState({ initialHeight: this.props.input.style.height }, () => {
+      this.resizeToFitContent();
+      window.addEventListener('resize', this.resizeListener);
+    });
+  }
+}
