@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from 'lodash';
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../platform';
 
-class TextAreaAutoSize extends React.Component {
+class TextAreaAutosize extends React.Component {
   constructor() {
     super();
     
@@ -184,11 +184,11 @@ class TextAreaAutoSize extends React.Component {
   };
 }
 
-TextAreaAutoSize.propTypes = {
+TextAreaAutosize.propTypes = {
   __platform: PlatformPropTypes,
 };
 
-TextAreaAutoSize.defaultProps = {
+TextAreaAutosize.defaultProps = {
   __platform: PlatformDefaultProps,
 };
 
@@ -249,6 +249,6 @@ function cacheTextAreaLineHeight() {
   this.setMaxHeight();
 }
 
-const StackedTextAreaAutoSize = withPlatformConsumer(TextAreaAutoSize);
+const StackedTextAreaAutosize = withPlatformConsumer(TextAreaAutosize);
 
-export default StackedTextAreaAutoSize;
+export default StackedTextAreaAutosize;
