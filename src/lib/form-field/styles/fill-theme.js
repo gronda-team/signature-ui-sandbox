@@ -1,5 +1,4 @@
 import { css } from 'styled-components';
-import { GREEN, GREY, RED } from '../../../cdk/theme/colors';
 import {formFieldLabelPositioning} from './theme-base';
 
 /**

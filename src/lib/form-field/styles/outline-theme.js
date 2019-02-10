@@ -16,7 +16,7 @@ export const outlineThemeThunk = (components) => {
   }
   
   // Lowest priority of enabled states
-  &[data-has-value=true] {
+  &[data-value=filled] {
     ${FormFieldBar} {
       border-color: ${DEFAULT_BORDER};
     }
