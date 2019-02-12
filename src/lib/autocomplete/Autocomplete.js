@@ -122,20 +122,25 @@ class Autocomplete extends React.Component {
   /** Get the provider parent to determine what to do on selection change */
   providerValue = () => ({
     onSelectionChange: this.state.service.onSelectionChange,
+    activeItem: this.state.activeItem,
   });
 
   /**
    * Actions
    */
-  handleKeyManagerOnChange = (newActiveIndex) => {
-    const options = this.getOptions();
-    if (newActiveIndex > -1) {
-      options.forEach((option) => {
-        _.invoke(option, 'deactivate');
-      });
-      console.log(newActiveIndex);
-      _.invoke(options, [newActiveIndex, 'activate']);
-    }
+  handleActiveItemChange = (index) => {
+    this.setState({
+      /**
+       * Manually sync the active item here
+       * because otherwise the Autocomplete component
+       * would be one tick behind the key manager
+       * component.
+       *
+       * This way, this.state.activeItem will reflect
+       * the actual item instead of prevState.activeItem.
+       */
+      activeItem: _.get(this.getOptions(), [index]),
+    });
   };
 
   /**
@@ -153,7 +158,7 @@ class Autocomplete extends React.Component {
         <ListKeyManager
           wrap
           onTabOut={this.state.service.onTabOut}
-          onChange={this.handleKeyManagerOnChange}
+          onChange={this.handleActiveItemChange}
           items={this.getOptions()}
           ref={this.keyManager}
         />
