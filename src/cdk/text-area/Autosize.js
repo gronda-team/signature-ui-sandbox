@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../platform';
 
@@ -28,24 +29,9 @@ class TextAreaAutosize extends React.Component {
   /**
    * Lifecycle
    */
-  componentDidMount() {
-    if (this.props.__platform.is('browser')) {
-      // Remember the height which we started with in case autosizing is disabled
-      this.setState({ initialHeight: _.get(this.props.input, 'style.height') });
-
-      this.resizeToFitContent();
-
-      window.addEventListener('resize', this.resizeListener);
-    }
-  }
-
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.__platform.is('browser')) {
-      this.resizeToFitContent();
-    }
-
     // listen to when we first have props.input
-    if (!prevProps && this.props.input) {
+    if (!prevProps.input && this.props.input) {
       storeInitialHeight.call(this);
       this.resizeToFitContent();
     }
@@ -190,6 +176,12 @@ class TextAreaAutosize extends React.Component {
 
     _.set(this.props.input, 'style.height', this.state.initialHeight);
   };
+
+  /**
+   * Renderers
+   */
+  /** No op render */
+  render = () => null;
 }
 
 const TextAreaAutosizePropTypes = {
@@ -221,6 +213,10 @@ TextAreaAutosize.defaultProps = {
 };
 
 const StackedTextAreaAutosize = withPlatformConsumer(TextAreaAutosize);
+
+StackedTextAreaAutosize.displayName = 'Autosize';
+StackedTextAreaAutosize.propTypes = TextAreaAutosizePropTypes;
+StackedTextAreaAutosize.defaultProps = TextAreaAutosizeDefaultProps;
 
 export default StackedTextAreaAutosize;
 
