@@ -109,17 +109,20 @@ describe('ListKeyManager', () => {
     });
 
     it('should emit an event when the active item changes', () => {
+      jest.useFakeTimers();
       const onChangeSpy = jest.fn();
       wrapper.setProps({
         onChange: onChangeSpy,
       });
 
-      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
 
+      keyManagerInstance.onKeyDown(keyboardEvents.DOWN);
+      // Next tick is in a timeout because of setState batching
+      jest.runTimersToTime(1);
       expect(onChangeSpy).toHaveBeenCalledTimes(1);
 
       keyManagerInstance.onKeyDown(keyboardEvents.UP);
-
+      jest.runTimersToTime(1);
       expect(onChangeSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -498,11 +501,14 @@ describe('ListKeyManager', () => {
     });
 
     it('should not call onChange if the item did not change', () => {
+      jest.useFakeTimers();
       const spy = jest.fn();
       wrapper.setProps({ onChange: spy });
 
       keyManagerInstance.setActiveItem(2);
+      jest.runAllTimers();
       keyManagerInstance.setActiveItem(2);
+      jest.runAllTimers();
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
