@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { OptionRoot, OptionText } from './styles/index';
 import { ENTER, SPACE, SPACEBAR } from '../../../cdk/keycodes/keys';
-import {withOptionParentConsumer} from './context/OptionParent';
+import {
+  OptionParentDefaultProps,
+  OptionParentPropTypes,
+  withOptionParentConsumer
+} from './context/OptionParent';
 import { stack } from '../components/util';
 
 class Option extends React.Component {
@@ -17,7 +21,22 @@ class Option extends React.Component {
     
     this.DEFAULT_ID = _.uniqueId('sui-option:');
   }
-  
+
+  /**
+   * Lifecycle
+   */
+  componentDidUpdate(prevProps) {
+    const currentActive = this.props.__parent.activeItem;
+    const previousActive = prevProps.__parent.activeItem;
+    if (currentActive !== previousActive) {
+      if (_.get(currentActive, 'props.value') === this.props.value) {
+        this.activate();
+      } else {
+        this.deactivate();
+      }
+    }
+  }
+
   /**
    * refs
    */
@@ -132,11 +151,7 @@ Option.propTypes = {
     disabled: PropTypes.bool,
   }),
   /** The parent, whether that's a select or menu or whatever */
-  __parent: PropTypes.shape({
-    multiple: PropTypes.bool,
-    /** Event emitted when the option is selected or deselected. */
-    onSelectionChange: PropTypes.func,
-  }),
+  __parent: OptionParentPropTypes,
 };
 
 Option.defaultProps = {
@@ -144,10 +159,7 @@ Option.defaultProps = {
   __optionGroup: {
     disabled: false,
   },
-  __parent: {
-    multiple: false,
-    onSelectionChange: _.noop,
-  },
+  __parent: OptionParentDefaultProps,
 };
 
 const StackedOption = stack(
