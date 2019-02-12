@@ -125,6 +125,20 @@ class Autocomplete extends React.Component {
   });
 
   /**
+   * Actions
+   */
+  handleKeyManagerOnChange = (newActiveIndex) => {
+    const options = this.getOptions();
+    if (newActiveIndex > -1) {
+      options.forEach((option) => {
+        _.invoke(option, 'deactivate');
+      });
+      console.log(newActiveIndex);
+      _.invoke(options, [newActiveIndex, 'activate']);
+    }
+  };
+
+  /**
    * Renderers
    */
   render() {
@@ -139,6 +153,7 @@ class Autocomplete extends React.Component {
         <ListKeyManager
           wrap
           onTabOut={this.state.service.onTabOut}
+          onChange={this.handleKeyManagerOnChange}
           items={this.getOptions()}
           ref={this.keyManager}
         />
