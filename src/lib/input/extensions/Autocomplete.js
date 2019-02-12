@@ -96,7 +96,7 @@ class AutocompleteExtension extends React.Component {
   /** Get whether te panel is open or not */
   getPanelOpen = () => {
     if (!this.getAutocomplete()) return false;
-    return this.state.overlayAttached && this.getAutocomplete().state.showPanel;
+    return this.state.overlayAttached && this.getAutocomplete().getOptions().length > 0;
   };
 
   /** Get the autocomplete */
@@ -131,7 +131,7 @@ class AutocompleteExtension extends React.Component {
     'aria-activedescendant': this.getActiveOption() ?
       this.getActiveOption().getId() : null,
     'aria-expanded': this.props.autocompleteDisabled ?
-      null : this.state.panelOpen,
+      null : this.getPanelOpen(),
     'aria-owns': (this.props.autocompleteDisabled || !this.getPanelOpen()) ?
       null : this.getAutocomplete().getId(),
   });
@@ -149,7 +149,7 @@ class AutocompleteExtension extends React.Component {
     if (!this.state.overlayAttached) return;
     const autocomplete = this.getAutocomplete();
 
-    if (this.state.panelOpen) {
+    if (this.getPanelOpen()) {
       // Only emit if the panel was visible.
       _.invoke(autocomplete, 'props.onClose');
     }
@@ -160,7 +160,6 @@ class AutocompleteExtension extends React.Component {
     });
 
     this.setState({
-      panelOpen: false,
       // Overlay will be detached (from this component's POV)
       overlayAttached: false,
     });
@@ -197,7 +196,7 @@ class AutocompleteExtension extends React.Component {
     // pane was closed, in order to avoid reopening it unintentionally.
     this.setState({
       canOpenOnNextFocus: document.activeElement !== this.getInput().EL
-      || this.state.panelOpen,
+      || this.getPanelOpen(),
     });
   };
 
@@ -253,7 +252,7 @@ class AutocompleteExtension extends React.Component {
       event.preventDefault();
     }
 
-    if (this.getActiveOption() && key === ENTER && this.state.panelOpen) {
+    if (this.getActiveOption() && key === ENTER && this.getPanelOpen()) {
       this.getActiveOption().selectViaInteraction();
       resetActiveItem.call(this);
       event.preventDefault();
@@ -262,7 +261,7 @@ class AutocompleteExtension extends React.Component {
       const previousActiveItem = keyManager.activeItem;
       const isArrowKey = [ARROW_UP, UP, ARROW_DOWN, DOWN].indexOf(key) > -1;
 
-      if (this.state.panelOpen || key === TAB) {
+      if (this.getPanelOpen() || key === TAB) {
         keyManager.onKeyDown(event);
       } else if (isArrowKey && this.canOpen()) {
         this.openPanel();
@@ -415,7 +414,7 @@ function subscribeToClosingActions() {
   this.onPanelClose = _.once((event) => {
     resetActiveItem.call(this);
 
-    if (this.state.panelOpen) {
+    if (this.getPanelOpen()) {
       this.getAutocomplete().getOverlay().updatePosition();
     }
 
@@ -514,7 +513,7 @@ function attachOverlay() {
       this.props.__viewportRuler.add({
         id: this.DEFAULT_ID,
         callback: () => {
-          if (this.state.panelOpen && this.getAutocomplete().getOverlay()) {
+          if (this.getPanelOpen() && this.getAutocomplete().getOverlay()) {
             this.getAutocomplete().getOverlay
               .updateSize();
           }
@@ -532,13 +531,13 @@ function attachOverlay() {
       subscribeToClosingActions.call(this);
     }
 
-    const wasOpen = this.state.panelOpen;
+    const wasOpen = this.getPanelOpen();
 
     autocomplete.setState({ isOpen: true });
     this.setState({ overlayAttached: true });
 
     /** Do another check here to see if we can emit */
-    if (this.state.panelOpen && wasOpen !== this.state.panelOpen) {
+    if (this.getPanelOpen() && wasOpen !== this.getPanelOpen()) {
       _.invoke(autocomplete, 'props.onOpened');
     }
   });
