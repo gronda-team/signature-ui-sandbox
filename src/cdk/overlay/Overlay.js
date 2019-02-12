@@ -41,6 +41,11 @@ class Overlay extends React.Component {
     if (this.PANE && !_.isEqual(_.pick(prevProps, PROP_CSS_FIELDS), _.pick(this.props, PROP_CSS_FIELDS))) {
       updateElementSize.call(this, this.props);
     }
+
+    /** Update keydown when it changes as a prop, in case it comes later after attaching */
+    if (prevProps.onKeyDown !== this.props.onKeyDown) {
+      updateOverlayKeyDown.call(this, this.props.onKeyDown);
+    }
   }
   
   componentWillUnmount() {
@@ -454,4 +459,12 @@ function detachContent() {
       this.state.previousHostParent.removeChild(this.state.host);
     });
   }
+}
+
+/** Update the overlay keydown callback function */
+function updateOverlayKeyDown(current) {
+  this.props.__keyboardDispatcher.update({
+    id: this.OVERLAY_ID,
+    callback: current,
+  });
 }

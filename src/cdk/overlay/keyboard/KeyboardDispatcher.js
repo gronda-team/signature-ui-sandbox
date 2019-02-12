@@ -17,6 +17,7 @@ class OverlayKeyboardDispatcher extends React.Component {
       attached: false,
       provide: {
         add: this.add,
+        update: this.update,
         remove: this.remove,
       },
     };
@@ -40,15 +41,34 @@ class OverlayKeyboardDispatcher extends React.Component {
       attachedOverlays: [...state.attachedOverlays, { id, callback }],
     }));
   };
+
+  /** Update overlay callback in case it's changed */
+  update = ({ id, callback }) => {
+    const index = _.findIndex(this.state.attachedOverlays, { id });
+
+    if (index > -1) {
+      this.setState((state) => {
+        const info = state.attachedOverlays[index];
+        const attachedOverlays = [...state.attachedOverlays];
+        attachedOverlays.splice(index, 1, {
+          ...info,
+          callback,
+        });
+        return { attachedOverlays };
+      });
+    }
+  };
   
   /** Remove an overlay from the list of attached overlay refs. */
   remove = (id) => {
     const index = _.findIndex(this.state.attachedOverlays, { id });
     
     if (index > -1) {
-      this.setState(state => ({
-        attachedOverlays: [...state.attachedOverlays].splice(index, 1),
-      }), () => {
+      this.setState((state) => {
+        const attachedOverlays = [...state.attachedOverlays];
+        attachedOverlays.splice(index, 1);
+        return { attachedOverlays };
+      }, () => {
         if (this.state.attachedOverlays.length === 0) {
           detach.call(this);
         }
@@ -57,7 +77,7 @@ class OverlayKeyboardDispatcher extends React.Component {
   };
   
   /** Keyboard event listener that will be attached to the body. */
-  keyDownListener = () => {
+  keyDownListener = (event) => {
     /*
     Dispatch the keydown event to the top overlay which has subscribers to its keydown events.
     We want to target the most recent overlay, rather than trying to match where the event
@@ -68,7 +88,7 @@ class OverlayKeyboardDispatcher extends React.Component {
      */
     _.forEachRight(this.state.attachedOverlays, (overlay) => {
       if (overlay.callback) {
-        _.invoke(overlay.callback);
+        overlay.callback(event);
         return false;
       }
     });
