@@ -9,6 +9,11 @@ import { stack } from '../components/util';
 class Option extends React.Component {
   constructor() {
     super();
+
+    /** Show active styling */
+    this.state = {
+      active: false,
+    };
     
     this.DEFAULT_ID = _.uniqueId('sui-option:');
   }
@@ -49,6 +54,15 @@ class Option extends React.Component {
       this.OPTION.focus();
     }
   };
+
+  /** Programmatically activate this from e.g., a keyManager */
+  activate = () => {
+    this.setState({ active: true });
+  };
+
+  deactivate = () => {
+    this.setState({ active: false });
+  };
   
   /** Ensures the option is selected when activated from the keyboard. */
   handleKeydown = (event) => {
@@ -80,7 +94,7 @@ class Option extends React.Component {
         tabIndex={this.getTabIndex()}
         id={this.getId()}
         data-multiple={this.isMultiple()}
-        data-active={this.props.active}
+        data-active={this.state.active}
         aria-selected={this.props.selected.toString()}
         aria-disabled={this.isDisabled().toString()}
         onClick={this.selectViaInteraction}
