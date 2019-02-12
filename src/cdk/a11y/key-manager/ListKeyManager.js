@@ -80,10 +80,12 @@ export default class ListKeyManager extends React.Component {
     const previousIndex = this.state.activeItemIndex;
     this.updateActiveItem(item);
 
-    if (this.state.activeItemIndex !== previousIndex) {
-      // Invoke the change handler to whoever is listening
-      this.props.onChange(this.state.activeItemIndex);
-    }
+    window.setTimeout(() => {
+      if (this.state.activeItemIndex !== previousIndex) {
+        // Invoke the change handler to whoever is listening
+        this.props.onChange(this.state.activeItemIndex);
+      }
+    }, 0);
   };
 
   onKeyDown = (event) => {
