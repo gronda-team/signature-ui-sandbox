@@ -105,8 +105,8 @@ class AutocompleteExtension extends React.Component {
   /** Get the autocomplete panel's currently active option */
   getActiveOption = () => {
     const autocompleteKeyManager = _.invoke(this.getAutocomplete(), 'getKeyManager');
-    if (_.get(autocompleteKeyManager, 'activeItem.getId')) {
-      return autocompleteKeyManager.activeItem;
+    if (_.get(autocompleteKeyManager, 'state.activeItem')) {
+      return autocompleteKeyManager.state.activeItem;
     }
 
     return null;
