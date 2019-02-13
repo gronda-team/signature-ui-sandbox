@@ -7,12 +7,16 @@ const OptionParentPropTypes = PropTypes.shape({
   onSelectionChange: PropTypes.func,
   multiple: PropTypes.bool,
   activeItem: PropTypes.any,
+  monitor: PropTypes.func,
+  stopMonitoring: PropTypes.func,
 });
 
 const OptionParentDefaultProps = {
   onSelectionChange: _.noop,
   multiple: false,
   activeItem: null,
+  monitor: _.noop,
+  stopMonitoring: _.noop,
 };
 
 const {
