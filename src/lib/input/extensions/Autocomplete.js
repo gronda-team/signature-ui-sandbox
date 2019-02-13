@@ -112,6 +112,15 @@ class AutocompleteExtension extends React.Component {
     return null;
   };
 
+  getActiveOptionRef = () => {
+    if (!this.getActiveOption()) return '';
+    const activeOption = this.getActiveOption();
+    const activeOptionValue = _.get(activeOption, 'props.value');
+    const options = this.getAutocomplete().getOptions();
+    // Return the value that corresponds to props.value in options
+    return _.find(options, { props: { value: activeOptionValue } });
+  };
+
   /** Get whether or not the panel can actually open */
   canOpen = () => {
     const input = this.getInput();
@@ -128,8 +137,7 @@ class AutocompleteExtension extends React.Component {
       null : 'combobox',
     'aria-autocomplete': this.props.autocompleteDisabled ?
       null : 'list',
-    'aria-activedescendant': this.getActiveOption() ?
-      this.getActiveOption().getId() : null,
+    'aria-activedescendant': null,
     'aria-expanded': this.props.autocompleteDisabled ?
       null : this.getPanelOpen(),
     'aria-owns': (this.props.autocompleteDisabled || !this.getPanelOpen()) ?
@@ -252,8 +260,9 @@ class AutocompleteExtension extends React.Component {
       event.preventDefault();
     }
 
-    if (this.getActiveOption() && key === ENTER && this.getPanelOpen()) {
-      this.getActiveOption().selectViaInteraction();
+    if (this.getActiveOptionRef() && key === ENTER && this.getPanelOpen()) {
+      const value = _.get(this.getActiveOptionRef(), 'props.value');
+      _.invoke(this.getAutocomplete(), ['state', 'childRefs', value, 'selectViaInteraction']);
       resetActiveItem.call(this);
       event.preventDefault();
     } else if (this.getAutocomplete()) {

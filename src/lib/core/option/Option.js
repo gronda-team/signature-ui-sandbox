@@ -25,6 +25,10 @@ class Option extends React.Component {
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    this.props.__parent.monitor(this);
+  }
+
   componentDidUpdate(prevProps) {
     const currentActive = this.props.__parent.activeItem;
     const previousActive = prevProps.__parent.activeItem;
@@ -35,6 +39,15 @@ class Option extends React.Component {
         this.deactivate();
       }
     }
+
+    if (prevProps.value !== this.props.value) {
+      this.props.__parent.stopMonitoring(prevProps.value);
+      this.props.__parent.monitor(this);
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.__parent.stopMonitoring(this.props.value);
   }
 
   /**

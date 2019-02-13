@@ -33,6 +33,8 @@ class Autocomplete extends React.Component {
         /** Action to be done when an option is selected */
         onSelectionChange: _.noop,
       },
+      /** Map of child refs to register and deregister */
+      childRefs: {},
     };
 
     this.DEFAULT_ID = _.uniqueId('sui-autocomplete-panel:');
@@ -123,6 +125,8 @@ class Autocomplete extends React.Component {
   providerValue = () => ({
     onSelectionChange: this.state.service.onSelectionChange,
     activeItem: this.state.activeItem,
+    monitor: this.monitor,
+    stopMonitoring: this.stopMonitoring,
   });
 
   /**
@@ -140,6 +144,23 @@ class Autocomplete extends React.Component {
        * the actual item instead of prevState.activeItem.
        */
       activeItem: _.get(this.getOptions(), [index]),
+    });
+  };
+
+  monitor = (child) => {
+    const value = _.get(child, 'props.value');
+    this.setState(state => ({
+      childRefs: {
+        ...state.childRefs,
+        [value]: child,
+      },
+    }));
+  };
+
+  stopMonitoring = (value) => {
+    this.setState((state) => {
+      const { [value]: omit, ...rest } = state.childRefs;
+      return { childRefs: rest };
     });
   };
 
