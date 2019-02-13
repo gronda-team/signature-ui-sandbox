@@ -475,7 +475,7 @@ function setValueAndClose(event) {
       target: this.getInput().EL,
     });
     this.getInput().EL.focus();
-    // this.getAutocomplete().emitSelectEvent(event.source);
+    this.getAutocomplete().emitSelectEvent(event.source);
   }
 
   this.closePanel();

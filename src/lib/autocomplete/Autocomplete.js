@@ -147,6 +147,14 @@ class Autocomplete extends React.Component {
     });
   };
 
+  /** Callback for the "select" event */
+  emitSelectEvent = (option) => {
+    this.props.onSelect({
+      option,
+      source: this,
+    });
+  };
+
   monitor = (child) => {
     const value = _.get(child, 'props.value');
     this.setState(state => ({
@@ -232,12 +240,15 @@ const AutocompletePropTypes = {
   id: PropTypes.string,
   /** Fixed panel width */
   panelWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  /** Callback for event emitting when autocomplete option is selected */
+  onSelect: PropTypes.func,
 };
 
 const AutocompleteDefaultProps = {
   autoActiveFirstOption: false,
   id: null,
   panelWidth: null,
+  onSelect: _.noop,
 };
 
 Autocomplete.propTypes = {
