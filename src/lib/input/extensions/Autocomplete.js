@@ -212,7 +212,7 @@ class AutocompleteExtension extends React.Component {
   handleFocus = () => {
     if (!this.state.canOpenOnNextFocus) {
       this.setState({ canOpenOnNextFocus: true });
-    } else if (this.canOpen()) {
+    } else if (this.canOpen() && !this.state.overlayAttached) {
       // Save the previous value
       this.setState({ previousValue: this.getInput().EL.value });
       // Attach the overlay
