@@ -11,9 +11,11 @@ import ScrollDispatcher from '../../../cdk/scrolling/ScrollDispatcher';
 import { OverlayContainer } from '../../../cdk/overlay';
 import { FocusMonitor } from '../../../cdk/a11y';
 import { AutofillMonitor } from '../../../cdk/text-area';
+import {ARROW_DOWN} from '../../../cdk/keycodes/keys';
 
 describe('Autocomplete', () => {
   describe('Panel toggling', () => {
+    let root;
     let wrapper;
     let input;
     let overlay;
@@ -24,8 +26,12 @@ describe('Autocomplete', () => {
        * Must use fake timers because most of the components
        * involved (Overlays, etc.) handle asynchronous actions.
        */
+      root = document.createElement('div');
+      document.body.appendChild(root);
       jest.useFakeTimers();
-      wrapper = mount(<SimpleAutocomplete />);
+      wrapper = mount(<SimpleAutocomplete />, {
+        attachTo: root,
+      });
     });
 
     beforeEach(() => {
@@ -44,7 +50,7 @@ describe('Autocomplete', () => {
       expect(ace.getPanelOpen()).toBe(false);
 
       input.simulate('focus');
-      jest.runAllTimers();
+      jest.runOnlyPendingTimers();
       expect(ace.getPanelOpen()).toBe(true);
     });
 
@@ -56,9 +62,88 @@ describe('Autocomplete', () => {
       expect(ace.getPanelOpen()).toBe(false);
       input.simulate('focus');
 
-      jest.runAllTimers();
+      jest.runOnlyPendingTimers();
       // Should stay closed if we're read only
       expect(ace.getPanelOpen()).toBe(false);
+    });
+
+    it('should not open the panel using arrow keys when the input is readOnly', () => {
+      const ace = autocompleteExtension.instance();
+      wrapper.setState({ readOnly: true });
+
+      expect(ace.getPanelOpen()).toBe(false);
+      input.simulate('keydown', {
+        key: ARROW_DOWN,
+      });
+
+      jest.runOnlyPendingTimers();
+      // Should stay closed even if we have the keyboard down
+      expect(ace.getPanelOpen()).toBe(false);
+    });
+
+    it('should open the panel programmatically', () => {
+      const ace = autocompleteExtension.instance();
+
+      expect(ace.getPanelOpen()).toBe(false);
+
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      expect(ace.getPanelOpen()).toBe(true);
+      expect(overlay.text()).toContain('Alabama');
+      expect(overlay.text()).toContain('California');
+    });
+
+    it('should close the panel when the user clicks away', () => {
+      const ace = autocompleteExtension.instance();
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(true);
+
+      document.dispatchEvent(new Event('click'));
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+      expect(overlay.text()).toBeFalsy();
+    });
+
+    it('should close the panel when the user taps away on a touch device', () => {
+      const ace = autocompleteExtension.instance();
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(true);
+
+      document.dispatchEvent(new Event('touchend'));
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+      expect(overlay.text()).toBeFalsy();
+    });
+
+    it('should close the panel when an option is clicked', () => {
+      const ace = autocompleteExtension.instance();
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      /**
+       * We have to use a manually update here because after
+       * running internal updates, autocomplete.debug() will
+       * not show the wrappers present, despite it being on
+       * autocomplete.html().
+       *
+       * Manually calling update seems to fix this issue.
+       */
+      wrapper.update();
+      const option = wrapper.find('Option').at(0);
+      option.simulate('click');
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+      expect(overlay.text()).toBeFalsy();
     });
   });
 });
