@@ -17,7 +17,7 @@ describe('Autocomplete', () => {
     let wrapper;
     let input;
     let overlay;
-    let acb; // autocomplete behavior
+    let autocompleteExtension; // autocomplete behavior
 
     beforeAll(() => {
       /**
@@ -32,11 +32,21 @@ describe('Autocomplete', () => {
       wrapper.mount();
       input = wrapper.find('input');
       overlay = wrapper.find('Overlay');
-      acb = wrapper.find('AutocompleteExtension');
+      autocompleteExtension = wrapper.find('AutocompleteExtension');
+    });
+
+    afterEach(() => {
+      wrapper.unmount();
     });
 
     it('should open the panel when the input is focused', () => {
-      expect(acb.instance().getPanelOpen()).toBe(false);
+      const ace = autocompleteExtension.instance(); // = AutoCompleteExtension
+      expect(ace.getPanelOpen()).toBe(false);
+
+      input.simulate('focus');
+      jest.runAllTimers();
+      expect(ace.getPanelOpen()).toBe(true);
+    });
 
       input.simulate('focus');
       jest.runOnlyPendingTimers();
