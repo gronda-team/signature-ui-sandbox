@@ -48,9 +48,17 @@ describe('Autocomplete', () => {
       expect(ace.getPanelOpen()).toBe(true);
     });
 
+    it('should not open the panel on input focus if it’s readOnly', () => {
+      const ace = autocompleteExtension.instance(); // = AutoCompleteExtension
+
+      wrapper.setState({ readOnly: true });
+
+      expect(ace.getPanelOpen()).toBe(false);
       input.simulate('focus');
-      jest.runOnlyPendingTimers();
-      expect(acb.instance().getPanelOpen()).toBe(true);
+
+      jest.runAllTimers();
+      // Should stay closed if we're read only
+      expect(ace.getPanelOpen()).toBe(false);
     });
   });
 });
@@ -74,6 +82,7 @@ class SimpleAutocomplete extends React.Component {
         { code: 'WY', name: 'Wyoming' },
       ],
       value: '',
+      readOnly: false,
     };
   }
 
@@ -101,6 +110,7 @@ class SimpleAutocomplete extends React.Component {
                   <React.Fragment>
                     <FormField>
                       <Input
+                        readOnly={this.state.readOnly}
                         placeholder="State"
                         autocompleteAttribute="auto"
                         autocompleteDisabled={this.props.autocompleteDisabled}

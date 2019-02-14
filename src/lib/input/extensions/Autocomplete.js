@@ -126,8 +126,8 @@ class AutocompleteExtension extends React.Component {
     const input = this.getInput();
     if (!input) return !this.props.autocompleteDisabled;
     return !_.get(input, 'props.readOnly')
-    || !_.get(input, 'props.disabled')
-    || !this.props.autocompleteDisabled;
+    && !_.get(input, 'props.disabled')
+    && !this.props.autocompleteDisabled;
   };
 
   /** Get the attributes that are associated with the autocomplete */
