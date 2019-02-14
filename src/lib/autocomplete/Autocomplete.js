@@ -256,7 +256,7 @@ Autocomplete.propTypes = {
   __formFieldControl: FormFieldPropTypes,
 };
 
-Autocomplete.propTypes = {
+Autocomplete.defaultProps = {
   ...AutocompleteDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
 };

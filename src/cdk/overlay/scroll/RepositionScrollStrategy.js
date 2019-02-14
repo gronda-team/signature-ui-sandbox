@@ -74,7 +74,7 @@ class RepositionScrollStrategy extends React.Component {
 
 const RepositionScrollStrategyPropTypes = {
   /** Associated overlay */
-  overlay: PropTypes.string.isRequired,
+  overlay: PropTypes.object,
   /** Time in milliseconds to throttle the scroll events. */
   scrollThrottle: PropTypes.number,
   /** Whether to close the overlay once the user has scrolled away completely. */

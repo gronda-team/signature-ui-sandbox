@@ -124,7 +124,7 @@ ScrollDispatcher.propTypes = {
   __platform: PlatformPropTypes,
 };
 
-ScrollDispatcher.propTypes = {
+ScrollDispatcher.defaultProps = {
   __platform: PlatformDefaultProps,
 };
 

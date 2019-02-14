@@ -146,7 +146,7 @@ const OptionPropTypes = {
   /** The unique ID of the option. */
   id: PropTypes.string,
   /** view value of the option item */
-  viewValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  viewValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 const OptionDefaultProps = {
@@ -154,6 +154,7 @@ const OptionDefaultProps = {
   disabled: false,
   id: null,
   '__sui-internal-type': 'Option',
+  viewValue: null,
 };
 
 Option.propTypes = {

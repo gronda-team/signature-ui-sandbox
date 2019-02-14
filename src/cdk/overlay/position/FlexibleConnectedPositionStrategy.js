@@ -304,7 +304,7 @@ class FlexibleConnectedPositionStrategy extends React.Component {
 
 const FCPSPropTypes = {
   /** The actual overlay to which this strategy is attached */
-  overlay: PropTypes.element,
+  overlay: PropTypes.object,
   /** The origin element against which the overlay will be positioned. */
   origin: PropTypes.instanceOf(HTMLElement),
   /** Whether the overlay can be pushed on-screen on the initial open. */
