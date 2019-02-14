@@ -145,6 +145,87 @@ describe('Autocomplete', () => {
       expect(ace.getPanelOpen()).toBe(false);
       expect(overlay.text()).toBeFalsy();
     });
+
+    it('should close the panel when a filtered option is clicked', () => {
+      const ace = autocompleteExtension.instance();
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      input.simulate('change', {
+        target: { value: 'a' }
+      });
+      input.simulate('change', {
+        target: { value: 'al' }
+      }); // try typing Alabama or california
+
+      expect(wrapper.state('value')).toEqual('al');
+
+      wrapper.update();
+      const alabama = wrapper.find('Option').at(0);
+      alabama.simulate('click');
+      jest.runOnlyPendingTimers();
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      input.simulate('change', {
+        target: { value: 'a' }
+      });
+      input.simulate('change', {
+        target: { value: 'al' }
+      }); // try typing California
+
+      wrapper.update();
+      const california = wrapper.find('Option').at(1);
+      california.simulate('click');
+
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+      expect(overlay.text()).toBeFalsy();
+    });
+
+    it('should close the panel programmatically', () => {
+      const ace = autocompleteExtension.instance();
+
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+
+      ace.closePanel();
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+      expect(overlay.text()).toBeFalsy();
+    });
+
+    it('should hide the panel when the options list is empty', () => {
+      const ace = autocompleteExtension.instance();
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+      expect(ace.getPanelOpen()).toBe(true);
+
+      input.simulate('change', {
+        target: { value: 'a' }
+      });
+      input.simulate('change', {
+        target: { value: 'af' }
+      }); // try getting a no-match
+
+      expect(wrapper.state('value')).toEqual('af');
+      expect(ace.getPanelOpen()).toBe(false);
+    });
+
+    it('should not open the panel when the value changes on a non-focused input', () => {
+      const ace = autocompleteExtension.instance();
+      expect(ace.getPanelOpen()).toBe(false);
+      wrapper.setState({ value: 'Alabama' });
+
+      jest.runOnlyPendingTimers();
+      // It should remain closed
+      expect(ace.getPanelOpen()).toBe(false);
+    });
   });
 });
 
