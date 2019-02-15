@@ -547,7 +547,7 @@ function attachOverlay() {
 
     /** Do another check here to see if we can emit */
     if (this.getPanelOpen() && wasOpen !== this.getPanelOpen()) {
-      _.invoke(autocomplete, 'props.onOpened');
+      _.invoke(autocomplete, 'props.onOpen');
     }
   });
 }

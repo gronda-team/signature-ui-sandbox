@@ -242,6 +242,9 @@ const AutocompletePropTypes = {
   panelWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   /** Callback for event emitting when autocomplete option is selected */
   onSelect: PropTypes.func,
+  /** Callback for opening and closing */
+  onOpen: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 const AutocompleteDefaultProps = {
@@ -249,6 +252,8 @@ const AutocompleteDefaultProps = {
   id: null,
   panelWidth: null,
   onSelect: _.noop,
+  onOpen: _.noop,
+  onClose: _.noop,
 };
 
 Autocomplete.propTypes = {
