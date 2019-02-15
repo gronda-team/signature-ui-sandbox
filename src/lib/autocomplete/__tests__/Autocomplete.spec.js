@@ -182,6 +182,7 @@ describe('Autocomplete', () => {
 
       jest.runOnlyPendingTimers();
 
+      expect(wrapper.state('value')).toBe('California');
       expect(ace.getPanelOpen()).toBe(false);
       expect(overlay.text()).toBeFalsy();
     });
@@ -226,6 +227,73 @@ describe('Autocomplete', () => {
       // It should remain closed
       expect(ace.getPanelOpen()).toBe(false);
     });
+
+    it('should toggle the visibility when typing and closing the panel', () => {
+      /**
+       * In other words, the panel should hide any non-matching
+       * results, but when we try typing again, it should show
+       * the panel again.
+       */
+      const ace = autocompleteExtension.instance();
+
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+      expect(wrapper.find('[data-visible="true"]')).toBeTruthy();
+
+      input.simulate('change', {
+        target: { value: 'x' },
+      });
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(ace.getPanelOpen()).toBe(false);
+
+      ace.closePanel();
+      jest.runOnlyPendingTimers();
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+
+      input.simulate('change', {
+        target: { value: 'al' },
+      });
+
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(wrapper.find('[data-visible="true"]')).toBeTruthy();
+    });
+
+    it('should provide the open state of the panel', () => {
+      const ace = autocompleteExtension.instance();
+      expect(ace.getPanelOpen()).toBe(false);
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(true);
+    });
+
+    it('should emit an event when the panel is opened', () => {
+      const spy = jest.fn();
+      wrapper.setState({ onOpen: spy });
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not emit the `onOpen` event when no options are shown', () => {
+      const spy = jest.fn();
+      // Set the value without dispatching an input event
+      wrapper.setState({ value: 'xyz', onOpen: spy });
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      expect(spy).not.toHaveBeenCalled();
+    });
   });
 });
 
@@ -248,6 +316,8 @@ class SimpleAutocomplete extends React.Component {
         { code: 'WY', name: 'Wyoming' },
       ],
       value: '',
+      onOpen: _.noop,
+      onClose: _.noop,
       readOnly: false,
     };
   }
@@ -286,8 +356,8 @@ class SimpleAutocomplete extends React.Component {
                       />
                       <Autocomplete
                         displayWith={this.displayFn}
-                        onOpen={this.props.onOpen}
-                        onClose={this.props.onClose}
+                        onOpen={this.state.onOpen}
+                        onClose={this.state.onClose}
                       >
                         { this.getFilteredStates().map(state => (
                           <Option value={state} key={state.code}>
