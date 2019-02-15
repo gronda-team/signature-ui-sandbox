@@ -294,6 +294,62 @@ describe('Autocomplete', () => {
 
       expect(spy).not.toHaveBeenCalled();
     });
+
+    it('should not emit the `onOpen` event multiple times while typing', () => {
+      const spy = jest.fn();
+      wrapper.setState({ onOpen: spy });
+
+      const ace = autocompleteExtension.instance();
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      input.simulate('change', {
+        target: { value: 'Alabam' },
+      });
+      jest.runOnlyPendingTimers();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit an event when the panel is closed', () => {
+      const spy = jest.fn();
+      wrapper.setState({ onClose: spy });
+      const ace = autocompleteExtension.instance();
+
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+
+      ace.closePanel();
+      jest.runOnlyPendingTimers();
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not emit the `onClose` event when no options are shown', () => {
+      const spy = jest.fn();
+      wrapper.setState({ onClose: spy, value: 'xyz' });
+      const ace = autocompleteExtension.instance();
+
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      ace.closePanel();
+      jest.runOnlyPendingTimers();
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not be able to open the panel if the autocomplete is disabled', () => {
+      const ace = autocompleteExtension.instance();
+      expect(ace.getPanelOpen()).toBe(false);
+
+      wrapper.setState({ autocompleteDisabled: true });
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+    });
   });
 });
 
@@ -319,6 +375,7 @@ class SimpleAutocomplete extends React.Component {
       onOpen: _.noop,
       onClose: _.noop,
       readOnly: false,
+      autocompleteDisabled: false,
     };
   }
 
@@ -349,7 +406,7 @@ class SimpleAutocomplete extends React.Component {
                         readOnly={this.state.readOnly}
                         placeholder="State"
                         autocompleteAttribute="auto"
-                        autocompleteDisabled={this.props.autocompleteDisabled}
+                        autocompleteDisabled={this.state.autocompleteDisabled}
                         value={this.state.value}
                         onChange={this.onChange}
                         extensions={['autocomplete']}
