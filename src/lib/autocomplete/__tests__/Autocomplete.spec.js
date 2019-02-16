@@ -328,6 +328,25 @@ describe('Autocomplete', () => {
       expect(ace.getPanelOpen()).toBe(false);
     });
   });
+
+  describe('Bidi, LTR and RTL contexts', () => {
+    /**
+     * Check the bidirectionality capabilities
+     * of the panel. Ensure that the components
+     * can react accordingly when the `dir` attribute
+     * is set.
+     */
+    it('should have the correct text direction in RTL', () => {
+      wrapper.setState({ dir: 'rtl' });
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      const boundingBox = document.querySelector('[data-overlay-role="bounding-box"]');
+      expect(boundingBox).toBeTruthy();
+      expect(boundingBox.getAttribute('dir')).toEqual('rtl');
+    });
+  });
 });
 
 class SimpleAutocomplete extends React.Component {
@@ -353,6 +372,7 @@ class SimpleAutocomplete extends React.Component {
       onClose: _.noop,
       readOnly: false,
       autocompleteDisabled: false,
+      dir: 'ltr',
     };
   }
 
@@ -392,6 +412,7 @@ class SimpleAutocomplete extends React.Component {
                         displayWith={this.displayFn}
                         onOpen={this.state.onOpen}
                         onClose={this.state.onClose}
+                        dir={this.state.dir}
                       >
                         { this.getFilteredStates().map(state => (
                           <Option value={state} key={state.code}>
