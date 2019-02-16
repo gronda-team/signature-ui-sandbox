@@ -110,7 +110,7 @@ class Overlay extends React.Component {
     
     updateStackingOrder.call(this);
     updateElementSize.call(this);
-    // updateElementDirection.call(this);
+    updateElementDirection.call(this);
     
     if (this.props.scrollStrategy) {
       this.props.scrollStrategy.enable();
@@ -415,6 +415,11 @@ function detachBackdrop() {
    */
   backdrop.style.pointerEvents = 'none';
   timeoutId = window.setTimeout(finishDetach, 500);
+}
+
+/** Updates the text direction on the overlay panel host */
+function updateElementDirection() {
+  this.HOST.setAttribute('dir', this.props.dir);
 }
 
 /** Updates the size of the overlay element based on the overlay config. */
