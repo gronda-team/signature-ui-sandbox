@@ -9,6 +9,7 @@ import RepositionScrollStrategy from '../../cdk/overlay/scroll/RepositionScrollS
 import { OptionParentProvider } from '../core/option';
 import {AutocompletePanel, AutocompletePanelRoot} from './styles';
 import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../form-field';
+import {RTLDefaultProps, RTLPropTypes} from '../../cdk/bidi';
 
 const toArray = React.Children.toArray;
 
@@ -104,6 +105,11 @@ class Autocomplete extends React.Component {
   getOptionGroups = () => (
     this.getChildren().filter(byInternalType('OptGroup'))
   );
+
+  /** Get directionality */
+  getDir = () => ['ltr', 'rtl'].indexOf(this.props.dir) > -1 ?
+    this.props.dir :
+    'ltr';
 
   /** Get the option children */
   getOptions = () => {
@@ -207,6 +213,7 @@ class Autocomplete extends React.Component {
           onKeyDown={this.state.service.onKeyDown}
           positionStrategy={this.positionStrategy.current}
           scrollStrategy={this.scrollStrategy.current}
+          dir={this.getDir()}
           width={getPanelWidth.call(this)}
           ref={this.overlay}
         >
@@ -231,6 +238,8 @@ class Autocomplete extends React.Component {
 }
 
 const AutocompletePropTypes = {
+  /** Add directionality context */
+  ...RTLPropTypes,
   /**
    * Whether the first option is highlighted when the panel
    * is first open
@@ -248,6 +257,7 @@ const AutocompletePropTypes = {
 };
 
 const AutocompleteDefaultProps = {
+  ...RTLDefaultProps,
   autoActiveFirstOption: false,
   id: null,
   panelWidth: null,
