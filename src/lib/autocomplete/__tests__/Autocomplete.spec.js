@@ -14,39 +14,40 @@ import { AutofillMonitor } from '../../../cdk/text-area';
 import {ARROW_DOWN} from '../../../cdk/keycodes/keys';
 
 describe('Autocomplete', () => {
+  let root;
+  let wrapper;
+  let input;
+  let overlay;
+  let autocompleteExtension; // autocomplete behavior
+  let ace; // instance for autocompleteExtension
+
+  beforeAll(() => {
+    /**
+     * Must use fake timers because most of the components
+     * involved (Overlays, etc.) handle asynchronous actions.
+     */
+    root = document.createElement('div');
+    document.body.appendChild(root);
+    jest.useFakeTimers();
+    wrapper = mount(<SimpleAutocomplete />, {
+      attachTo: root,
+    });
+  });
+
+  beforeEach(() => {
+    wrapper.mount();
+    input = wrapper.find('input');
+    overlay = wrapper.find('Overlay');
+    autocompleteExtension = wrapper.find('AutocompleteExtension');
+    ace = autocompleteExtension.instance();
+  });
+
+  afterEach(() => {
+    wrapper.unmount();
+  });
+
   describe('Panel toggling', () => {
-    let root;
-    let wrapper;
-    let input;
-    let overlay;
-    let autocompleteExtension; // autocomplete behavior
-
-    beforeAll(() => {
-      /**
-       * Must use fake timers because most of the components
-       * involved (Overlays, etc.) handle asynchronous actions.
-       */
-      root = document.createElement('div');
-      document.body.appendChild(root);
-      jest.useFakeTimers();
-      wrapper = mount(<SimpleAutocomplete />, {
-        attachTo: root,
-      });
-    });
-
-    beforeEach(() => {
-      wrapper.mount();
-      input = wrapper.find('input');
-      overlay = wrapper.find('Overlay');
-      autocompleteExtension = wrapper.find('AutocompleteExtension');
-    });
-
-    afterEach(() => {
-      wrapper.unmount();
-    });
-
     it('should open the panel when the input is focused', () => {
-      const ace = autocompleteExtension.instance(); // = AutoCompleteExtension
       expect(ace.getPanelOpen()).toBe(false);
 
       input.simulate('focus');
@@ -55,7 +56,6 @@ describe('Autocomplete', () => {
     });
 
     it('should not open the panel on input focus if it’s readOnly', () => {
-      const ace = autocompleteExtension.instance(); // = AutoCompleteExtension
 
       wrapper.setState({ readOnly: true });
 
@@ -68,7 +68,6 @@ describe('Autocomplete', () => {
     });
 
     it('should not open the panel using arrow keys when the input is readOnly', () => {
-      const ace = autocompleteExtension.instance();
       wrapper.setState({ readOnly: true });
 
       expect(ace.getPanelOpen()).toBe(false);
@@ -82,8 +81,6 @@ describe('Autocomplete', () => {
     });
 
     it('should open the panel programmatically', () => {
-      const ace = autocompleteExtension.instance();
-
       expect(ace.getPanelOpen()).toBe(false);
 
       ace.openPanel();
@@ -94,8 +91,6 @@ describe('Autocomplete', () => {
     });
 
     it('should close the panel when the user clicks away', () => {
-      const ace = autocompleteExtension.instance();
-
       input.simulate('focus');
       jest.runOnlyPendingTimers();
 
@@ -109,8 +104,6 @@ describe('Autocomplete', () => {
     });
 
     it('should close the panel when the user taps away on a touch device', () => {
-      const ace = autocompleteExtension.instance();
-
       input.simulate('focus');
       jest.runOnlyPendingTimers();
 
@@ -124,8 +117,6 @@ describe('Autocomplete', () => {
     });
 
     it('should close the panel when an option is clicked', () => {
-      const ace = autocompleteExtension.instance();
-
       input.simulate('focus');
       jest.runOnlyPendingTimers();
 
@@ -147,8 +138,6 @@ describe('Autocomplete', () => {
     });
 
     it('should close the panel when a filtered option is clicked', () => {
-      const ace = autocompleteExtension.instance();
-
       input.simulate('focus');
       jest.runOnlyPendingTimers();
 
@@ -188,8 +177,6 @@ describe('Autocomplete', () => {
     });
 
     it('should close the panel programmatically', () => {
-      const ace = autocompleteExtension.instance();
-
       ace.openPanel();
       jest.runOnlyPendingTimers();
 
@@ -201,8 +188,6 @@ describe('Autocomplete', () => {
     });
 
     it('should hide the panel when the options list is empty', () => {
-      const ace = autocompleteExtension.instance();
-
       input.simulate('focus');
       jest.runOnlyPendingTimers();
       expect(ace.getPanelOpen()).toBe(true);
@@ -219,7 +204,6 @@ describe('Autocomplete', () => {
     });
 
     it('should not open the panel when the value changes on a non-focused input', () => {
-      const ace = autocompleteExtension.instance();
       expect(ace.getPanelOpen()).toBe(false);
       wrapper.setState({ value: 'Alabama' });
 
@@ -234,8 +218,6 @@ describe('Autocomplete', () => {
        * results, but when we try typing again, it should show
        * the panel again.
        */
-      const ace = autocompleteExtension.instance();
-
       ace.openPanel();
       jest.runOnlyPendingTimers();
       wrapper.update();
@@ -265,7 +247,6 @@ describe('Autocomplete', () => {
     });
 
     it('should provide the open state of the panel', () => {
-      const ace = autocompleteExtension.instance();
       expect(ace.getPanelOpen()).toBe(false);
 
       input.simulate('focus');
@@ -299,7 +280,6 @@ describe('Autocomplete', () => {
       const spy = jest.fn();
       wrapper.setState({ onOpen: spy });
 
-      const ace = autocompleteExtension.instance();
       ace.openPanel();
       jest.runOnlyPendingTimers();
 
@@ -315,7 +295,6 @@ describe('Autocomplete', () => {
     it('should emit an event when the panel is closed', () => {
       const spy = jest.fn();
       wrapper.setState({ onClose: spy });
-      const ace = autocompleteExtension.instance();
 
       ace.openPanel();
       jest.runOnlyPendingTimers();
@@ -329,7 +308,6 @@ describe('Autocomplete', () => {
     it('should not emit the `onClose` event when no options are shown', () => {
       const spy = jest.fn();
       wrapper.setState({ onClose: spy, value: 'xyz' });
-      const ace = autocompleteExtension.instance();
 
       ace.openPanel();
       jest.runOnlyPendingTimers();
@@ -340,7 +318,6 @@ describe('Autocomplete', () => {
     });
 
     it('should not be able to open the panel if the autocomplete is disabled', () => {
-      const ace = autocompleteExtension.instance();
       expect(ace.getPanelOpen()).toBe(false);
 
       wrapper.setState({ autocompleteDisabled: true });
