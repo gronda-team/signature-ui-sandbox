@@ -88,6 +88,8 @@ class FlexibleConnectedPositionStrategy extends React.Component {
       boundingBoxStyles.forEach((className) => {
         this.props.overlay.state.host.classList.add(className);
       });
+
+      boundingBox.setAttribute('data-overlay-role', 'bounding-box');
     }
     
     this.setState({
@@ -272,6 +274,8 @@ class FlexibleConnectedPositionStrategy extends React.Component {
       boundingBoxStyles.forEach((className) => {
         this.props.overlay.state.host.classList.remove(className);
       });
+
+      this.props.overlay.state.host.removeAttribute('data-overlay-role');
     }
     
     this.detach();
