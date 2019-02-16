@@ -6,7 +6,7 @@ import { ListKeyManager } from '../../cdk/a11y';
 import { countGroupLabelsBeforeOption, getOptionScrollPosition } from '../core/option/util';
 import {ARROW_DOWN, ARROW_KEYS, ARROW_UP, DOWN, END, ENTER, HOME, SPACE, SPACEBAR, UP} from '../../cdk/keycodes/keys';
 import { stack } from '../core/components/util';
-import { isRtl } from '../../cdk/bidi/constants';
+import { isRtl } from '../../cdk/bidi';
 import {
   SelectPanel, SelectPlaceholder, SelectRoot, SelectTrigger, SelectValue,
   SelectValueText,
@@ -68,7 +68,8 @@ class Select extends React.Component {
       /** Same as offsetY, but for the X direction */
       offsetX: 0,
     };
-    
+
+    this.isRtl = isRtl.bind(this);
     this.DEFAULT_ID = _.uniqueId('sui-select:');
     this.POSITIONS = DEFAULT_POSITIONS;
     this.connectedOverlay = React.createRef();
@@ -322,7 +323,7 @@ class Select extends React.Component {
     if (this.props.multiple) {
       const selectedOptionIndices = selected.map(getOptionIndexFromValue);
       
-      if (isRtl.call(this)) {
+      if (this.isRtl()) {
         selectedOptionIndices.reverse();
       }
       const selectedOptions = selectedOptionIndices
@@ -790,7 +791,7 @@ function calculateOverlayOffsetX() {
   window.setTimeout(() => {
     const overlayRect = this.PANEL.getBoundingClientRect();
     const viewportSize = this.props.__viewportRuler.getViewportSize();
-    const rtl = isRtl.call(this);
+    const rtl = this.isRtl();
     const paddingWidth = SELECT_PANEL_PADDING_X * 2;
 
     // Adjust the offset, depending on the option padding.
