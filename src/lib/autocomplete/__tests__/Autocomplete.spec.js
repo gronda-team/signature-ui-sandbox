@@ -346,6 +346,29 @@ describe('Autocomplete', () => {
       expect(boundingBox).toBeTruthy();
       expect(boundingBox.getAttribute('dir')).toEqual('rtl');
     });
+
+    it('should update the panel direction if it changes', () => {
+      wrapper.setState({ dir: 'rtl' });
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      let boundingBox = document.querySelector('[data-overlay-role="bounding-box"]');
+      expect(boundingBox).toBeTruthy();
+      expect(boundingBox.getAttribute('dir')).toEqual('rtl');
+
+      ace.closePanel();
+      jest.runOnlyPendingTimers();
+
+      wrapper.setState({ dir: 'ltr' });
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      boundingBox = document.querySelector('[data-overlay-role="bounding-box"]');
+      expect(boundingBox).toBeTruthy();
+      expect(boundingBox.getAttribute('dir')).toEqual('ltr');
+    });
   });
 });
 
