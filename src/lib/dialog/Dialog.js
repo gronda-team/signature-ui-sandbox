@@ -132,9 +132,9 @@ class Dialog extends React.Component {
   render() {
     return (
       <Overlay
-        ref={this.overlay}
         onDetach={this.handleOverlayDetachment}
         onKeyDown={this.handleOverlayKeyDown}
+        ref={this.overlay}
       >
         <DialogContainer
           id={this.getId()}
