@@ -5,6 +5,7 @@ import {PROP_TYPE_STRING_OR_NUMBER} from '../../cdk/util';
 import { Overlay } from '../../cdk/overlay';
 import {ESC, ESCAPE} from '../../cdk/keycodes/keys';
 import {OverlayContainerDefaultProps, OverlayContainerPropTypes} from '../../cdk/overlay/context/overlay-container';
+import DialogContainer from './DialogContainer';
 
 /**
  * Dialog component that uses CDK Overlay behind the scenes.
