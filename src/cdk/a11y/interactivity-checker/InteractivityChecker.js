@@ -1,7 +1,6 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
 import {PlatformDefaultProps, PlatformPropTypes, withPlatformConsumer} from '../../platform';
+import { InteractivityCheckerProvider } from './context/InteractivityCheckerContext';
 
 /**
  * Root-level provider to check the interactivity of an
