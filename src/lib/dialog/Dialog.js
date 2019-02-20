@@ -17,8 +17,6 @@ class Dialog extends React.Component {
     super();
 
     this.state = {
-      /** Other open dialogs (if this dialog opens a child dialog) */
-      openDialogsAtThisLevel: [],
       /**
        * List of self-expiring actions that will be invoked
        * when the dialog animates.
@@ -28,8 +26,6 @@ class Dialog extends React.Component {
 
     /** Refs, constants */
     this.DEFAULT_ID = _.uniqueId('sui-overlay:');
-    /** We don't need this to be reactive, so it can remain as instance var */
-    this.ARIA_HIDDEN_ELEMENTS = [];
     this.overlay = React.createRef();
     this.container = React.createRef();
     /**
@@ -81,49 +77,6 @@ class Dialog extends React.Component {
   /** Get a reference to the Dialog container */
   getContainer = () => _.get(this.container, 'current', {});
 
-  /** Get the currently open dialogs */
-  getOpenDialogs = () => this.props.__parentDialog.getOpenDialogs() || this.state.openDialogsAtThisLevel;
-
-  /** Remove an open dialog */
-  removeDialog = (id) => {
-    /**
-     * Check to see if the parent provides the removeDialog
-     * function. If it does, then invoke it and return
-     * so it is only set at the top level parent.
-     */
-    if (_.isFunction(this.props.__parentDialog.removeDialog)) {
-      this.props.__parentDialog.removeDialog(id);
-      return;
-    }
-
-    /**
-     * If the overlay does not have a parent, it will
-     * end up here and will remove the topmost dialog
-     * where necessary.
-     */
-    this.setState((state) => {
-      const openDialogs = [...state.openDialogsAtThisLevel];
-      const index = _.findIndex(openDialogs, { id });
-      openDialogs.splice(index, 1);
-      return { openDialogsAtThisLevel: openDialogs };
-    });
-  };
-
-  /** Add a dialog (follows same logic as removeDialog) */
-  addDialog = ({ id, dialog }) => {
-    // See removeDialog to see how this works
-    if (_.isFunction(this.props.__parentDialog.addDialog)) {
-      this.props.__parentDialog.addDialog({ id, dialog });
-      return;
-    }
-
-    this.setState(state => ({
-      openDialogsAtThisLevel: [...state.openDialogsAtThisLevel, { id, dialog }],
-    }), () => {
-
-    });
-  };
-
   /**
    * Actions
    */
@@ -133,9 +86,6 @@ class Dialog extends React.Component {
      * If this is the first dialog we're opening then hide all
      * non-overlay content from screen readers and such.
      */
-    if (!this.getOpenDialogs().length) {
-      hideNonDialogContentFromAssistiveTechnology.call(this);
-    }
   };
 
   /** Close the overlay */
@@ -285,51 +235,3 @@ Dialog.defaultProps = {
 /**
  * Private methods
  */
-/** Hide remaining content from assistive technology */
-function hideNonDialogContentFromAssistiveTechnology() {
-  const overlayContainer = this.props.__overlayContainer.getContainer();
-
-  // Ensure that the overlay container is attached to the DOM.
-  if (overlayContainer.parentElement) {
-    const siblings = overlayContainer.parentElement.children;
-
-    for (let i = siblings.length - 1; i > -1; i--) {
-      // In reverse order
-      let sibling = siblings[i];
-
-      if (
-        sibling !== overlayContainer
-        && sibling.nodeName !== 'SCRIPT'
-        && sibling.nodeName !== 'STYLE'
-        && !sibling.hasAttribute('aria-live')
-      ) {
-        /**
-         * Save a reference to the DOM element as well as
-         * the previous value for aria-hidden. That way,
-         * we can set it back once all the dialogs are
-         * unmounted.
-         */
-        this.ARIA_HIDDEN_ELEMENTS.push({
-          element: sibling,
-          previousAttribute: sibling.getAttribute('aria-hidden'),
-        });
-        // Set aria-hidden for all other non-overlay container siblings
-        sibling.setAttribute('aria-hidden', 'true');
-      }
-    }
-  }
-}
-
-/** Remove a dialog from the saved list of open dialogs */
-function removeOpenDialog(id) {
-  const index = _.findIndex(this.getOpenDialogs(), { id });
-
-  if (index > -1) {
-    /**
-     * Recursively call parents' removeDialog method until
-     * we get to the topmost parent, and then remove the
-     * dialog from there.
-     */
-    this.removeDialog(id);
-  }
-}
