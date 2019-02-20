@@ -66,6 +66,16 @@ class Dialog extends React.Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.open !== this.props.open) {
+      if (this.props.open) {
+        this.open();
+      } else {
+        this.close();
+      }
+    }
+  }
+
   /**
    * Derived data
    */
@@ -83,10 +93,37 @@ class Dialog extends React.Component {
    */
   /** Open the modal dialog */
   open = () => {
+    const overlay = this.getOverlay();
+    if (!overlay.state.created) {
+      /** Create the overlay if it hasn't been created already */
+      overlay.create();
+    } else {
+      overlay.updateSize();
+    }
+
     /**
-     * If this is the first dialog we're opening then hide all
-     * non-overlay content from screen readers and such.
+     * Wait until the next tick to attach the backdrop click
+     * and other important stuff.
      */
+    window.setTimeout(() => {
+      if (this.props.backdrop) {
+        overlay.setState({
+          backdropClick: () => {
+            /**
+             * When the user clicks on the backdrop, and if they
+             * do not disable close, then it should close the
+             * backdrop as expected.
+             */
+            if (!this.props.disableClose) {
+              this.close();
+            }
+          },
+        });
+      }
+    }, 0);
+
+    /** Add the reference to the dialog manager */
+    this.props.__parentDialogManager.add({ id: this.DEFAULT_ID, dialog: this });
   };
 
   /** Close the overlay */
@@ -152,6 +189,8 @@ class Dialog extends React.Component {
 const DialogPropTypes = {
   /** ID for the dialog. If omitted, a unique one will be generated. */
   id: PropTypes.string,
+  /** Whether the dialog is open or not */
+  open: PropTypes.bool,
   /** The ARIA role of the dialog element */
   role: PropTypes.string,
   /** Whether the user can use escape or clicking on the backdrop to close the modal. */
@@ -203,6 +242,7 @@ const DialogPropTypes = {
 
 const DialogDefaultProps = {
   id: null,
+  open: false,
   role: 'dialog',
   panelClass: '',
   disableClose: false,
