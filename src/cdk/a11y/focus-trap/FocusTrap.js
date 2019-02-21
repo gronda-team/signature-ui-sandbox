@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import {InteractivityCheckerDefaultProps, InteractivityCheckerPropTypes, withInteractivityChecker} from '..';
 
 /**
@@ -29,12 +28,6 @@ class FocusTrap extends React.Component {
   /**
    * Lifecycle
    */
-  componentDidMount() {
-    if (!this.props.deferAnchors) {
-      this.attachAnchors();
-    }
-  }
-
   componentDidUpdate(prevProps) {
     if (
       prevProps.enabled !== this.props.enabled
@@ -44,6 +37,17 @@ class FocusTrap extends React.Component {
       /** If we're toggling/not toggling, then update the tab index for the anchors */
       toggleAnchorTabIndex.call(this, this.props.enabled, this.START_ANCHOR);
       toggleAnchorTabIndex.call(this, this.props.enabled, this.END_ANCHOR);
+    }
+
+    /**
+     * Instantiate the anchors when props.element is defined
+     */
+    if (
+      (!prevProps.element && this.props.element)
+      && !this.props.deferAnchors
+      && this.props.enabled
+    ) {
+      this.attachAnchors();
     }
   }
 
@@ -120,7 +124,7 @@ class FocusTrap extends React.Component {
    */
   focusFirstTabbableElement = () => {
     const redirectToElement = getRegionBoundary.call(this, 'start');
-
+    console.log(redirectToElement);
     if (redirectToElement) {
       redirectToElement.focus();
     }
@@ -203,6 +207,11 @@ function getRegionBoundary(bound) {
 
 /** Recursively get the first tabbable element from a DOM subtree */
 function getFirstTabbableElement(root) {
+  console.log(
+    root.nodeName,
+    this.props.__interactivity.isFocusable(root),
+    this.props.__interactivity.isTabbable(root)
+  );
   if (
     this.props.__interactivity.isFocusable(root)
     && this.props.__interactivity.isTabbable(root)

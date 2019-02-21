@@ -174,8 +174,8 @@ export default StackedInteractivityChecker;
  */
 function getFrameElement(window) {
   try {
-    return window.frameElement as HTMLElement;
-  } catch {
+    return window.frameElement;
+  } catch(error) {
     return null;
   }
 }
@@ -251,7 +251,7 @@ function getTabIndexValue(element) {
 /** Checks whether the specified element is potentially tabbable on iOS */
 function isPotentiallyTabbableIOS(element) {
   let nodeName = element.nodeName.toLowerCase();
-  let inputType = nodeName === 'input' && (element as HTMLInputElement).type;
+  let inputType = nodeName === 'input' && element.type;
 
   return inputType === 'text'
     || inputType === 'password'
