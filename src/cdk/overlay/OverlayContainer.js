@@ -1,7 +1,7 @@
 import * as React from 'react';
 import _ from 'lodash';
 import { OverlayContainerRoot } from './styles/index';
-import { OverlayContainerProvider } from './context/OverlayContainerContext';
+import { OverlayContainerProvider } from './context';
 import OverlayKeyboardDispatcher from './keyboard/KeyboardDispatcher';
 
 /** Container inside which all overlays will render. */
