@@ -7,7 +7,7 @@ const OVERLAY_CONTAINER_Z_INDEX = 1000;
 const OVERLAY_Z_INDEX = 1000;
 const OVERLAY_BACKDROP_Z_INDEX = 1000;
 
-const viewportStretch = css`
+export const viewportStretch = css`
 // Disable events from being captured on the overlay container.
 pointer-events: none;
 
