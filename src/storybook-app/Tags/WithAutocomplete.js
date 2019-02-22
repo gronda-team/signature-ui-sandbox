@@ -26,6 +26,7 @@ class WithAutocomplete extends React.Component {
   };
 
   addItem = ({ value }) => {
+    if (!value) return;
     this.setState(state => ({
       list: state.list.indexOf(value) === -1 ?
         [...state.list, value] :
