@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import {Platform} from '../src/cdk/platform';
 import {OverlayContainer} from '../src/cdk/overlay';
-import {FocusMonitor} from '../src/cdk/a11y';
+import {FocusMonitor, InteractivityChecker} from '../src/cdk/a11y';
 import { AutofillMonitor } from '../src/cdk/text-area';
 import ViewportRuler from '../src/cdk/scrolling/ViewportRuler';
 import ScrollDispatcher from '../src/cdk/scrolling/ScrollDispatcher';
@@ -19,19 +19,21 @@ import {DialogManager} from '../src/lib/dialog';
  */
 addDecorator(story => (
   <Platform>
-    <ViewportRuler>
-      <ScrollDispatcher>
-        <OverlayContainer>
-          <DialogManager>
-            <FocusMonitor>
-              <AutofillMonitor>
-                { story() }
-              </AutofillMonitor>
-            </FocusMonitor>
-          </DialogManager>
-        </OverlayContainer>
-      </ScrollDispatcher>
-    </ViewportRuler>
+    <InteractivityChecker>
+      <ViewportRuler>
+        <ScrollDispatcher>
+          <OverlayContainer>
+            <DialogManager>
+              <FocusMonitor>
+                <AutofillMonitor>
+                  { story() }
+                </AutofillMonitor>
+              </FocusMonitor>
+            </DialogManager>
+          </OverlayContainer>
+        </ScrollDispatcher>
+      </ViewportRuler>
+    </InteractivityChecker>
   </Platform>
 ));
 
