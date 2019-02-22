@@ -7,6 +7,7 @@ import {
   OverlayContainerDefaultProps,
   OverlayContainerPropTypes,
   BlockScrollStrategy,
+  GlobalPositionStrategy,
   Overlay,
 } from '../../cdk/overlay';
 import DialogContainer from './DialogContainer';
@@ -34,6 +35,7 @@ class Dialog extends React.Component {
     this.overlay = React.createRef();
     this.container = React.createRef();
     this.scrollStrategy = React.createRef();
+    this.positionStrategy = React.createRef();
     /**
      * Listeners that can only be called once
      */
@@ -176,12 +178,22 @@ class Dialog extends React.Component {
    * Renderers
    */
   render() {
+    const overrules = _.get(this.props, 'position', {});
     return (
       <React.Fragment>
         <BlockScrollStrategy
           ref={this.scrollStrategy}
         />
+        <GlobalPositionStrategy
+          overlay={this.overlay.current}
+          leftOffset={overrules.left}
+          rightOffset={overrules.right}
+          topOffset={overrules.top}
+          bottomOffset={overrules.bottom}
+          ref={this.positionStrategy}
+        />
         <Overlay
+          positionStrategy={this.positionStrategy.current}
           scrollStrategy={this.scrollStrategy.current}
           backdrop={this.props.backdrop}
           width={this.props.width}

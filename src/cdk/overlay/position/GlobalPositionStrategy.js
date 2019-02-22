@@ -164,13 +164,8 @@ const GlobalPositionStrategyPropTypes = {
   leftOffset: PropTypes.string,
   /** The right offset relative to viewport */
   rightOffset: PropTypes.string,
-  /**
-   * Centers the overlay horizontally with an optional
-   * offset from the center.
-   */
-  centerHorizontally: PropTypes.bool,
-  /** Same as above but with vertical offset */
-  centerVertically: PropTypes.bool,
+  /** Overlay */
+  overlay: PropTypes.object,
 };
 
 const GlobalPositionStrategyDefaultProps = {
@@ -178,8 +173,7 @@ const GlobalPositionStrategyDefaultProps = {
   bottomOffset: '',
   leftOffset: '',
   rightOffset: '',
-  centerHorizontally: false,
-  centerVertically: true,
+  overlay: null,
 };
 
 GlobalPositionStrategy.propTypes = {
