@@ -173,6 +173,15 @@ class Dialog extends React.Component {
   render() {
     return (
       <Overlay
+        backdrop={this.props.backdrop}
+        width={this.props.width}
+        height={this.props.height}
+        minWidth={this.props.minWidth}
+        minHeight={this.props.minHeight}
+        maxWidth={this.props.maxWidth}
+        maxHeight={this.props.maxHeight}
+        direction={this.props.dir}
+        disposeOnNavigation={this.props.closeOnNavigation}
         onDetach={this.handleOverlayDetachment}
         onKeyDown={this.handleOverlayKeyDown}
         ref={this.overlay}
