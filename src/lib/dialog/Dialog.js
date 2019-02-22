@@ -119,6 +119,11 @@ class Dialog extends React.Component {
      * and other important stuff.
      */
     window.setTimeout(() => {
+      if (!overlay.state.attached) {
+        /** Attach overlay if it's not already attached */
+        overlay.attach();
+      }
+
       if (this.props.backdrop) {
         overlay.setState({
           backdropClick: () => {
@@ -133,9 +138,10 @@ class Dialog extends React.Component {
           },
         });
       }
-      /** Attach overlay */
-      overlay.attach();
 
+      /**
+       * Finally attach the dialog when it's ready
+       */
       window.requestAnimationFrame(() => {
         /** Attach the dialog container and save previous element */
         this.getContainer().attach();
