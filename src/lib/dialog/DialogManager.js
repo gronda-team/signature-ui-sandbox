@@ -1,7 +1,15 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { DialogManagerProvider } from './context/DialogManagerContext';
+import {
+  DialogManagerDefaultProps,
+  DialogManagerPropTypes,
+  DialogManagerProvider
+} from './context/DialogManagerContext';
+import {
+  OverlayContainerDefaultProps,
+  OverlayContainerPropTypes,
+  withOverlayContainerConsumer
+} from '../../cdk/overlay/context';
 
 /**
  * Manager that tracks open dialogs and handles accessibility
@@ -49,7 +57,7 @@ class DialogManager extends React.Component {
    */
   /** Keeps track of the currently open dialogs */
   getOpenDialogs = () => (
-    this.props.__parentDialogManager.getOpenDialogs() || this.state.openDialogsAtThisLevel
+    this.props.__dialogManager.getOpenDialogs() || this.state.openDialogsAtThisLevel
   );
 
   /** Get an open dialog by its id */
@@ -95,7 +103,17 @@ class DialogManager extends React.Component {
   }
 }
 
-export default DialogManager;
+DialogManager.propTypes = {
+  __overlayContainer: OverlayContainerPropTypes,
+  __dialogManager: DialogManagerPropTypes,
+};
+
+DialogManager.defaultProps = {
+  __overlayContainer: OverlayContainerDefaultProps,
+  __dialogManager: DialogManagerDefaultProps,
+};
+
+export default withOverlayContainerConsumer(DialogManager);
 
 /**
  * Private methods
@@ -141,8 +159,8 @@ function addDialogRef({ id, dialog }) {
    * If there is a parent dialog manager, then add
    * the dialog to this guy recursively.
    */
-  if (_.get(this.props.__parentDialogManager.id)) {
-    addDialogRef.call(this.props.__parentDialogManager, { id, dialog });
+  if (_.get(this.props.__dialogManager.id)) {
+    addDialogRef.call(this.props.__dialogManager, { id, dialog });
     // Once complete, early return.
     return;
   }
@@ -158,8 +176,8 @@ function addDialogRef({ id, dialog }) {
 
 /** Remove dialog ref. Follows the same logic as addDialogRef */
 function removeDialogRef(id) {
-  if (_.get(this.props.__parentDialogManager.id)) {
-    removeDialogRef.call(this.props.__parentDialogManager, id);
+  if (_.get(this.props.__dialogManager.id)) {
+    removeDialogRef.call(this.props.__dialogManager, id);
     // Once complete, early return.
     return;
   }

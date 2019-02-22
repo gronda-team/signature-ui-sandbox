@@ -20,17 +20,17 @@ import {DialogManager} from '../src/lib/dialog';
 addDecorator(story => (
   <Platform>
     <ViewportRuler>
-      <DialogManager>
-        <ScrollDispatcher>
-          <OverlayContainer>
+      <ScrollDispatcher>
+        <OverlayContainer>
+          <DialogManager>
             <FocusMonitor>
               <AutofillMonitor>
                 { story() }
               </AutofillMonitor>
             </FocusMonitor>
-          </OverlayContainer>
-        </ScrollDispatcher>
-      </DialogManager>
+          </DialogManager>
+        </OverlayContainer>
+      </ScrollDispatcher>
     </ViewportRuler>
   </Platform>
 ));

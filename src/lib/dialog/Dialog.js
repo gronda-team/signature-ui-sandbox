@@ -133,9 +133,7 @@ class Dialog extends React.Component {
           },
         });
       }
-    }, 0);
-
-    window.requestAnimationFrame(() => {
+      /** Attach overlay */
       overlay.attach();
 
       window.requestAnimationFrame(() => {
@@ -143,9 +141,9 @@ class Dialog extends React.Component {
         this.getContainer().attach();
 
         /** Add the reference to the dialog manager */
-        this.props.__parentDialogManager.add({ id: this.DEFAULT_ID, dialog: this });
+        this.props.__dialogManager.add({ id: this.DEFAULT_ID, dialog: this });
       });
-    })
+    }, 0);
   };
 
   /** Close the overlay */
@@ -316,13 +314,13 @@ const DialogDefaultProps = {
 Dialog.propTypes = {
   ...DialogPropTypes,
   __overlayContainer: OverlayContainerPropTypes,
-  __parentDialogManager: DialogManagerPropTypes,
+  __dialogManager: DialogManagerPropTypes,
 };
 
 Dialog.defaultProps = {
   ...DialogDefaultProps,
   __overlayContainer: OverlayContainerDefaultProps,
-  __parentDialogManager: DialogManagerDefaultProps,
+  __dialogManager: DialogManagerDefaultProps,
 };
 
 const StackedDialog = stack(
