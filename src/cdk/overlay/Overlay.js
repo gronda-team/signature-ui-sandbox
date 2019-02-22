@@ -10,7 +10,7 @@ import {
 import {
   KeyboardDispatcherDefaultProps, KeyboardDispatcherPropTypes,
   withKeyboardDispatcher,
-} from './keyboard/context';
+} from './keyboard/context/KeyboardDispatcherContext';
 import { stack } from '../../lib/core/components/util';
 
 class Overlay extends React.Component {

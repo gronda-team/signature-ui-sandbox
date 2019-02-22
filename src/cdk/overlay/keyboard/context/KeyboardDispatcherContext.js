@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {getDisplayName} from '../../util';
+import {getDisplayName} from '../../../util';
 
 const KeyboardDispatcherPropTypes = PropTypes.shape({
   add: PropTypes.func,
