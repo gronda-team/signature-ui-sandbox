@@ -8,7 +8,7 @@ import {
   OverlayContainerPropTypes,
   BlockScrollStrategy,
   GlobalPositionStrategy,
-  Overlay,
+  Overlay, withOverlayContainerConsumer,
 } from '../../cdk/overlay';
 import DialogContainer from './DialogContainer';
 
@@ -310,6 +310,12 @@ Dialog.defaultProps = {
   ...DialogDefaultProps,
   __overlayContainer: OverlayContainerDefaultProps,
 };
+
+const StackedDialog = withOverlayContainerConsumer(Dialog);
+StackedDialog.propTypes = DialogPropTypes;
+StackedDialog.defaultProps = DialogDefaultProps;
+
+export default StackedDialog;
 
 /**
  * Private methods
