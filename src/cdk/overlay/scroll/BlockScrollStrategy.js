@@ -26,7 +26,7 @@ class BlockScrollStrategy extends React.Component {
   /** Get the dummy classes */
   getDummyBlock = (el) => {
     if (el) {
-      this.BLOCK_CLASS_LIST = _.castArray(el.classList);
+      this.BLOCK_CLASS_LIST = _.toArray(el.classList);
     }
   };
 

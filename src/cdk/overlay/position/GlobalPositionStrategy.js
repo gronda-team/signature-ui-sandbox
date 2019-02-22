@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import {GlobalOverlayWrapper} from './styles';
+import { GlobalOverlayWrapper } from './styles';
 
 /**
  * This is a strategy for positioning overlays.
@@ -29,7 +29,7 @@ class GlobalPositionStrategy extends React.Component {
   getDummyPositionDiv = (el) => {
     if (el) {
       this.setState({ renderDummyDiv: false });
-      this.POSITION_CLASS_LIST = _.castArray(el.classList);
+      this.POSITION_CLASS_LIST = _.toArray(el.classList);
     }
   };
 
