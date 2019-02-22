@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { GlobalOverlayWrapper } from './styles';
+import { GlobalOverlayWrapper } from '../styles';
 
 /**
  * This is a strategy for positioning overlays.
@@ -87,7 +87,7 @@ class GlobalPositionStrategy extends React.Component {
   apply = () => {
     if (
       !this.props.overlay
-      || _.get(this.props.overlay, 'state.attached')
+      || !_.get(this.props.overlay, 'state.attached')
     ) return;
 
     const overlay = this.props.overlay;
