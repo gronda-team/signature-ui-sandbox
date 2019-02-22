@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {
   OverlayContainerDefaultProps, OverlayContainerPropTypes,
   withOverlayContainerConsumer,
-} from '../context/overlay-container';
+} from '../context/OverlayContainerContext';
 import { stack } from '../../../lib/core/components/util';
 import { PlatformDefaultProps, PlatformPropTypes, withPlatformConsumer } from '../../platform';
 import { ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler } from '../../scrolling';

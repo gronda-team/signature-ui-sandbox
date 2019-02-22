@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {PROP_TYPE_STRING_OR_NUMBER} from '../../cdk/util';
 import { Overlay } from '../../cdk/overlay';
 import {ESC, ESCAPE} from '../../cdk/keycodes/keys';
-import {OverlayContainerDefaultProps, OverlayContainerPropTypes} from '../../cdk/overlay/context/overlay-container';
+import {OverlayContainerDefaultProps, OverlayContainerPropTypes} from '../../cdk/overlay/context/OverlayContainerContext';
 import DialogContainer from './DialogContainer';
 
 /**

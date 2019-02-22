@@ -6,7 +6,7 @@ import { OverlayBackdrop, OverlayPaneRoot } from './styles/index';
 import {
   OverlayContainerDefaultProps, OverlayContainerPropTypes,
   withOverlayContainerConsumer,
-} from './context/overlay-container';
+} from './context/OverlayContainerContext';
 import {
   KeyboardDispatcherDefaultProps, KeyboardDispatcherPropTypes,
   withKeyboardDispatcher,
