@@ -157,7 +157,7 @@ const FocusTrapPropTypes = {
   /** Whether the focus trap is active */
   enabled: PropTypes.bool,
   /** Element within which to trap focus */
-  element: PropTypes.element,
+  element: PropTypes.object,
   /**
    * Whether we're deferring the creation of start/end anchors to a later
    * time.

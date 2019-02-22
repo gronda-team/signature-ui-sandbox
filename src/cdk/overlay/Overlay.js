@@ -12,6 +12,7 @@ import {
   withKeyboardDispatcher,
 } from './keyboard/context/KeyboardDispatcherContext';
 import { stack } from '../../lib/core/components/util';
+import {PROP_TYPE_STRING_OR_NUMBER} from '../util';
 
 class Overlay extends React.Component {
   constructor(props) {
@@ -236,17 +237,17 @@ const OverlayPropTypes = {
   /** Whether the overlay has a backdrop. */
   backdrop: PropTypes.oneOf(['transparent', 'dark', 'light']),
   /** The width of the overlay panel. If a number is provided, pixel units are assumed. */
-  width: PropTypes.number,
+  width: PROP_TYPE_STRING_OR_NUMBER,
   /** The height of the overlay panel. If a number is provided, pixel units are assumed. */
-  height: PropTypes.number,
+  height: PROP_TYPE_STRING_OR_NUMBER,
   /** The min-width of the overlay panel. If a number is provided, pixel units are assumed. */
-  minWidth: PropTypes.number,
+  minWidth: PROP_TYPE_STRING_OR_NUMBER,
   /** The min-height of the overlay panel. If a number is provided, pixel units are assumed. */
-  minHeight: PropTypes.number,
+  minHeight: PROP_TYPE_STRING_OR_NUMBER,
   /** The max-width of the overlay panel. If a number is provided, pixel units are assumed. */
-  maxWidth: PropTypes.number,
+  maxWidth: PROP_TYPE_STRING_OR_NUMBER,
   /** The max-height of the overlay panel. If a number is provided, pixel units are assumed. */
-  maxHeight: PropTypes.number,
+  maxHeight: PROP_TYPE_STRING_OR_NUMBER,
   /**
    * Direction of the text in the overlay panel. If a `Directionality` instance
    * is passed in, the overlay will handle changes to its value automatically.
@@ -310,6 +311,7 @@ const StackedOverlay = stack(
 
 StackedOverlay.propTypes = OverlayPropTypes;
 StackedOverlay.defaultProps = OverlayDefaultProps;
+StackedOverlay.displayName = 'StackedOverlay';
 
 export default StackedOverlay;
 
