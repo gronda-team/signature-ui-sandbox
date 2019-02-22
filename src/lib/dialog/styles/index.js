@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import {ButtonRoot} from '../../button/styles';
+import dialogThemeThunk from './theme';
 
 const DIALOG_PADDING = 24; // px
 const DIALOG_BORDER_RADIUS = 3; // px
@@ -51,6 +52,10 @@ ${ButtonRoot} + ${ButtonRoot} {
 }
 `;
 
+const dialogTheme = dialogThemeThunk({
+  DialogTitle,
+});
+
 export const DialogContainerRoot = styled.div`
 display: block;
 padding: ${DIALOG_PADDING}px;
@@ -80,4 +85,6 @@ max-height: inherit;
   transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1),
     transform 150ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+${dialogTheme}
 `;
