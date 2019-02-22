@@ -100,12 +100,12 @@ RepositionScrollStrategy.defaultProps = {
 };
 
 // Add context dependencies
-const WrappedStrategy = stack(
+const StackedRepositionScrollStrategy = stack(
   withViewportRuler,
   withScrollDispatcher,
 )(RepositionScrollStrategy);
 
-WrappedStrategy.propTypes = RepositionScrollStrategyPropTypes;
-WrappedStrategy.defaultProps = RepositionScrollStrategyDefaultProps;
+StackedRepositionScrollStrategy.propTypes = RepositionScrollStrategyPropTypes;
+StackedRepositionScrollStrategy.defaultProps = RepositionScrollStrategyDefaultProps;
 
-export default WrappedStrategy;
+export default StackedRepositionScrollStrategy;
