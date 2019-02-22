@@ -2,9 +2,13 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {PROP_TYPE_STRING_OR_NUMBER} from '../../cdk/util';
-import { Overlay } from '../../cdk/overlay';
 import {ESC, ESCAPE} from '../../cdk/keycodes/keys';
-import {OverlayContainerDefaultProps, OverlayContainerPropTypes} from '../../cdk/overlay/context/OverlayContainerContext';
+import {
+  OverlayContainerDefaultProps,
+  OverlayContainerPropTypes,
+  BlockScrollStrategy,
+  Overlay,
+} from '../../cdk/overlay';
 import DialogContainer from './DialogContainer';
 
 /**
@@ -29,6 +33,7 @@ class Dialog extends React.Component {
     this.DEFAULT_ID = _.uniqueId('sui-overlay:');
     this.overlay = React.createRef();
     this.container = React.createRef();
+    this.scrollStrategy = React.createRef();
     /**
      * Listeners that can only be called once
      */
@@ -172,31 +177,37 @@ class Dialog extends React.Component {
    */
   render() {
     return (
-      <Overlay
-        backdrop={this.props.backdrop}
-        width={this.props.width}
-        height={this.props.height}
-        minWidth={this.props.minWidth}
-        minHeight={this.props.minHeight}
-        maxWidth={this.props.maxWidth}
-        maxHeight={this.props.maxHeight}
-        direction={this.props.dir}
-        disposeOnNavigation={this.props.closeOnNavigation}
-        onDetach={this.handleOverlayDetachment}
-        onKeyDown={this.handleOverlayKeyDown}
-        ref={this.overlay}
-      >
-        <DialogContainer
-          id={this.getId()}
-          role={this.props.role}
-          autoFocus={this.props.autoFocus}
-          restoreFocus={this.props.restoreFocus}
-          onAnimationStateChange={this.handleAnimationListeners}
-          ref={this.container}
+      <React.Fragment>
+        <BlockScrollStrategy
+          ref={this.scrollStrategy}
+        />
+        <Overlay
+          scrollStrategy={this.scrollStrategy.current}
+          backdrop={this.props.backdrop}
+          width={this.props.width}
+          height={this.props.height}
+          minWidth={this.props.minWidth}
+          minHeight={this.props.minHeight}
+          maxWidth={this.props.maxWidth}
+          maxHeight={this.props.maxHeight}
+          direction={this.props.dir}
+          disposeOnNavigation={this.props.closeOnNavigation}
+          onDetach={this.handleOverlayDetachment}
+          onKeyDown={this.handleOverlayKeyDown}
+          ref={this.overlay}
         >
-          { this.props.children }
-        </DialogContainer>
-      </Overlay>
+          <DialogContainer
+            id={this.getId()}
+            role={this.props.role}
+            autoFocus={this.props.autoFocus}
+            restoreFocus={this.props.restoreFocus}
+            onAnimationStateChange={this.handleAnimationListeners}
+            ref={this.container}
+          >
+            { this.props.children }
+          </DialogContainer>
+        </Overlay>
+      </React.Fragment>
     )
   }
 }
