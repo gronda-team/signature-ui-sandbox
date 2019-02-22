@@ -34,6 +34,9 @@ class DialogContainer extends React.Component {
   /** Attach dialog container */
   attach = () => {
     savePreviouslyFocusedElement.call(this);
+    window.requestAnimationFrame(() => {
+      this.setState({ animationState: 'enter' });
+    });
   };
 
   /** Invoked when the transition starts */
@@ -88,6 +91,7 @@ class DialogContainer extends React.Component {
           role={this.props.role}
           aria-labelledby={ariaLabel ? null : ariaLabelledBy}
           aria-label={ariaLabel}
+          data-state={this.state.animationState}
           onTransitionStart={this.emitOnTransitionStart}
           onTransitionEnd={this.onTransitionEnd}
           innerRef={this.EL}
