@@ -61,16 +61,15 @@ class GlobalPositionStrategy extends React.Component {
   };
 
   getAlignItems = () => {
-    if (this.props.centerVertically) return 'center';
-    if (this.getTop()) return 'flex-start';
+    if (!(this.getTop() || this.getBottom())) return 'center';
     if (this.getBottom()) return 'flex-end';
-    return '';
+    return 'flex-start';
   };
 
   getJustifyContent = () => {
-    if (this.props.centerHorizontally) return 'center';
-    if (this.getLeft()) return 'flex-start';
+    if (!(this.getLeft() || this.getRight())) return 'center';
     if (this.getRight()) return 'flex-end';
+    return 'flex-start';
   };
 
   /**
