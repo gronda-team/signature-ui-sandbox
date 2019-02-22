@@ -7,9 +7,9 @@ import {
   OverlayContainerDefaultProps,
   OverlayContainerPropTypes,
   BlockScrollStrategy,
-  GlobalPositionStrategy,
   Overlay, withOverlayContainerConsumer,
 } from '../../cdk/overlay';
+import GlobalPositionStrategy from '../../cdk/overlay/position/GlobalPositionStrategy';
 import DialogContainer from './DialogContainer';
 
 /**
