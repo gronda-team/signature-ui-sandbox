@@ -11,6 +11,12 @@ import {
 } from '../../cdk/overlay';
 import GlobalPositionStrategy from '../../cdk/overlay/position/GlobalPositionStrategy';
 import DialogContainer from './DialogContainer';
+import {
+  DialogManagerDefaultProps,
+  DialogManagerPropTypes,
+  withDialogManager
+} from './context/DialogManagerContext';
+import {stack} from '../core/components/util';
 
 /**
  * Dialog component that uses CDK Overlay behind the scenes.
@@ -129,11 +135,17 @@ class Dialog extends React.Component {
       }
     }, 0);
 
-    /** Attach the dialog container and save previous element */
-    this.getContainer().attach();
+    window.requestAnimationFrame(() => {
+      overlay.attach();
 
-    /** Add the reference to the dialog manager */
-    this.props.__parentDialogManager.add({ id: this.DEFAULT_ID, dialog: this });
+      window.requestAnimationFrame(() => {
+        /** Attach the dialog container and save previous element */
+        this.getContainer().attach();
+
+        /** Add the reference to the dialog manager */
+        this.props.__parentDialogManager.add({ id: this.DEFAULT_ID, dialog: this });
+      });
+    })
   };
 
   /** Close the overlay */
@@ -178,7 +190,7 @@ class Dialog extends React.Component {
    * Renderers
    */
   render() {
-    const overrules = _.get(this.props, 'position', {});
+    const overrules = this.props.position || {};
     return (
       <React.Fragment>
         <BlockScrollStrategy
@@ -304,14 +316,19 @@ const DialogDefaultProps = {
 Dialog.propTypes = {
   ...DialogPropTypes,
   __overlayContainer: OverlayContainerPropTypes,
+  __parentDialogManager: DialogManagerPropTypes,
 };
 
 Dialog.defaultProps = {
   ...DialogDefaultProps,
   __overlayContainer: OverlayContainerDefaultProps,
+  __parentDialogManager: DialogManagerDefaultProps,
 };
 
-const StackedDialog = withOverlayContainerConsumer(Dialog);
+const StackedDialog = stack(
+  withDialogManager,
+  withOverlayContainerConsumer,
+)(Dialog);
 StackedDialog.propTypes = DialogPropTypes;
 StackedDialog.defaultProps = DialogDefaultProps;
 

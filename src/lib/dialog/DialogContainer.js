@@ -84,7 +84,7 @@ class DialogContainer extends React.Component {
         <DialogContainerRoot
           tabIndex={-1}
           aria-modal={true}
-          id={this.getId()}
+          id={this.props.id}
           role={this.props.role}
           aria-labelledby={ariaLabel ? null : ariaLabelledBy}
           aria-label={ariaLabel}
