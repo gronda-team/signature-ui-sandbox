@@ -2,6 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {DialogContainerRoot} from './styles';
+import { FocusTrap } from '../../cdk/a11y';
 
 class DialogContainer extends React.Component {
   constructor() {
@@ -16,10 +17,25 @@ class DialogContainer extends React.Component {
        */
       elementFocusedBeforeDialogWasOpened: null,
     };
+
+    this.EL = React.createRef();
+    this.focusTrap = React.createRef();
   }
+
+  /**
+   * Derived data
+   */
+  /** Get the focus trap ref */
+  getFocusTrap = () => _.get(this.focusTrap, 'current', {});
+
   /**
    * Actions
    */
+  /** Attach dialog container */
+  attach = () => {
+    savePreviouslyFocusedElement.call(this);
+  };
+
   /** Invoked when the transition starts */
   emitOnTransitionStart = () => {
     this.setState({
@@ -60,18 +76,25 @@ class DialogContainer extends React.Component {
     const ariaLabel = _.get(this.props, 'aria-label');
     const ariaLabelledBy = _.get(this.props, 'aria-labelledby');
     return (
-      <DialogContainerRoot
-        tabIndex={-1}
-        aria-modal={true}
-        id={this.getId()}
-        role={this.props.role}
-        aria-labelledby={ariaLabel ? null : ariaLabelledBy}
-        aria-label={ariaLabel}
-        onTransitionStart={this.emitOnTransitionStart}
-        onTransitionEnd={this.onTransitionEnd}
-      >
-        { this.props.children }
-      </DialogContainerRoot>
+      <React.Fragment>
+        <FocusTrap
+          element={this.EL.current}
+          ref={this.focusTrap}
+        />
+        <DialogContainerRoot
+          tabIndex={-1}
+          aria-modal={true}
+          id={this.getId()}
+          role={this.props.role}
+          aria-labelledby={ariaLabel ? null : ariaLabelledBy}
+          aria-label={ariaLabel}
+          onTransitionStart={this.emitOnTransitionStart}
+          onTransitionEnd={this.onTransitionEnd}
+          innerRef={this.EL}
+        >
+          { this.props.children }
+        </DialogContainerRoot>
+      </React.Fragment>
     )
   }
 }
@@ -102,5 +125,47 @@ export default DialogContainer;
 /**
  * Private methods
  */
-/** Moves the focus inside the focus trap */
+/** Saves a reference to the element that was focused before opening */
+function savePreviouslyFocusedElement() {
+  if (document) {
+    this.setState({
+      elementFocusedBeforeDialogWasOpened: document.activeElement,
+    }, () => {
+      /** No focus method on the server */
+      if (_.isFunction(this.EL.current)) {
+        /**
+         * Move focus onto dialog immediately to prevent the user
+         * from accidentally opening multiple dialogs at once.
+         */
+        this.EL.current.focus();
+      }
+    });
+  }
+}
 
+/** Moves the focus inside the focus trap */
+function trapFocus() {
+  /**
+   * If we want to autofocus, defer it until
+   * the microtasks are complete.
+   */
+  if (this.props.autoFocus) {
+    window.requestAnimationFrame(() => {
+      this.getFocusTrap().focusInitialElement();
+    });
+  }
+}
+
+/** Restore focus to the element that was previously focused */
+function restoreFocus() {
+  const toFocus = this.state.elementFocusedBeforeDialogWasOpened;
+
+  // IE can set `activeElement` to null in some cases
+  if (this.props.restoreFocus && toFocus && _.isFunction(toFocus.focus)) {
+    toFocus.focus();
+  }
+
+  if (this.getFocusTrap().destroy) {
+    this.getFocusTrap().destroy();
+  }
+}
