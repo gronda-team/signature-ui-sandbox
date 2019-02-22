@@ -16,15 +16,21 @@ import {getDisplayName} from '../../../cdk/util';
  */
 
 const DialogManagerPropTypes = PropTypes.shape({
+  /** Unchanging ID of the dialog manager */
+  id: PropTypes.string,
   /** Add a dialog to the list of managed dialogs */
   add: PropTypes.func,
   /** Remove a dialog from the list of managed dialogs */
   remove: PropTypes.func,
+  /** Recursive getter for dialog manager */
+  getOpenDialogs: PropTypes.func,
 });
 
 const DialogManagerDefaultProps = {
+  id: null,
   add: _.noop,
   remove: _.noop,
+  getOpenDialogs: _.noop,
 };
 
 const {

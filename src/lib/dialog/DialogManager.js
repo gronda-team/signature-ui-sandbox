@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { DialogManagerProvider } from './context/DialogManagerContext';
 
 /**
  * Manager that tracks open dialogs and handles accessibility
@@ -13,14 +14,22 @@ class DialogManager extends React.Component {
   constructor() {
     super();
 
+    this.DEFAULT_ID = _.uniqueId('sui-dialog-manager:');
+
     this.state = {
       /** The currently open dialogs */
       openDialogsAtThisLevel: [],
       /** Currently available listeners for when dialogs open */
       afterOpenedListeners: [],
+      /** Provider for the dialog consumers below */
+      provide: {
+        getOpenDialogs: this.getOpenDialogs,
+        id: this.DEFAULT_ID,
+        add: this.add,
+        remove: this.remove,
+      },
     };
 
-    this.DEFAULT_ID = _.uniqueId('sui-dialog-manager:');
     this.ARIA_HIDDEN_ELEMENTS = [];
   }
 
@@ -78,7 +87,11 @@ class DialogManager extends React.Component {
   };
 
   render() {
-
+    return (
+      <DialogManagerProvider value={this.state.provide}>
+        { this.props.children }
+      </DialogManagerProvider>
+    )
   }
 }
 
