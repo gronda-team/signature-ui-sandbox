@@ -1,6 +1,10 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import {InteractivityCheckerDefaultProps, InteractivityCheckerPropTypes, withInteractivityChecker} from '..';
+import {
+  InteractivityCheckerDefaultProps,
+  InteractivityCheckerPropTypes,
+  withInteractivityChecker,
+} from '../interactivity-checker/context/InteractivityCheckerContext';
 
 /**
  * Reactive FocusTrap object to trap focus within
