@@ -11,7 +11,7 @@ import { ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler } 
 import {
   isElementClippedByScrolling,
   isElementScrolledOutsideView,
-} from './scroll-clip';
+} from './util';
 
 class FlexibleConnectedPositionStrategy extends React.Component {
   constructor() {

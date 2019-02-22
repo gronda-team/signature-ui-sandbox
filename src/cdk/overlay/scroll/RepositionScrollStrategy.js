@@ -8,7 +8,7 @@ import {
   withScrollDispatcher,
 } from '../../scrolling/exports';
 import {stack} from '../../../lib/core/components/util';
-import {isElementScrolledOutsideView} from '../position/scroll-clip';
+import {isElementScrolledOutsideView} from '../position/util';
 
 /**
  * Reactive scroll strategy object to expose enable, and disable
