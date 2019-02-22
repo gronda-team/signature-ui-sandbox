@@ -124,7 +124,6 @@ class FocusTrap extends React.Component {
    */
   focusFirstTabbableElement = () => {
     const redirectToElement = getRegionBoundary.call(this, 'start');
-    console.log(redirectToElement);
     if (redirectToElement) {
       redirectToElement.focus();
     }
