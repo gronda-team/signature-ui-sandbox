@@ -210,11 +210,6 @@ function getRegionBoundary(bound) {
 
 /** Recursively get the first tabbable element from a DOM subtree */
 function getFirstTabbableElement(root) {
-  console.log(
-    root.nodeName,
-    this.props.__interactivity.isFocusable(root),
-    this.props.__interactivity.isTabbable(root)
-  );
   if (
     this.props.__interactivity.isFocusable(root)
     && this.props.__interactivity.isTabbable(root)
