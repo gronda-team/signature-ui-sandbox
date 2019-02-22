@@ -5,7 +5,7 @@ import {ListKeyManager} from '../../cdk/a11y';
 import {byInternalType, stack} from '../core/components/util';
 import { Overlay } from '../../cdk/overlay';
 import FlexibleConnectedPositionStrategy from '../../cdk/overlay/position/FlexibleConnectedPositionStrategy';
-import RepositionScrollStrategy from '../../cdk/overlay/scroll/RepositionScrollStrategy';
+import { RepositionScrollStrategy } from '../../cdk/overlay';
 import { OptionParentProvider } from '../core/option';
 import {AutocompletePanel, AutocompletePanelRoot} from './styles';
 import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../form-field';
