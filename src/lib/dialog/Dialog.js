@@ -122,6 +122,9 @@ class Dialog extends React.Component {
       }
     }, 0);
 
+    /** Attach the dialog container and save previous element */
+    this.getContainer().attach();
+
     /** Add the reference to the dialog manager */
     this.props.__parentDialogManager.add({ id: this.DEFAULT_ID, dialog: this });
   };
@@ -176,6 +179,9 @@ class Dialog extends React.Component {
       >
         <DialogContainer
           id={this.getId()}
+          role={this.props.role}
+          autoFocus={this.props.autoFocus}
+          restoreFocus={this.props.restoreFocus}
           onAnimationStateChange={this.handleAnimationListeners}
           ref={this.container}
         >

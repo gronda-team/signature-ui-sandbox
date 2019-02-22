@@ -106,10 +106,22 @@ const DialogContainerPropTypes = {
    * CSS property transition behind the scenes.
    */
   onAnimationStateChange: PropTypes.func,
+  /** The ARIA role of the dialog element */
+  role: PropTypes.string,
+  /** Whether the dialog should focus the first focusable element */
+  autoFocus: PropTypes.bool,
+  /**
+   * Whether the dialog should restore focus to the most recently
+   * focused element before the dialog was open (after it's closed)
+   */
+  restoreFocus: PropTypes.bool,
 };
 
 const DialogContainerDefaultProps = {
   onAnimationStateChange: _.noop,
+  role: 'dialog',
+  autoFocus: true,
+  restoreFocus: true,
 };
 
 DialogContainer.propTypes = {
