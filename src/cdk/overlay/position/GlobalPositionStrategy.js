@@ -190,3 +190,5 @@ GlobalPositionStrategy.propTypes = {
 GlobalPositionStrategy.defaultProps = {
   ...GlobalPositionStrategyDefaultProps,
 };
+
+export default GlobalPositionStrategy;
