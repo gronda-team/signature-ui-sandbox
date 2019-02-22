@@ -17,7 +17,7 @@ class BlockScrollStrategy extends React.Component {
       enabled: false,
     };
 
-    this.BLOCK_STYLE_LIST = [];
+    this.BLOCK_CLASS_LIST = [];
   }
 
   /**
@@ -26,7 +26,7 @@ class BlockScrollStrategy extends React.Component {
   /** Get the dummy classes */
   getDummyBlock = (el) => {
     if (el) {
-      this.BLOCK_STYLE_LIST = el.classList;
+      this.BLOCK_CLASS_LIST = _.castArray(el.classList);
     }
   };
 
@@ -57,7 +57,9 @@ class BlockScrollStrategy extends React.Component {
          */
         root.style.left = `${-previousScrollPosition.left}px`;
         root.style.top = `${-previousScrollPosition.top}px`;
-        root.classList.add(...this.BLOCK_STYLE_LIST);
+        this.BLOCK_CLASS_LIST.forEach((className) => {
+          root.classList.add(className);
+        });
       });
     }
   };
@@ -75,7 +77,9 @@ class BlockScrollStrategy extends React.Component {
       this.setState({ enabled: false }, () => {
         htmlStyle.left = this.state.previousHTMLStyles.left;
         htmlStyle.top = this.state.previousHTMLStyles.top;
-        html.classList.remove(...this.BLOCK_STYLE_LIST);
+        this.BLOCK_CLASS_LIST.forEach((className) => {
+          root.classList.remove(className);
+        });
 
         // Disable user-defined smooth scrolling temporarily while we restore the scroll position.
         // See https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior
@@ -129,7 +133,7 @@ function canBeEnabled() {
    * scrolling multiple times.
    */
   const html = document.documentElement;
-  const hasBlockClasses = _.every(this.BLOCK_STYLE_LIST, className => (
+  const hasBlockClasses = _.every(this.BLOCK_CLASS_LIST, className => (
     html.classList.contains(className)
   ));
 
