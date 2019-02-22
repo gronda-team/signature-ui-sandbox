@@ -75,7 +75,7 @@ max-height: inherit;
 
 &[data-state=null], &[data-state=exit] {
   opacity: 0;
-  transform: scale(0.7);
+  transform: scale(0.86);
   transition: opacity 75ms cubic-bezier(0.4, 0.0, 0.2, 1),
     transform 75ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
