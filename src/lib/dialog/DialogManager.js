@@ -214,13 +214,13 @@ function removeDialogRef(id) {
 }
 
 /** Close all of the dialogs as provided by an array */
-function closeDialogs(dialogs) {
-  let i = dialogs.length;
+function closeDialogs(info) {
+  let i = info.length;
 
   while (i--) {
     /**
      * Loop through all of the open dialogs in reverse order and close them
      */
-    dialogs[i].close();
+    info[i].dialog.close();
   }
 }
