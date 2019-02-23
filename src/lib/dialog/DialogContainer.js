@@ -93,8 +93,8 @@ class DialogContainer extends React.Component {
           aria-labelledby={ariaLabel ? null : ariaLabelledBy}
           aria-label={ariaLabel}
           data-state={this.state.animationState}
-          onTransitionStart={this.emitOnTransitionStart}
-          onTransitionEnd={this.onTransitionEnd}
+          onAnimationStart={this.emitOnTransitionStart}
+          onAnimationEnd={this.onTransitionEnd}
           innerRef={this.EL}
         >
           { this.props.children }
