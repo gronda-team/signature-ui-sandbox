@@ -150,6 +150,7 @@ class Dialog extends React.Component {
         },
       }],
     }), () => {
+      /** Dispose the overlay when the animation is complete */
       this.props.__dialogManager.remove(this.DEFAULT_ID);
       /** Trigger all of the callbacks to be done */
       this.getContainer().startExitAnimation();

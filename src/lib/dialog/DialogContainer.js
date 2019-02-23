@@ -4,6 +4,12 @@ import _ from 'lodash';
 import {DialogContainerRoot} from './styles';
 import { FocusTrap } from '../../cdk/a11y';
 
+/**
+ * Represents the actual div that contains each
+ * individual dialog. Compare this to the
+ * OverlayContainer that houses all of the
+ * overlays.
+ */
 class DialogContainer extends React.Component {
   constructor() {
     super();
@@ -30,6 +36,15 @@ class DialogContainer extends React.Component {
 
   /**
    * Actions
+   *
+   * For the animation, we have the following:
+   * - Start of ENTER animation: nothing
+   * - End of ENTER animation:
+   *   - emit onOpened animation
+   * - Start of EXIT animation:
+   *   - detach backdrop
+   * - End of EXIT animation:
+   *   - dispose of overlay
    */
   /** Attach dialog container */
   attach = () => {
