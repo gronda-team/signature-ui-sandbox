@@ -42,21 +42,6 @@ class Dialog extends React.Component {
     this.container = React.createRef();
     this.scrollStrategy = React.createRef();
     this.positionStrategy = React.createRef();
-    /**
-     * Listeners that can only be called once
-     */
-    /** Dispose the overlay when the animation is complete */
-    this.disposeOverlay = _.once(() => {
-      this.getOverlay().dispose();
-    });
-    /** Invoke the onOpen listener only once */
-    this.emitOnOpen = _.once(() => {
-      this.props.onOpen();
-    });
-    /** Detach the overlay backdrop (done in concert with the animation) */
-    this.detachBackdrop = _.once(() => {
-      this.getOverlay().detachBackdrop();
-    });
   }
 
   componentDidMount() {
@@ -145,6 +130,7 @@ class Dialog extends React.Component {
       window.requestAnimationFrame(() => {
         /** Attach the dialog container and save previous element */
         this.getContainer().attach();
+        setupDisposableListeners.call(this);
 
         /** Add the reference to the dialog manager */
         this.props.__dialogManager.add({ id: this.DEFAULT_ID, dialog: this });
@@ -348,3 +334,20 @@ export default StackedDialog;
 /**
  * Private methods
  */
+/**
+ * Listeners that can only be called once
+ */
+function setupDisposableListeners() {
+  this.disposeOverlay = _.once(() => {
+    this.getOverlay().dispose();
+  });
+  /** Invoke the onOpen listener only once */
+  this.emitOnOpen = _.once(() => {
+    this.props.onOpen();
+  });
+  /** Detach the overlay backdrop (done in concert with the animation) */
+  this.detachBackdrop = _.once(() => {
+    this.props.onClose();
+    this.getOverlay().detachBackdrop();
+  });
+}
