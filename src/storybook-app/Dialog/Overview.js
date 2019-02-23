@@ -24,7 +24,9 @@ export default class Overview extends React.Component {
           View terms and conditions
         </Button>
         <Dialog
+          width="500"
           open={this.state.showModal}
+          onClose={this.toggleModal}
         >
           <DialogTitle>
             Bacon Ipsum Terms & Conditions
