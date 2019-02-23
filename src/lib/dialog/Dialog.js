@@ -126,7 +126,7 @@ class Dialog extends React.Component {
 
       if (this.props.backdrop) {
         overlay.setState({
-          backdropClick: () => {
+          onBackdropClick: () => {
             /**
              * When the user clicks on the backdrop, and if they
              * do not disable close, then it should close the
