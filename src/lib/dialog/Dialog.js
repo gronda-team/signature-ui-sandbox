@@ -157,13 +157,13 @@ class Dialog extends React.Component {
     this.setState(state => ({
       animationChangeStateActions: [...state.animationChangeStateActions, {
         id: 'transition-backdrop',
-        callback: (event) => {
-          if (event.phaseName !== 'start') return;
+        callback: () => {
           // Invoke this only once
           this.detachBackdrop();
         },
       }],
     }), () => {
+      this.props.__dialogManager.remove(this.DEFAULT_ID);
       /** Trigger all of the callbacks to be done */
       this.getContainer().startExitAnimation();
     });
@@ -220,7 +220,6 @@ class Dialog extends React.Component {
           maxHeight={this.props.maxHeight}
           direction={this.props.dir}
           disposeOnNavigation={this.props.closeOnNavigation}
-          onDetach={this.handleOverlayDetachment}
           onKeyDown={this.handleOverlayKeyDown}
           ref={this.overlay}
         >
@@ -229,6 +228,7 @@ class Dialog extends React.Component {
             role={this.props.role}
             autoFocus={this.props.autoFocus}
             restoreFocus={this.props.restoreFocus}
+            handleDetachment={this.handleOverlayDetachment}
             onAnimationStateChange={this.handleAnimationListeners}
             ref={this.container}
           >
@@ -300,7 +300,7 @@ const DialogDefaultProps = {
   role: 'dialog',
   panelClass: '',
   disableClose: false,
-  backdrop: null,
+  backdrop: 'dark',
   width: '',
   height: '',
   minWidth: null,
