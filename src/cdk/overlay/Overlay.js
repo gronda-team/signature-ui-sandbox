@@ -142,7 +142,7 @@ class Overlay extends React.Component {
   detach = () => {
     if (!this.state.attached) return;
     
-    detachBackdrop.call(this);
+    this.detachBackdrop();
     /*
     When the overlay is detached, the pane element should disable pointer events.
     This is necessary because otherwise the pane element will cover the page and
@@ -170,6 +170,50 @@ class Overlay extends React.Component {
       detachContent.call(this);
     });
   };
+
+  /**
+   * Detaches the backdrop (if any) associated with the overlay.
+   *
+   * This is not a private method because the Dialog component
+   * needs to manually manage the backdrop destruction
+   * appropriately.
+   */
+  detachBackdrop = () => {
+    const backdrop = this.state.backdrop;
+    if (!backdrop) return;
+
+    let timeoutId = null;
+    const finishDetach = () => {
+      // remove backdrop
+      backdrop.parentNode.removeChild(backdrop);
+
+      backdrop.dataset.shade = undefined; // toggle it off
+      this.setState(state => {
+        /**
+         * If we open up the same overlay before the backdrop
+         * can officially be disposed, we would still have the
+         * older backdrop and won't be able to add a new one.
+         *
+         * This was found when tests were done where overlays
+         * were closed and then reopened immediately before the
+         * 500 ms (see below) could finish executing.
+         */
+        if (state.backdrop === backdrop) return { backdrop: null };
+        return null;
+      }, () => {
+        window.clearTimeout(timeoutId);
+      });
+    };
+
+    backdrop.dataset.visible = false;
+    backdrop.addEventListener('transitionend', finishDetach);
+    /*
+    If the backdrop doesn't have a transition, the `transitionend` event won't fire.
+    In this case we make it unclickable and we try to remove it after a delay.
+     */
+    backdrop.style.pointerEvents = 'none';
+    timeoutId = window.setTimeout(finishDetach, 500);
+  }
   
   /** Cleans up the overlay and associated document listeners from the DOM. */
   dispose = () => {
@@ -379,44 +423,6 @@ function attachBackdrop() {
     
     this.setState({ backdrop });
   }
-}
-
-/** Detaches the backdrop (if any) associated with the overlay. */
-function detachBackdrop() {
-  const backdrop = this.state.backdrop;
-  if (!backdrop) return;
-  
-  let timeoutId = null;
-  const finishDetach = () => {
-    // remove backdrop
-    backdrop.parentNode.removeChild(backdrop);
-  
-    backdrop.dataset.shade = undefined; // toggle it off
-    this.setState(state => {
-      /**
-       * If we open up the same overlay before the backdrop
-       * can officially be disposed, we would still have the
-       * older backdrop and won't be able to add a new one.
-       *
-       * This was found when tests were done where overlays
-       * were closed and then reopened immediately before the
-       * 500 ms (see below) could finish executing.
-       */
-      if (state.backdrop === backdrop) return { backdrop: null };
-      return null;
-    }, () => {
-      window.clearTimeout(timeoutId);
-    });
-  };
-  
-  backdrop.dataset.visible = false;
-  backdrop.addEventListener('transitionend', finishDetach);
-  /*
-  If the backdrop doesn't have a transition, the `transitionend` event won't fire.
-  In this case we make it unclickable and we try to remove it after a delay.
-   */
-  backdrop.style.pointerEvents = 'none';
-  timeoutId = window.setTimeout(finishDetach, 500);
 }
 
 /** Updates the text direction on the overlay panel host */
