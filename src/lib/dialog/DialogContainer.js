@@ -34,20 +34,17 @@ class DialogContainer extends React.Component {
   /** Attach dialog container */
   attach = () => {
     savePreviouslyFocusedElement.call(this);
-    window.requestAnimationFrame(() => {
+    window.setTimeout(() => {
       this.setState({ animationState: 'enter' });
-    });
+    }, 0);
   };
 
   /** Invoked when the transition starts */
   emitOnTransitionStart = () => {
-    this.setState({
-      animationState: 'enter',
-    }, () => {
-      this.props.onAnimationStateChange({
-        phaseName: 'start',
-        toState: this.state.animationState,
-      });
+    this.props.onAnimationStateChange({
+      phaseName: 'start',
+      /** This could be either entering or exiting. */
+      toState: this.state.animationState,
     });
   };
 
@@ -63,7 +60,8 @@ class DialogContainer extends React.Component {
     }
 
     this.props.onAnimationStateChange({
-      phaseName: 'end',
+      phaseName: 'done',
+      /** This could be either entering or exiting. */
       toState: this.state.animationState,
     });
   };
