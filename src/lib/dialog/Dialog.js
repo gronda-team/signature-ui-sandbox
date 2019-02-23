@@ -62,14 +62,14 @@ class Dialog extends React.Component {
   componentDidMount() {
     this.setState({
       animationChangeStateActions: [{
-        id: 'call-onOpened',
+        id: 'end-enter',
         callback: (event) => {
           if (!(event.phaseName === 'done' && event.toState === 'enter')) return;
           // Must only be invoked once
           this.emitOnOpen();
         },
       }, {
-        id: 'call-dispose',
+        id: 'end-exit',
         callback: (event) => {
           if (!(event.phaseName === 'done' && event.toState === 'exit')) return;
           // Invoke dispose only once
@@ -156,8 +156,9 @@ class Dialog extends React.Component {
   close = () => {
     this.setState(state => ({
       animationChangeStateActions: [...state.animationChangeStateActions, {
-        id: 'transition-backdrop',
-        callback: () => {
+        id: 'start-exit',
+        callback: (event) => {
+          if (!(event.phaseName === 'start' && event.toState === 'exit')) return;
           // Invoke this only once
           this.detachBackdrop();
         },
