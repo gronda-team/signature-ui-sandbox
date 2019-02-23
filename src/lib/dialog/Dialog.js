@@ -220,6 +220,7 @@ class Dialog extends React.Component {
           maxWidth={this.props.maxWidth}
           maxHeight={this.props.maxHeight}
           direction={this.props.dir}
+          onDetach={this.handleOverlayDetachment}
           disposeOnNavigation={this.props.closeOnNavigation}
           onKeyDown={this.handleOverlayKeyDown}
           ref={this.overlay}
@@ -229,7 +230,6 @@ class Dialog extends React.Component {
             role={this.props.role}
             autoFocus={this.props.autoFocus}
             restoreFocus={this.props.restoreFocus}
-            handleDetachment={this.handleOverlayDetachment}
             onAnimationStateChange={this.handleAnimationListeners}
             ref={this.container}
           >
@@ -293,6 +293,10 @@ const DialogPropTypes = {
   scrollStrategy: PropTypes.shape({}),
   /** Whether the dialog should close when the user navigates */
   closeOnNavigation: PropTypes.bool,
+  /** Callback invoked when dialog is opened */
+  onOpen: PropTypes.func,
+  /** Callback invoked when dialog is closed */
+  onClose: PropTypes.func,
 };
 
 const DialogDefaultProps = {
@@ -316,6 +320,8 @@ const DialogDefaultProps = {
   restoreFocus: true,
   scrollStrategy: null,
   closeOnNavigation: true,
+  onOpen: _.noop,
+  onClose: _.noop,
 };
 
 Dialog.propTypes = {

@@ -54,7 +54,6 @@ class DialogContainer extends React.Component {
       // If we're opening, then trap the focus immediately
       trapFocus.call(this);
     } else if (this.state.animationState === 'exit') {
-      this.props.handleDetachment();
       // If we're closing, restore focus to the previously focused element
       restoreFocus.call(this);
     }
