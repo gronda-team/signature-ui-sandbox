@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import {ButtonRoot} from '../../button/styles';
 import dialogThemeThunk from './theme';
 
@@ -52,6 +52,17 @@ ${ButtonRoot} + ${ButtonRoot} {
 }
 `;
 
+/**
+ * Since there is no broad support for
+ * onTransitionStart, we must fake it by
+ * using animations. Here, we can use the
+ * animation name as a proxy for if we're
+ * going between entering or exiting.
+ */
+
+export const ANIMATION_ENTER = keyframes`/*!*/`;
+export const ANIMATION_EXIT = keyframes`/*!!*/`;
+
 const dialogTheme = dialogThemeThunk({
   DialogTitle,
 });
@@ -72,18 +83,19 @@ height: 100%;
 // isn't set, we have to inherit the min and max values explicitly.
 min-height: inherit;
 max-height: inherit;
-
+transition-property: opacity, transform;
 &[data-state=null], &[data-state=exit] {
-  opacity: 0;
+  animation-name: ${ANIMATION_EXIT};
   transform: scale(0.86);
-  transition: opacity 75ms cubic-bezier(0.4, 0.0, 0.2, 1),
-    transform 75ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition-duration: 75ms;
+  transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 &[data-state=enter] {
+  animation-name: ${ANIMATION_ENTER};
   transform: none;
-  transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1),
-    transform 150ms cubic-bezier(0, 0, 0.2, 1);
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
 ${dialogTheme}
