@@ -328,7 +328,6 @@ const OverlayDefaultProps = {
   maxHeight: null,
   direction: 'ltr',
   disposeOnNavigation: false,
-  onBackdropClick: _.noop,
   /*
   must be null instead of _.noop so we don't invoke
   the keyboard dispatcher
