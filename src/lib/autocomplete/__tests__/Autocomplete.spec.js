@@ -5,13 +5,8 @@ import { Autocomplete } from '../exports';
 import { FormField } from '../../form-field';
 import { Input } from '../../input';
 import { Option } from '../../core/option';
-import { Platform } from '../../../cdk/platform';
-import ViewportRuler from '../../../cdk/scrolling/ViewportRuler';
-import ScrollDispatcher from '../../../cdk/scrolling/ScrollDispatcher';
-import { OverlayContainer } from '../../../cdk/overlay';
-import { FocusMonitor } from '../../../cdk/a11y';
-import { AutofillMonitor } from '../../../cdk/text-area';
 import {ARROW_DOWN} from '../../../cdk/keycodes/keys';
+import SUIProvider from '../../core/SUIProvider';
 
 describe('Autocomplete', () => {
   let root;
@@ -370,6 +365,14 @@ describe('Autocomplete', () => {
       expect(boundingBox.getAttribute('dir')).toEqual('ltr');
     });
   });
+
+  describe('Miscellaneous testing', () => {
+    let wrapper;
+
+    it('should be able to set a custom value for the `autocomplete` attribute', () => {
+      wrapper = mount(<AutocompleteWithAutocompleteAttribute />);
+    });
+  });
 });
 
 class SimpleAutocomplete extends React.Component {
@@ -414,43 +417,31 @@ class SimpleAutocomplete extends React.Component {
 
   render() {
     return (
-      <Platform>
-        <ViewportRuler>
-          <ScrollDispatcher>
-            <OverlayContainer>
-              <FocusMonitor>
-                <AutofillMonitor>
-                  <React.Fragment>
-                    <FormField>
-                      <Input
-                        readOnly={this.state.readOnly}
-                        placeholder="State"
-                        autocompleteAttribute="auto"
-                        autocompleteDisabled={this.state.autocompleteDisabled}
-                        value={this.state.value}
-                        onChange={this.onChange}
-                        extensions={['autocomplete']}
-                      />
-                      <Autocomplete
-                        displayWith={this.displayFn}
-                        onOpen={this.state.onOpen}
-                        onClose={this.state.onClose}
-                        dir={this.state.dir}
-                      >
-                        { this.getFilteredStates().map(state => (
-                          <Option value={state} key={state.code}>
-                            { state.name }
-                          </Option>
-                        )) }
-                      </Autocomplete>
-                    </FormField>
-                  </React.Fragment>
-                </AutofillMonitor>
-              </FocusMonitor>
-            </OverlayContainer>
-          </ScrollDispatcher>
-        </ViewportRuler>
-      </Platform>
+      <SUIProvider>
+        <FormField>
+          <Input
+            readOnly={this.state.readOnly}
+            placeholder="State"
+            autocompleteAttribute="auto"
+            autocompleteDisabled={this.state.autocompleteDisabled}
+            value={this.state.value}
+            onChange={this.onChange}
+            extensions={['autocomplete']}
+          />
+          <Autocomplete
+            displayWith={this.displayFn}
+            onOpen={this.state.onOpen}
+            onClose={this.state.onClose}
+            dir={this.state.dir}
+          >
+            { this.getFilteredStates().map(state => (
+              <Option value={state} key={state.code}>
+                { state.name }
+              </Option>
+            )) }
+          </Autocomplete>
+        </FormField>
+      </SUIProvider>
     );
   }
 }
