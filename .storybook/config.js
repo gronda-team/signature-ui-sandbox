@@ -6,36 +6,15 @@ import {
   faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft,
   faEye, faEyeSlash,
 } from '@fortawesome/free-solid-svg-icons'
-import {Platform} from '../src/cdk/platform';
-import {OverlayContainer} from '../src/cdk/overlay';
-import {FocusMonitor, InteractivityChecker} from '../src/cdk/a11y';
-import { AutofillMonitor } from '../src/cdk/text-area';
-import ViewportRuler from '../src/cdk/scrolling/ViewportRuler';
-import ScrollDispatcher from '../src/cdk/scrolling/ScrollDispatcher';
-import {DialogManager} from '../src/lib/dialog';
+import SUIProvider from '../src/lib/core/SUIProvider';
 
 /**
- * Add the important global DI containers
- * so that FocusMonitor works, OverlayContainer exists, etc.
+ * Add the global provider so that FocusMonitor works, OverlayContainer exists, etc.
  */
 addDecorator(story => (
-  <Platform>
-    <InteractivityChecker>
-      <ViewportRuler>
-        <ScrollDispatcher>
-          <OverlayContainer>
-            <DialogManager>
-              <FocusMonitor>
-                <AutofillMonitor>
-                  { story() }
-                </AutofillMonitor>
-              </FocusMonitor>
-            </DialogManager>
-          </OverlayContainer>
-        </ScrollDispatcher>
-      </ViewportRuler>
-    </InteractivityChecker>
-  </Platform>
+  <SUIProvider>
+    { story() }
+  </SUIProvider>
 ));
 
 /**
