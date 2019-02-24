@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { configure, addDecorator } from '@storybook/react';
+import { withNotes } from '@storybook/addon-notes';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft,
@@ -36,6 +37,11 @@ addDecorator(story => (
     </InteractivityChecker>
   </Platform>
 ));
+
+/**
+ * Add markdown notes
+ */
+addDecorator(withNotes);
 
 /**
  * Add any FontAwesome icons we want
