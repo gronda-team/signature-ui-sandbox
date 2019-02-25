@@ -5,7 +5,7 @@ import { Autocomplete } from '../exports';
 import { FormField } from '../../form-field';
 import { Input } from '../../input';
 import { Option } from '../../core/option';
-import {ARROW_DOWN, ARROW_UP, ENTER} from '../../../cdk/keycodes/keys';
+import {ARROW_DOWN, ARROW_UP, ENTER, ESCAPE, SPACE, TAB} from '../../../cdk/keycodes/keys';
 import SUIProvider from '../../core/SUIProvider';
 
 describe('Autocomplete', () => {
@@ -13,6 +13,7 @@ describe('Autocomplete', () => {
   let wrapper;
   let input;
   let overlay;
+  let panel;
   let autocompleteExtension; // autocomplete behavior
   let ace; // instance for autocompleteExtension
 
@@ -33,6 +34,7 @@ describe('Autocomplete', () => {
     wrapper.mount();
     input = wrapper.find('input');
     overlay = wrapper.find('Overlay');
+    panel = wrapper.find('Autocomplete');
     autocompleteExtension = wrapper.find('AutocompleteExtension');
     ace = autocompleteExtension.instance();
   });
@@ -465,6 +467,210 @@ describe('Autocomplete', () => {
       jest.runOnlyPendingTimers();
 
       expect(enterEvent.defaultPrevented).toBe(true);
+    });
+
+    it('should not prevent the default enter action for a closed panel after a user action', () => {
+      ace.handleKeyDown(upEvent);
+      jest.runOnlyPendingTimers();
+
+      ace.closePanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      ace.handleKeyDown(enterEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(enterEvent.defaultPrevented).toBe(false);
+    });
+
+    it('should fill the text field, not select an option, when SPACE is entered', () => {
+      // Type in New _ York
+      wrapper.setState({ value: 'New' });
+      const spaceEvent = createKeyDownEvent(SPACE);
+
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      ace.handleKeyDown(spaceEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(wrapper.state('value')).not.toContain('New York');
+    });
+
+    it.skip('should call the parent form’s onDirty method when selecting an option from the keyboard', () => {
+      /**
+       * Todo (There is no <Form /> component just yet.)
+       */
+    });
+
+    it('should open the panel again when typing after making a selection', () => {
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      ace.handleKeyDown(enterEvent);
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(ace.getPanelOpen()).toBe(false);
+      expect(overlay.text()).toBeFalsy();
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+      input.simulate('change', {
+        target: { value: 'al' }
+      });
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(ace.getPanelOpen()).toBe(true);
+      expect(overlay.text()).toContain('Alabama');
+    });
+
+    it('should not open the panel with a blank onChange event', () => {
+      /**
+       * The original Angular implementation used the onInput event
+       * rather than the React-recommended onChange event. This suite
+       * was originally set up ensure that some IE quirks would not
+       * open the panel. (The IE quirk in question was that a blank
+       * input event would fire). This test is kept here for
+       * completeness.
+       */
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+      input.simulate('change', {
+        target: { value: 'A' },
+      });
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(true);
+      ace.closePanel();
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+
+      /** Dispatch the false input event */
+      input.simulate('change', {
+        target: { value: 'A' },
+      });
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(false);
+    });
+
+    it('should scroll to active options below the fold', () => {
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      // Should not scroll
+      expect(panel.instance().state.scrollTop).toBe(0);
+
+      // Simulate down events to go below the fold
+      _.times(5, () => ace.handleKeyDown(downEvent));
+      jest.runOnlyPendingTimers();
+
+      expect(panel.instance().state.scrollTop).toBeGreaterThan(0);
+    });
+
+    it('should scroll to active options on UP arrow', () => {
+      ace.handleKeyDown(upEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(panel.instance().state.scrollTop).toBeGreaterThan(0);
+    });
+
+    it('should not scroll to active options that are fully in the panel', () => {
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(panel.instance().state.scrollTop).toBe(0);
+
+      // Simulate down events to go below the fold
+      _.times(5, () => ace.handleKeyDown(downEvent));
+      jest.runOnlyPendingTimers();
+
+      const scrollTop = panel.instance().state.scrollTop;
+      expect(scrollTop).toBeGreaterThan(0);
+
+      // Set the second item active (which is still visible in the panel)
+      _.times(4, () => ace.handleKeyDown(upEvent));
+      jest.runOnlyPendingTimers();
+
+      expect(panel.instance().state.scrollTop).toBe(scrollTop);
+    });
+
+    it('should scroll to active options that are above the panel', () => {
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(panel.instance().state.scrollTop).toBe(0);
+
+      // Simulate down events to go below the fold
+      _.times(6, () => ace.handleKeyDown(downEvent));
+      jest.runOnlyPendingTimers();
+
+      // Set the second item active (which is still visible in the panel)
+      _.times(5, () => ace.handleKeyDown(upEvent));
+      jest.runOnlyPendingTimers();
+
+      expect(panel.instance().state.scrollTop).toBeGreaterThan(0);
+    });
+
+    it('should close the panel when pressing ESCAPE', () => {
+      input.simulate('focus');
+      // must trigger focus manually to query document.activeElement
+      input.getDOMNode().focus();
+      jest.runOnlyPendingTimers();
+
+      expect(document.activeElement.nodeName).toBe('INPUT');
+      expect(ace.getPanelOpen()).toBe(true);
+
+      document.body.dispatchEvent(createKeyDownEvent(ESCAPE));
+      jest.runOnlyPendingTimers();
+
+      expect(document.activeElement.nodeName).toBe('INPUT');
+      expect(ace.getPanelOpen()).toBe(false);
+    });
+
+    it('should prevent the default action when pressing ESCAPE', () => {
+      const escapeEvent = createKeyDownEvent(ESCAPE);
+      input.getDOMNode().dispatchEvent(escapeEvent);
+
+      expect(escapeEvent.defaultPrevented).toBe(true);
+    });
+
+    it('should close the panel when pressing ALT + UP_ARROW', () => {
+      // Update the event to use the alt key as well
+      Object.defineProperty(upEvent, 'altKey', { get: () => true });
+
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+      // Simulate focus
+      input.getDOMNode().focus();
+
+      expect(document.activeElement.nodeName).toBe('INPUT');
+      expect(ace.getPanelOpen()).toBe(true);
+
+      document.body.dispatchEvent(upEvent); // up + alt
+      jest.runOnlyPendingTimers();
+
+      // Input should still be focused
+      expect(document.activeElement.nodeName).toBe('INPUT');
+      expect(ace.getPanelOpen()).toBe(false);
+    });
+
+    it('should close the panel when tabbing away from a trigger without results', () => {
+      wrapper.setState({ states: [] });
+      input.simulate('focus');
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(ace.getPanelOpen()).toBe(true);
+
+      input.getDOMNode().dispatchEvent(createKeyDownEvent(TAB));
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(ace.getPanelOpen()).toBe(false);
     });
   });
 
