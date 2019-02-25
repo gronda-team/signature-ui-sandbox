@@ -371,6 +371,24 @@ describe('Autocomplete', () => {
 
     it('should be able to set a custom value for the `autocomplete` attribute', () => {
       wrapper = mount(<AutocompleteWithAutocompleteAttribute />);
+      input = wrapper.find('input');
+      console.log(input.debug());
+      expect(input.getDOMNode().getAttribute('autocomplete')).toBe('changed');
+    });
+
+    it('should not throw when typing in an element with a null + disabled autocomplete', () => {
+      wrapper = mount(<InputWithoutAutocompleteAndDisabled />);
+
+      expect(() => {
+        input = wrapper.find('input');
+        input
+          .getDOMNode()
+          .dispatchEvent(new KeyboardEvent('keydown', {
+            cancelable: true,
+            bubbles: true,
+            key: ' ',
+          }));
+      }).not.toThrow();
     });
   });
 });
@@ -444,4 +462,33 @@ class SimpleAutocomplete extends React.Component {
       </SUIProvider>
     );
   }
+}
+
+function AutocompleteWithAutocompleteAttribute(props) {
+  return (
+    <SUIProvider>
+      <FormField>
+        <Input
+          autocomplete="changed"
+          value={props.value}
+          extensions={['autocomplete']}
+        />
+        <Autocomplete />
+      </FormField>
+    </SUIProvider>
+  )
+}
+
+function InputWithoutAutocompleteAndDisabled() {
+  return (
+    <SUIProvider>
+      <FormField>
+        <Input
+          autocomplete="changed"
+          autocompleteDisabled
+          extensions={['autocomplete']}
+        />
+      </FormField>
+    </SUIProvider>
+  )
 }
