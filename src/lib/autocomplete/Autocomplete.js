@@ -163,12 +163,11 @@ class Autocomplete extends React.Component {
     });
   };
 
-  monitor = (child) => {
-    const value = _.get(child, 'props.value');
+  monitor = ({ id, source }) => {
     this.setState(state => ({
       childRefs: {
         ...state.childRefs,
-        [value]: child,
+        [id]: source,
       },
     }));
   };

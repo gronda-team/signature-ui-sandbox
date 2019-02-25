@@ -26,7 +26,7 @@ class Option extends React.Component {
    * Lifecycle
    */
   componentDidMount() {
-    this.props.__parent.monitor(this);
+    this.props.__parent.monitor({ id: this.DEFAULT_ID, source: this });
   }
 
   componentDidUpdate(prevProps) {
@@ -47,7 +47,7 @@ class Option extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.__parent.stopMonitoring(this.props.value);
+    this.props.__parent.stopMonitoring(this.DEFAULT_ID);
   }
 
   /**
