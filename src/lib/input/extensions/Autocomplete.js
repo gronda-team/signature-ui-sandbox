@@ -262,9 +262,16 @@ class AutocompleteExtension extends React.Component {
 
     if (this.getActiveOptionRef() && key === ENTER && this.getPanelOpen()) {
       const value = _.get(this.getActiveOptionRef(), 'props.value');
-      _.invoke(this.getAutocomplete(), ['state', 'childRefs', value, 'selectViaInteraction']);
-      resetActiveItem.call(this);
-      event.preventDefault();
+      /** Find the Option whose values in childRefs matches this value */
+      const refs = _.get(this.getAutocomplete(), ['state', 'childRefs']);
+      const option = _.find(refs, optionObj => (
+        _.isEqual(_.get(optionObj, 'props.value'), value)
+      ));
+      if (option) {
+        option.selectViaInteraction();
+        resetActiveItem.call(this);
+        event.preventDefault();
+      }
     } else if (this.getAutocomplete()) {
       const keyManager = this.getAutocomplete().getKeyManager();
       const previousActiveItem = keyManager.activeItem;
