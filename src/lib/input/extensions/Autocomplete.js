@@ -132,7 +132,7 @@ class AutocompleteExtension extends React.Component {
 
   /** Get the attributes that are associated with the autocomplete */
   getExtendedAttributes = () => ({
-    autocomplete: this.props.autocompleteAttribute,
+    autoComplete: this.props.autocompleteAttribute,
     role: this.props.autocompleteDisabled ?
       null : 'combobox',
     'aria-autocomplete': this.props.autocompleteDisabled ?
