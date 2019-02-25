@@ -274,7 +274,7 @@ class AutocompleteExtension extends React.Component {
       }
     } else if (this.getAutocomplete()) {
       const keyManager = this.getAutocomplete().getKeyManager();
-      const previousActiveItem = keyManager.activeItem;
+      const previousActiveItem = keyManager.state.activeItem;
       const isArrowKey = [ARROW_UP, UP, ARROW_DOWN, DOWN].indexOf(key) > -1;
 
       if (this.getPanelOpen() || key === TAB) {
@@ -283,8 +283,15 @@ class AutocompleteExtension extends React.Component {
         this.openPanel();
       }
 
-      if (isArrowKey || keyManager.activeItem !== previousActiveItem) {
-        scrollToOption.call(this);
+      if (isArrowKey || keyManager.state.activeItem !== previousActiveItem) {
+        /**
+         * We update the active option before this via onKeyDown,
+         * so we must wait until the next tick before we can properly
+         * query the new activeItem in keyManager.
+         */
+        window.setTimeout(() => {
+          scrollToOption.call(this);
+        }, 0);
       }
     }
   };
@@ -402,7 +409,7 @@ function scrollToOption() {
   const autocomplete = this.getAutocomplete();
   const keyManager = autocomplete.getKeyManager();
 
-  const index = keyManager.activeItemIndex || 0;
+  const index = keyManager.state.activeItemIndex || 0;
   const labelCount = countGroupLabelsBeforeOption(
     index,
     autocomplete.getOptions(),
