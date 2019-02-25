@@ -5,7 +5,7 @@ import { Autocomplete } from '../exports';
 import { FormField } from '../../form-field';
 import { Input } from '../../input';
 import { Option } from '../../core/option';
-import {ARROW_DOWN} from '../../../cdk/keycodes/keys';
+import {ARROW_DOWN, ARROW_UP, ENTER} from '../../../cdk/keycodes/keys';
 import SUIProvider from '../../core/SUIProvider';
 
 describe('Autocomplete', () => {
@@ -366,13 +366,52 @@ describe('Autocomplete', () => {
     });
   });
 
+  describe('Keyboard events', () => {
+    let downEvent;
+    let upEvent;
+    let enterEvent;
+    const createKeyDownEvent = key => new KeyboardEvent('keydown', {
+      key,
+      cancelable: true,
+      bubbles: true,
+    });
+
+    beforeEach(() => {
+      downEvent = createKeyDownEvent(ARROW_DOWN);
+      upEvent = createKeyDownEvent(ARROW_UP);
+      enterEvent = createKeyDownEvent(ENTER);
+
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+    });
+
+    it('should not focus the option when the DOWN key is pressed', () => {
+      const option = wrapper.find('Option').at(0);
+      const optionNode = option.getDOMNode();
+      const focusSpy = jest.spyOn(optionNode, 'focus');
+
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+      expect(focusSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not close the panel when the DOWN key is pressed', () => {
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getPanelOpen()).toBe(true);
+      expect(overlay.text()).toContain('Alabama');
+      expect(overlay.text()).toContain('California');
+    });
+  });
+
   describe('Miscellaneous testing', () => {
     let wrapper;
 
     it('should be able to set a custom value for the `autocomplete` attribute', () => {
       wrapper = mount(<AutocompleteWithAutocompleteAttribute />);
       input = wrapper.find('input');
-      console.log(input.debug());
       expect(input.getDOMNode().getAttribute('autocomplete')).toBe('changed');
     });
 
