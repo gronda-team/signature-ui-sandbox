@@ -1,7 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { Button } from '../lib/button';
 import AutocompleteExample from './Autocomplete/Overview';
+import Filtering from './Autocomplete/Filtering';
+import {CenteredDecorator} from './styles';
 
 storiesOf('Autocomplete', module)
-  .add('Overview', () => <AutocompleteExample />);
+  .addDecorator(story => <CenteredDecorator>{ story() }</CenteredDecorator>)
+  .add('Overview', () => <AutocompleteExample />)
+  .add('with filtering', () => <Filtering />);
