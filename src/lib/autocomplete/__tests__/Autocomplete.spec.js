@@ -404,6 +404,68 @@ describe('Autocomplete', () => {
       expect(overlay.text()).toContain('Alabama');
       expect(overlay.text()).toContain('California');
     });
+
+    it('should set the active item to the first option when the DOWN key is pressed', () => {
+      expect(ace.getPanelOpen()).toBe(true);
+
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getActiveOption().props.value).toEqual({ code: 'AL', name: 'Alabama' });
+
+      const options = wrapper.find('Option');
+      expect(options.at(0).getDOMNode().getAttribute('data-active')).toBe('true');
+      expect(options.at(1).getDOMNode().getAttribute('data-active')).toBe('false');
+    });
+
+    it('should set the active item to the last option when the UP key is pressed', () => {
+      expect(ace.getPanelOpen()).toBe(true);
+
+      ace.handleKeyDown(upEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getActiveOption().props.value).toEqual({ code: 'WY', name: 'Wyoming' });
+
+      const options = wrapper.find('Option');
+      const count = options.length;
+      expect(options.at(count - 1).getDOMNode().getAttribute('data-active')).toBe('true');
+      expect(options.at(count - 2).getDOMNode().getAttribute('data-active')).toBe('false');
+    });
+
+    it('should set the active item properly after filtering', () => {
+      wrapper.setState({ value: 'o' });
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getActiveOption().props.value).toEqual({ code: 'CA', name: 'California' });
+
+      const options = wrapper.find('Option');
+      expect(options.at(0).getDOMNode().getAttribute('data-active')).toBe('true');
+      expect(options.at(1).getDOMNode().getAttribute('data-active')).toBe('false');
+    });
+
+    it('should fill the text field when an option is selected with ENTER', () => {
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(ace.getActiveOption().props.value).toEqual({ code: 'AL', name: 'Alabama' });
+
+      ace.handleKeyDown(enterEvent);
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(wrapper.state().value).toContain('Alabama');
+    });
+
+    it('should prevent the default enter key action', () => {
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      ace.handleKeyDown(enterEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(enterEvent.defaultPrevented).toBe(true);
+    });
   });
 
   describe('Miscellaneous testing', () => {
