@@ -79,9 +79,9 @@ class Autocomplete extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.PANEL && prevState.scrollTop !== this.state.scrollTop) {
+    if (this.PANEL.current && prevState.scrollTop !== this.state.scrollTop) {
       // Manually set the scrolltop position
-      this.PANEL.scrollTop = this.state.scrollTop;
+      this.PANEL.current.scrollTop = this.state.scrollTop;
     }
   }
 
