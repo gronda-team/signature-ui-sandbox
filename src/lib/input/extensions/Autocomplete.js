@@ -116,9 +116,10 @@ class AutocompleteExtension extends React.Component {
     if (!this.getActiveOption()) return '';
     const activeOption = this.getActiveOption();
     const activeOptionValue = _.get(activeOption, 'props.value');
-    const options = this.getAutocomplete().getOptions();
+    const options = this.getAutocomplete().state.childRefs;
     // Return the value that corresponds to props.value in options
-    return _.find(options, { props: { value: activeOptionValue } });
+    const optionRef = _.find(options, { props: { value: activeOptionValue } });
+    return optionRef || null;
   };
 
   /** Get whether or not the panel can actually open */
