@@ -290,9 +290,7 @@ class AutocompleteExtension extends React.Component {
          * so we must wait until the next tick before we can properly
          * query the new activeItem in keyManager.
          */
-        window.setTimeout(() => {
-          scrollToOption.call(this);
-        }, 0);
+        scrollToOption.call(this);
       }
     }
   };
