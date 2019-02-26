@@ -715,117 +715,117 @@ describe('Autocomplete', () => {
 
       expect(ace.getActiveOption()).toBeFalsy();
     });
+  });
 
-    describe.skip('Option groups', () => {
-      /**
-       * Todo: implement tests when we have an <OptionGroup /> component
-       */
+  describe.skip('Option groups', () => {
+    /**
+     * Todo: implement tests when we have an <OptionGroup /> component
+     */
+  });
+
+  describe('ARIA', () => {
+    let inputInstance;
+    beforeEach(() => {
+      inputInstance = input.getDOMNode();
     });
 
-    describe('ARIA', () => {
-      let inputInstance;
-      beforeEach(() => {
-        inputInstance = input.getDOMNode();
-      });
-
-      it('should set input[role=combobox]', () => {
-        expect(inputInstance.getAttribute('role')).toEqual('combobox');
-      });
-
-      it('should set the autocomplete panel’s role to listbox', () => {
-        ace.openPanel();
-        jest.runOnlyPendingTimers();
-        wrapper.update();
-        const acPanel = wrapper.find('AutocompletePanel');
-
-        expect(acPanel.getDOMNode().getAttribute('role')).toEqual('listbox');
-      });
-
-      it('should set aria-autocomplete to list', () => {
-        expect(inputInstance.getAttribute('aria-autocomplete')).toEqual('list');
-      });
-
-      it('should set aria-activedescendant based on the active option', () => {
-        ace.openPanel();
-        jest.runOnlyPendingTimers();
-
-        expect(inputInstance.hasAttribute('aria-activedescendant')).toBe(false);
-
-        ace.handleKeyDown(downEvent);
-        jest.runOnlyPendingTimers();
-
-        expect(inputInstance.getAttribute('aria-activedescendant')).toEqual('AL');
-
-        ace.handleKeyDown(downEvent);
-        jest.runOnlyPendingTimers();
-
-        expect(inputInstance.getAttribute('aria-activedescendant')).toEqual('CA');
-      });
-
-      it('should set aria-expanded based on whether the panel is open', () => {
-        expect(inputInstance.getAttribute('aria-expanded')).toBe('false');
-
-        ace.openPanel();
-        jest.runOnlyPendingTimers();
-
-        expect(inputInstance.getAttribute('aria-expanded')).toBe('true');
-      });
-
-      it('should set aria-expanded properly when the panel is hidden', () => {
-        ace.openPanel();
-        jest.runOnlyPendingTimers();
-
-        expect(inputInstance.getAttribute('aria-expanded')).toBe('true');
-
-        input.simulate('change', {
-          target: { value: 'zz' }, // does not match any of the states
-        });
-        jest.runOnlyPendingTimers();
-
-        expect(inputInstance.getAttribute('aria-expanded')).toBe('false');
-      });
-
-      it('should set aria-owns based on the attached autocomplete', () => {
-        ace.openPanel();
-        jest.runOnlyPendingTimers();
-        wrapper.update();
-
-        expect(inputInstance.getAttribute('aria-owns')).toBe(
-          panel.getDOMNode().getAttribute('id')
-        );
-      });
-
-      it('should not set aria-owns when the autocomplete is closed', () => {
-        expect(inputInstance.getAttribute('aria-owns')).toBeFalsy();
-
-        ace.openPanel();
-
-        expect(inputInstance.getAttribute('aria-owns')).toBeTruthy();
-      });
-
-      it('should restore focus to the input when clicking to select a value', () => {
-        ace.openPanel();
-        jest.runOnlyPendingTimers();
-        wrapper.update();
-
-        const option = wrapper.find('Option').at(0);
-        option.simulate('focus');
-        option.simulate('click');
-        jest.runOnlyPendingTimers();
-
-        expect(document.activeElement.nodeName).toBe('INPUT');
-      });
-
-      it('should remove autocomplete-specific aria attributes when autocomplete is disabled', () => {
-        wrapper.setState({ autocompleteDisabled: true });
-        jest.runOnlyPendingTimers();
-
-        expect(inputInstance.getAttribute('role')).toBeFalsy();
-        expect(inputInstance.getAttribute('aria-autocomplete')).toBeFalsy();
-        expect(inputInstance.getAttribute('aria-expanded')).toBeFalsy();
-        expect(inputInstance.getAttribute('aria-owns')).toBeFalsy();
-      })
+    it('should set input[role=combobox]', () => {
+      expect(inputInstance.getAttribute('role')).toEqual('combobox');
     });
+
+    it('should set the autocomplete panel’s role to listbox', () => {
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+      const acPanel = wrapper.find('AutocompletePanel');
+
+      expect(acPanel.getDOMNode().getAttribute('role')).toEqual('listbox');
+    });
+
+    it('should set aria-autocomplete to list', () => {
+      expect(inputInstance.getAttribute('aria-autocomplete')).toEqual('list');
+    });
+
+    it('should set aria-activedescendant based on the active option', () => {
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+
+      expect(inputInstance.hasAttribute('aria-activedescendant')).toBe(false);
+
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(inputInstance.getAttribute('aria-activedescendant')).toEqual('AL');
+
+      ace.handleKeyDown(downEvent);
+      jest.runOnlyPendingTimers();
+
+      expect(inputInstance.getAttribute('aria-activedescendant')).toEqual('CA');
+    });
+
+    it('should set aria-expanded based on whether the panel is open', () => {
+      expect(inputInstance.getAttribute('aria-expanded')).toBe('false');
+
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+
+      expect(inputInstance.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('should set aria-expanded properly when the panel is hidden', () => {
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+
+      expect(inputInstance.getAttribute('aria-expanded')).toBe('true');
+
+      input.simulate('change', {
+        target: { value: 'zz' }, // does not match any of the states
+      });
+      jest.runOnlyPendingTimers();
+
+      expect(inputInstance.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('should set aria-owns based on the attached autocomplete', () => {
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      expect(inputInstance.getAttribute('aria-owns')).toBe(
+        panel.getDOMNode().getAttribute('id')
+      );
+    });
+
+    it('should not set aria-owns when the autocomplete is closed', () => {
+      expect(inputInstance.getAttribute('aria-owns')).toBeFalsy();
+
+      ace.openPanel();
+
+      expect(inputInstance.getAttribute('aria-owns')).toBeTruthy();
+    });
+
+    it('should restore focus to the input when clicking to select a value', () => {
+      ace.openPanel();
+      jest.runOnlyPendingTimers();
+      wrapper.update();
+
+      const option = wrapper.find('Option').at(0);
+      option.simulate('focus');
+      option.simulate('click');
+      jest.runOnlyPendingTimers();
+
+      expect(document.activeElement.nodeName).toBe('INPUT');
+    });
+
+    it('should remove autocomplete-specific aria attributes when autocomplete is disabled', () => {
+      wrapper.setState({ autocompleteDisabled: true });
+      jest.runOnlyPendingTimers();
+
+      expect(inputInstance.getAttribute('role')).toBeFalsy();
+      expect(inputInstance.getAttribute('aria-autocomplete')).toBeFalsy();
+      expect(inputInstance.getAttribute('aria-expanded')).toBeFalsy();
+      expect(inputInstance.getAttribute('aria-owns')).toBeFalsy();
+    })
   });
 
   describe('Miscellaneous testing', () => {
