@@ -57,7 +57,7 @@ export default class Filtering extends React.Component {
           displayWith={this.displayFn}
         >
           { this.getFilteredStates().map(state => (
-            <Option value={state} key={state.code}>
+            <Option value={state} key={state.code} id={state.code}>
               { state.name }
             </Option>
           )) }
