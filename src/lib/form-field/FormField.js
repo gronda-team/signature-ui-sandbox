@@ -31,6 +31,8 @@ export default class FormField extends React.Component {
       type: null,
       /** Different kinds of extensions that the form field requires */
       extensions: {},
+      /** Control attributes */
+      controlAttrs: {},
       /** The root element */
       el: null,
       placeholder: '',
@@ -40,6 +42,7 @@ export default class FormField extends React.Component {
       setContainerClick: this.setControl('containerClick'),
       setControlType: this.setControl('type'),
       setExtension: this.setExtensions,
+      setControlAttrs: this.setControlAttrs,
       getConnectionContainer: this.getConnectionContainer,
       transitionUi: this.transition,
       changeDescribedByIds: this.changeDescribedByIds,
@@ -136,6 +139,20 @@ export default class FormField extends React.Component {
       extensions: {
         ...state.extensions,
         [key]: value,
+      },
+    }));
+  };
+
+  /**
+   * Set the attributes that are consumable by the control in the form field.
+   * In this case, this could be an Input that must update according to changes
+   * in its sibling extensions.
+   */
+  setControlAttrs = (attrs) => {
+    this.setState(state => ({
+      controlAttrs: {
+        ...state.controlAttrs,
+        ...attrs,
       },
     }));
   };

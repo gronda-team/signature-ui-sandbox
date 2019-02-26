@@ -244,6 +244,8 @@ class Input extends React.Component {
       this.tagList.current.getExtendedAttributes() :
       {};
 
+    const controlAttrs = _.get(__formFieldControl, 'controlAttrs', {});
+
     return (
       <React.Fragment>
         { extensions.indexOf('autocomplete') > -1 ? (
@@ -282,6 +284,7 @@ class Input extends React.Component {
           {...restProps}
           {...autocompleteAttributes}
           {...tagListAttributes}
+          {...controlAttrs}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
