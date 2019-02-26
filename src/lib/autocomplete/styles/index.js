@@ -34,4 +34,6 @@ ${DividerRoot}[aria-orientation=horizontal] {
 }
 `;
 
+AutocompletePanel.displayName = 'AutocompletePanel';
+
 export const AutocompletePanelRoot = styled.div``;

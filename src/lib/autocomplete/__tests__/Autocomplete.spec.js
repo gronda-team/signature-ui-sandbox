@@ -736,8 +736,9 @@ describe('Autocomplete', () => {
         ace.openPanel();
         jest.runOnlyPendingTimers();
         wrapper.update();
+        const acPanel = wrapper.find('AutocompletePanel');
 
-        expect(panel.getDOMNode().getAttribute('role')).toEqual('listbox');
+        expect(acPanel.getDOMNode().getAttribute('role')).toEqual('listbox');
       });
 
       it('should set aria-autocomplete to list', () => {
@@ -774,7 +775,7 @@ describe('Autocomplete', () => {
         ace.openPanel();
         jest.runOnlyPendingTimers();
 
-        expect(input.getAttribute('aria-expanded')).toBe('true');
+        expect(inputInstance.getAttribute('aria-expanded')).toBe('true');
 
         input.simulate('change', {
           target: { value: 'zz' }, // does not match any of the states
