@@ -4,7 +4,7 @@ import { withNotes } from '@storybook/addon-notes';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft,
-  faEye, faEyeSlash,
+  faEye, faEyeSlash, faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons'
 import SUIProvider from '../src/lib/core/SUIProvider';
 
@@ -25,7 +25,7 @@ addDecorator(withNotes);
 /**
  * Add any FontAwesome icons we want
  */
-library.add(faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft, faEye, faEyeSlash);
+library.add(faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft, faEye, faEyeSlash, faTimesCircle);
 
 /**
  * Dynamically load the stories from src/storybook-app folder,
