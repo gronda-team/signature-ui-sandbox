@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import InputOverview from './Input/Overview';
+import InputPrefixSuffix from './Input/PrefixSuffix';
 import { CenteredDecorator } from './styles';
 // import inputOverview from './Input/notes/InputOverview.md';
 
@@ -10,4 +11,5 @@ storiesOf('Input', module)
     'Overview',
     () => <InputOverview />,
     // { notes: { markdown: inputOverview } },
-  );
+  )
+  .add('with prefixes and suffixes', () => <InputPrefixSuffix />);
