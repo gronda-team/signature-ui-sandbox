@@ -120,4 +120,5 @@ overflow: auto;
 // We also add a negative margin to negate the effect of the padding on the layout.
 padding: 2px 0;
 margin: -2px 0;
+${inputTheme}
 `;
