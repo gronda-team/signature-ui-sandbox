@@ -46,6 +46,17 @@ class AutocompleteExtension extends React.Component {
       window.addEventListener('blur', this.windowBlurHandler);
     }
 
+    /** Set the form field control attributes upon instantiation */
+    const disabled = this.props.autocompleteDisabled;
+    this.props.__formFieldControl.setControlAttrs({
+      role: disabled ? null : 'combobox',
+      'aria-autocomplete': disabled ? null : 'list',
+      autoComplete: this.props.autocompleteAttribute,
+      'aria-expanded': disabled ? null : this.getPanelOpen(),
+      'aria-owns': (disabled || !this.getPanelOpen()) ?
+        null : this.getAutocomplete().getId(),
+    });
+
     /** Set up the document listener */
     setupOutsideClickStream.call(this);
   }
@@ -73,6 +84,25 @@ class AutocompleteExtension extends React.Component {
           },
         }));
       }
+    }
+
+    /** Apply the correct attribute for aria-autocomplete */
+    if (prevProps.autocompleteDisabled !== this.props.autocompleteDisabled) {
+      const disabled = this.props.autocompleteDisabled;
+      this.props.__formFieldControl.setControlAttrs({
+        role: disabled ? null : 'combobox',
+        'aria-autocomplete': disabled ? null : 'list',
+        'aria-expanded': disabled ? null : this.getPanelOpen(),
+        'aria-owns': (disabled || !this.getPanelOpen()) ?
+          null : this.getAutocomplete().getId(),
+      });
+    }
+
+    /** Apply the correct attribute for input autoComplete */
+    if (prevProps.autocompleteAttribute !== this.props.autocompleteAttribute) {
+      this.props.__formFieldControl.setControlAttrs({
+        autoComplete: this.props.autocompleteAttribute,
+      });
     }
   }
 
@@ -133,12 +163,6 @@ class AutocompleteExtension extends React.Component {
 
   /** Get the attributes that are associated with the autocomplete */
   getExtendedAttributes = () => ({
-    autoComplete: this.props.autocompleteAttribute,
-    role: this.props.autocompleteDisabled ?
-      null : 'combobox',
-    'aria-autocomplete': this.props.autocompleteDisabled ?
-      null : 'list',
-    'aria-activedescendant': null,
     'aria-expanded': this.props.autocompleteDisabled ?
       null : this.getPanelOpen(),
     'aria-owns': (this.props.autocompleteDisabled || !this.getPanelOpen()) ?
