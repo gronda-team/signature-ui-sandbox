@@ -7,7 +7,7 @@ import { BaseInput, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
-import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor} from '../../cdk/text-area';
+import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor, TextAreaAutosize } from '../../cdk/text-area';
 import AutocompleteTrigger from './extensions/Autocomplete';
 import TagBehavior from './extensions/TagBehavior';
 
@@ -232,6 +232,7 @@ class Input extends React.Component {
       as, id, placeholder, disabled, required, type,
       autocomplete, autocompleteDisabled, // autocomplete props
       tagListSeparatorKeyCodes, onTagEnd, tagListAddOnBlur, // tag list props
+      autosizeMinRows, autosizeMaxRows, autosizeEnabled,
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
@@ -248,6 +249,14 @@ class Input extends React.Component {
 
     return (
       <React.Fragment>
+        { extensions.indexOf('autosize') > -1 && as === 'textarea' ? (
+          <TextAreaAutosize
+            input={this.EL}
+            minRows={autosizeMinRows}
+            maxRows={autosizeMaxRows}
+            enabled={autosizeEnabled}
+          />
+        ) : null }
         { extensions.indexOf('autocomplete') > -1 ? (
           <AutocompleteTrigger
             input={this}
@@ -336,7 +345,7 @@ const InputPropTypes = {
   value: PROP_TYPE_STRING_OR_NUMBER,
   /** Extensions like if it's an autocomplete or part of a tag list */
   extensions: PropTypes.arrayOf(PropTypes.oneOf([
-    'autocomplete', 'tag-list',
+    'autocomplete', 'tag-list', 'autosize',
   ])),
 };
 
