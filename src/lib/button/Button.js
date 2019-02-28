@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ButtonRoot, ButtonFocusOverlay, ButtonWrapper } from './styles/index';
 import { FocusMonitorPropTypes, FocusMonitorDefaultProps, withFocusMonitor } from '../../cdk/a11y';
+import { ButtonDisabledOverlay } from './styles';
 
 /** Default color palette for round buttons (mat-fab and mat-mini-fab) */
 const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
@@ -90,6 +91,7 @@ class Button extends React.Component {
       >
         <ButtonWrapper>{ this.props.children }</ButtonWrapper>
         <ButtonFocusOverlay />
+        <ButtonDisabledOverlay />
       </this.BUTTON_ROOT>
     )
   }

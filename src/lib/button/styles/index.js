@@ -24,8 +24,18 @@ opacity: 0;
 transition: ${BUTTON_FOCUS_TRANSITION};
 `;
 
+/**
+ * To be shown if the button is disabled. Note that we can't just change
+ * the color of the background in ButtonFocusOverlay because going between
+ * disabled/new color would flicker the background color while the opacity
+ * is being changed as well. (It would look weird going from not disabled
+ * to disabled).
+ */
+export const ButtonDisabledOverlay = ButtonFocusOverlay.extend``;
+
 const components = {
   FocusOverlay: ButtonFocusOverlay,
+  DisabledOverlay: ButtonDisabledOverlay,
   Wrapper: ButtonWrapper,
 };
 
@@ -37,6 +47,16 @@ export const ButtonRoot = styled.div`
 // Elements inside of all type of buttons should be vertical aligned in the middle.
 ${ButtonFocusOverlay} > * {
   vertical-align: middle;
+}
+
+${ButtonDisabledOverlay} {
+  opacity: 0.3;
+}
+
+&:not([disabled]) {
+  ${ButtonDisabledOverlay} {
+    opacity: 0;
+  }
 }
 
 // Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.

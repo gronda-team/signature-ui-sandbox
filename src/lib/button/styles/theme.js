@@ -35,7 +35,7 @@ font-weight: 500;
 `;
 
 const themeThunk = (components) => {
-  const { FocusOverlay } = components;
+  const { FocusOverlay, DisabledOverlay } = components;
   return css`
   // Buttons without a background color should inherit the font color. This is necessary to
   // ensure that the button is readable on custom background colors. It's wrong to always assume
@@ -68,6 +68,7 @@ const themeThunk = (components) => {
   }
   
   ${FocusOverlay} { background-color: black; }
+  ${DisabledOverlay} { background-color: white; }
   
   &[data-appearance=stroked]:not([disabled=true]) {
     border-color: ${strokedBorder};
