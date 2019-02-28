@@ -8,7 +8,7 @@ import InputClearable from './Input/Clearable';
 import InputAutosize from './Input/Autosize';
 import inputOverview from './Input/notes/InputOverview.md';
 
-storiesOf('Input', module)
+storiesOf('Input & TextArea', module)
   .addDecorator(story => <CenteredDecorator>{ story() }</CenteredDecorator>)
   .add(
     'Overview',
