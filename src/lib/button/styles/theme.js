@@ -10,7 +10,7 @@ const buttonColors = (foreground, background, border) => {
   return css`
   color: ${foreground};
   background: ${background};
-  ${border ? `border-color: ${border}` : ''}
+  ${border ? `border-color: ${border};` : ''}
   `;
 };
 
@@ -46,7 +46,7 @@ const themeThunk = (components) => {
     background: transparent;
     
     &[data-color=primary] > ${FocusOverlay} { background-color: ${primary}; }
-    &[data-color=secondary] > ${FocusOverlay} { background-color: ${secondary}; }
+    &[data-color=secondary] > 
     &[disabled=true] > ${FocusOverlay} { background-color: transparent; }
   }
   
@@ -57,7 +57,9 @@ const themeThunk = (components) => {
   
   &[data-appearance=fill] {
     &[data-color=primary] { ${fillColor(primary)} }
-    &[data-color=secondary] { ${standardColor(darkPrimaryText)} }
+    &[data-color=secondary] {
+      ${standardColor(darkPrimaryText)}
+    }
   }
   
   &[data-appearance=stroked] {

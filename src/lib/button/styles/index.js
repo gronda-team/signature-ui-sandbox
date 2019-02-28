@@ -41,7 +41,7 @@ ${ButtonFocusOverlay} > * {
 
 // Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
-&[data-appearance=standard], &[data-appearance=stroked] {
+&[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
   &:hover {
     ${ButtonFocusOverlay} { opacity: 0.04; }
   }
@@ -51,7 +51,7 @@ ${ButtonFocusOverlay} > * {
 // enhancement and not all desktop browsers support this kind of media query, we can't
 // use something like @media (hover).
 @media (hover: none) {
-  &[data-appearance=standard], &[data-appearance=stroked] {
+  &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
     &:hover {
       ${ButtonFocusOverlay} { opacity: 0; }
     }
