@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import {ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler} from '../../scrolling';
 import {
   ScrollDispatcherDefaultProps,
@@ -8,7 +7,7 @@ import {
   withScrollDispatcher,
 } from '../../scrolling/exports';
 import {stack} from '../../../lib/core/components/util';
-import {isElementScrolledOutsideView} from '../position/scroll-clip';
+import {isElementScrolledOutsideView} from '../position/util';
 
 /**
  * Reactive scroll strategy object to expose enable, and disable
@@ -100,12 +99,12 @@ RepositionScrollStrategy.defaultProps = {
 };
 
 // Add context dependencies
-const WrappedStrategy = stack(
+const StackedRepositionScrollStrategy = stack(
   withViewportRuler,
   withScrollDispatcher,
 )(RepositionScrollStrategy);
 
-WrappedStrategy.propTypes = RepositionScrollStrategyPropTypes;
-WrappedStrategy.defaultProps = RepositionScrollStrategyDefaultProps;
+StackedRepositionScrollStrategy.propTypes = RepositionScrollStrategyPropTypes;
+StackedRepositionScrollStrategy.defaultProps = RepositionScrollStrategyDefaultProps;
 
-export default WrappedStrategy;
+export default StackedRepositionScrollStrategy;

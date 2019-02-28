@@ -4,7 +4,7 @@ import _ from 'lodash';
 import Overlay from './Overlay';
 import { ESC, ESCAPE } from '../keycodes/keys';
 import FlexibleConnectedPositionStrategy from './position/FlexibleConnectedPositionStrategy';
-import RepositionScrollStrategy from './scroll/RepositionScrollStrategy';
+import { RepositionScrollStrategy } from './scroll';
 
 class ConnectedOverlay extends React.Component {
   constructor() {

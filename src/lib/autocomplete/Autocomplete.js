@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {ListKeyManager} from '../../cdk/a11y';
 import {byInternalType, stack} from '../core/components/util';
-import { Overlay } from '../../cdk/overlay';
-import FlexibleConnectedPositionStrategy from '../../cdk/overlay/position/FlexibleConnectedPositionStrategy';
-import RepositionScrollStrategy from '../../cdk/overlay/scroll/RepositionScrollStrategy';
+import {
+  Overlay,
+  RepositionScrollStrategy,
+  FlexibleConnectedPositionStrategy,
+} from '../../cdk/overlay';
 import { OptionParentProvider } from '../core/option';
 import {AutocompletePanel, AutocompletePanelRoot} from './styles';
 import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../form-field';
@@ -77,9 +79,9 @@ class Autocomplete extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.PANEL && prevState.scrollTop !== this.state.scrollTop) {
+    if (this.PANEL.current && prevState.scrollTop !== this.state.scrollTop) {
       // Manually set the scrolltop position
-      this.PANEL.scrollTop = this.state.scrollTop;
+      this.PANEL.current.scrollTop = this.state.scrollTop;
     }
   }
 
@@ -139,6 +141,9 @@ class Autocomplete extends React.Component {
    * Actions
    */
   handleActiveItemChange = (index) => {
+    const options = this.getOptions();
+    const activeItemValue = _.get(options, [index, 'props', 'value']);
+    const activeItem = _.find(this.state.childRefs, { props: { value: activeItemValue } });
     this.setState({
       /**
        * Manually sync the active item here
@@ -149,7 +154,11 @@ class Autocomplete extends React.Component {
        * This way, this.state.activeItem will reflect
        * the actual item instead of prevState.activeItem.
        */
-      activeItem: _.get(this.getOptions(), [index]),
+      activeItem,
+    });
+
+    this.props.__formFieldControl.setControlAttrs({
+      'aria-activedescendant': _.invoke(activeItem, 'getId'),
     });
   };
 
@@ -161,12 +170,11 @@ class Autocomplete extends React.Component {
     });
   };
 
-  monitor = (child) => {
-    const value = _.get(child, 'props.value');
+  monitor = ({ id, source }) => {
     this.setState(state => ({
       childRefs: {
         ...state.childRefs,
-        [value]: child,
+        [id]: source,
       },
     }));
   };

@@ -21,7 +21,7 @@ class AutocompleteExample extends React.Component {
       population: '20.27M',
     }, {
       name: 'Texas',
-      population: '27.47M,'
+      population: '27.47M'
     }];
   }
 
@@ -31,32 +31,25 @@ class AutocompleteExample extends React.Component {
 
   render() {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '400px',
-        margin: '100px auto'
-      }}>
-        <FormField>
-          <Label>Autocomplete overview</Label>
-          <Input
-            extensions={['autocomplete']}
-            value={this.state.value}
-            onChange={this.updateText}
-            autocomplete="auto"
-            placeholder="State"
-            aria-label="State"
-          />
-          <Autocomplete>
-            { this.STATES.map(state => (
-              <Option value={state.name}>
-                { state.name }
-                <small>(Pop: { state.population })</small>
-              </Option>
-            ))}
-          </Autocomplete>
-        </FormField>
-      </div>
+      <FormField>
+        <Label>Autocomplete overview</Label>
+        <Input
+          extensions={['autocomplete']}
+          value={this.state.value}
+          onChange={this.updateText}
+          autocomplete="auto"
+          placeholder="State"
+          aria-label="State"
+        />
+        <Autocomplete>
+          { this.STATES.map(state => (
+            <Option value={state.name} key={state.name}>
+              { state.name }
+              <small>(Pop: { state.population })</small>
+            </Option>
+          ))}
+        </Autocomplete>
+      </FormField>
     );
   }
 }

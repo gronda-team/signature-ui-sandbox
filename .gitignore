@@ -29,3 +29,7 @@ node_modules
 
 # WebStorm
 .idea
+
+# Cypress directories
+screenshotsFolder
+videosFolder

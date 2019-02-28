@@ -7,7 +7,7 @@ import { BaseInput, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
-import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor} from '../../cdk/text-area';
+import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor, TextAreaAutosize } from '../../cdk/text-area';
 import AutocompleteTrigger from './extensions/Autocomplete';
 import TagBehavior from './extensions/TagBehavior';
 
@@ -232,9 +232,12 @@ class Input extends React.Component {
       as, id, placeholder, disabled, required, type,
       autocomplete, autocompleteDisabled, // autocomplete props
       tagListSeparatorKeyCodes, onTagEnd, tagListAddOnBlur, // tag list props
+      autosizeMinRows, autosizeMaxRows, autosizeEnabled,
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
+
+    const hasAutosize = as === 'textarea' && extensions.indexOf('autosize') > -1;
 
     const autocompleteAttributes = this.autocomplete.current ?
       this.autocomplete.current.getExtendedAttributes() :
@@ -244,8 +247,18 @@ class Input extends React.Component {
       this.tagList.current.getExtendedAttributes() :
       {};
 
+    const controlAttrs = _.get(__formFieldControl, 'controlAttrs', {});
+
     return (
       <React.Fragment>
+        { hasAutosize ? (
+          <TextAreaAutosize
+            input={this.EL}
+            minRows={autosizeMinRows}
+            maxRows={autosizeMaxRows}
+            enabled={_.isUndefined(autosizeEnabled) ? true : autosizeEnabled}
+          />
+        ) : null }
         { extensions.indexOf('autocomplete') > -1 ? (
           <AutocompleteTrigger
             input={this}
@@ -282,6 +295,7 @@ class Input extends React.Component {
           {...restProps}
           {...autocompleteAttributes}
           {...tagListAttributes}
+          {...controlAttrs}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
@@ -290,7 +304,9 @@ class Input extends React.Component {
           aria-describedby={this.getAriaDescribedBy()}
           aria-invalid={false}
           aria-required={required.toString()}
+          data-autosize={as === 'textarea' && extensions.indexOf('autosize') > -1}
           data-autofilled={this.isAutofilled()}
+          {...(hasAutosize ? { rows: 1 } : {})}
           onChange={this.onChange}
           onKeyDown={this.onKeyDown}
           onFocus={this.handleFocusChange(true)}
@@ -333,7 +349,7 @@ const InputPropTypes = {
   value: PROP_TYPE_STRING_OR_NUMBER,
   /** Extensions like if it's an autocomplete or part of a tag list */
   extensions: PropTypes.arrayOf(PropTypes.oneOf([
-    'autocomplete', 'tag-list',
+    'autocomplete', 'tag-list', 'autosize',
   ])),
 };
 

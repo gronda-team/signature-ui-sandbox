@@ -52,6 +52,10 @@ class TextAreaAutosize extends React.Component {
         this.reset();
       }
     }
+
+    if (this.props.__platform.is('browser')) {
+      this.resizeToFitContent();
+    }
   }
   
   componentWillUnmount() {
@@ -164,7 +168,7 @@ class TextAreaAutosize extends React.Component {
     
     this.setState({
       previousValue: value,
-      previousMinRows: props.minRows,
+      previousMinRows: this.props.minRows,
     });
   };
   
@@ -264,8 +268,10 @@ function cacheTextAreaLineHeight() {
   });
 
   // Min and max heights have to be re-calculated if the cached line height changes
-  this.setMinHeight();
-  this.setMaxHeight();
+  window.requestAnimationFrame(() => {
+    this.setMinHeight();
+    this.setMaxHeight();
+  });
 }
 
 function storeInitialHeight() {

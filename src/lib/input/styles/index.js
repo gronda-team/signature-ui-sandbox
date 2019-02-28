@@ -113,11 +113,12 @@ ${baseInput}
 resize: vertical;
 overflow: auto;
 
-&[data-autoresize=true] {
+&[data-autosize=true] {
   resize: none;
 }
 // The 2px padding prevents scrollbars from appearing on Chrome even when they aren't needed.
 // We also add a negative margin to negate the effect of the padding on the layout.
 padding: 2px 0;
 margin: -2px 0;
+${inputTheme}
 `;

@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, {css} from 'styled-components';
 
 // We want overlays to always appear over user content, so set a baseline
 // very high z-index for the overlay container, which is where we create the new
@@ -7,7 +7,7 @@ const OVERLAY_CONTAINER_Z_INDEX = 1000;
 const OVERLAY_Z_INDEX = 1000;
 const OVERLAY_BACKDROP_Z_INDEX = 1000;
 
-const viewportStretch = css`
+export const viewportStretch = css`
 // Disable events from being captured on the overlay container.
 pointer-events: none;
 
@@ -85,7 +85,7 @@ opacity: 0;
 // overlay element's size to fit within the viewport.
 export const OverlayBoundingBox = styled.div`
 position: absolute;
-z-index: $cdk-z-index-overlay;
+z-index: ${OVERLAY_Z_INDEX};
 
 // We use "display: flex" on this element exclusively for centering connected overlays.
 // When *not* centering, a top/left/bottom/right will be set which overrides the normal
@@ -99,4 +99,18 @@ flex-direction: column;
 // Add some dimensions so the element has an "innerText" which some people depend on in tests.
 min-width: 1px;
 min-height: 1px;
+`;
+
+/**
+ * We use an extra wrapper element in order to use make the
+ * overlay itself a flex item. This makes centering the overlay
+ * easy without running into the subpixel rendering problems
+ * tied to using `transform` and without interfering with the
+ * other position strategies.
+ */
+export const GlobalOverlayWrapper = styled.div`
+${viewportStretch}
+display: flex;
+position: absolute;
+z-index: ${OVERLAY_Z_INDEX};
 `;

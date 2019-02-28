@@ -46,6 +46,17 @@ class AutocompleteExtension extends React.Component {
       window.addEventListener('blur', this.windowBlurHandler);
     }
 
+    /** Set the form field control attributes upon instantiation */
+    const disabled = this.props.autocompleteDisabled;
+    this.props.__formFieldControl.setControlAttrs({
+      role: disabled ? null : 'combobox',
+      'aria-autocomplete': disabled ? null : 'list',
+      autoComplete: this.props.autocompleteAttribute,
+      'aria-expanded': disabled ? null : this.getPanelOpen(),
+      'aria-owns': (disabled || !this.getPanelOpen()) ?
+        null : this.getAutocomplete().getId(),
+    });
+
     /** Set up the document listener */
     setupOutsideClickStream.call(this);
   }
@@ -73,6 +84,25 @@ class AutocompleteExtension extends React.Component {
           },
         }));
       }
+    }
+
+    /** Apply the correct attribute for aria-autocomplete */
+    if (prevProps.autocompleteDisabled !== this.props.autocompleteDisabled) {
+      const disabled = this.props.autocompleteDisabled;
+      this.props.__formFieldControl.setControlAttrs({
+        role: disabled ? null : 'combobox',
+        'aria-autocomplete': disabled ? null : 'list',
+        'aria-expanded': disabled ? null : this.getPanelOpen(),
+        'aria-owns': (disabled || !this.getPanelOpen()) ?
+          null : this.getAutocomplete().getId(),
+      });
+    }
+
+    /** Apply the correct attribute for input autoComplete */
+    if (prevProps.autocompleteAttribute !== this.props.autocompleteAttribute) {
+      this.props.__formFieldControl.setControlAttrs({
+        autoComplete: this.props.autocompleteAttribute,
+      });
     }
   }
 
@@ -116,9 +146,10 @@ class AutocompleteExtension extends React.Component {
     if (!this.getActiveOption()) return '';
     const activeOption = this.getActiveOption();
     const activeOptionValue = _.get(activeOption, 'props.value');
-    const options = this.getAutocomplete().getOptions();
+    const options = this.getAutocomplete().state.childRefs;
     // Return the value that corresponds to props.value in options
-    return _.find(options, { props: { value: activeOptionValue } });
+    const optionRef = _.find(options, { props: { value: activeOptionValue } });
+    return optionRef || null;
   };
 
   /** Get whether or not the panel can actually open */
@@ -132,12 +163,6 @@ class AutocompleteExtension extends React.Component {
 
   /** Get the attributes that are associated with the autocomplete */
   getExtendedAttributes = () => ({
-    autocomplete: this.props.autocompleteAttribute,
-    role: this.props.autocompleteDisabled ?
-      null : 'combobox',
-    'aria-autocomplete': this.props.autocompleteDisabled ?
-      null : 'list',
-    'aria-activedescendant': null,
     'aria-expanded': this.props.autocompleteDisabled ?
       null : this.getPanelOpen(),
     'aria-owns': (this.props.autocompleteDisabled || !this.getPanelOpen()) ?
@@ -262,12 +287,19 @@ class AutocompleteExtension extends React.Component {
 
     if (this.getActiveOptionRef() && key === ENTER && this.getPanelOpen()) {
       const value = _.get(this.getActiveOptionRef(), 'props.value');
-      _.invoke(this.getAutocomplete(), ['state', 'childRefs', value, 'selectViaInteraction']);
-      resetActiveItem.call(this);
-      event.preventDefault();
+      /** Find the Option whose values in childRefs matches this value */
+      const refs = _.get(this.getAutocomplete(), ['state', 'childRefs']);
+      const option = _.find(refs, optionObj => (
+        _.isEqual(_.get(optionObj, 'props.value'), value)
+      ));
+      if (option) {
+        option.selectViaInteraction();
+        resetActiveItem.call(this);
+        event.preventDefault();
+      }
     } else if (this.getAutocomplete()) {
       const keyManager = this.getAutocomplete().getKeyManager();
-      const previousActiveItem = keyManager.activeItem;
+      const previousActiveItem = keyManager.state.activeItem;
       const isArrowKey = [ARROW_UP, UP, ARROW_DOWN, DOWN].indexOf(key) > -1;
 
       if (this.getPanelOpen() || key === TAB) {
@@ -276,7 +308,12 @@ class AutocompleteExtension extends React.Component {
         this.openPanel();
       }
 
-      if (isArrowKey || keyManager.activeItem !== previousActiveItem) {
+      if (isArrowKey || keyManager.state.activeItem !== previousActiveItem) {
+        /**
+         * We update the active option before this via onKeyDown,
+         * so we must wait until the next tick before we can properly
+         * query the new activeItem in keyManager.
+         */
         scrollToOption.call(this);
       }
     }
@@ -395,7 +432,7 @@ function scrollToOption() {
   const autocomplete = this.getAutocomplete();
   const keyManager = autocomplete.getKeyManager();
 
-  const index = keyManager.activeItemIndex || 0;
+  const index = keyManager.state.activeItemIndex || 0;
   const labelCount = countGroupLabelsBeforeOption(
     index,
     autocomplete.getOptions(),
