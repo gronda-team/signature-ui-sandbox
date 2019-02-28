@@ -5,6 +5,7 @@ import InputPrefixSuffix from './Input/PrefixSuffix';
 import InputHints from './Input/Hints';
 import { CenteredDecorator } from './styles';
 import InputClearable from './Input/Clearable';
+import InputAutosize from './Input/Autosize';
 import inputOverview from './Input/notes/InputOverview.md';
 
 storiesOf('Input', module)
@@ -16,4 +17,5 @@ storiesOf('Input', module)
   )
   .add('with prefixes and suffixes', () => <InputPrefixSuffix />)
   .add('with hints', () => <InputHints />)
-  .add('with clearing feature', () => <InputClearable />);
+  .add('with clearing feature', () => <InputClearable />)
+  .add('with autosize', () => <InputAutosize />);
