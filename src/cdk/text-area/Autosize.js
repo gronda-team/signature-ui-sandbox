@@ -164,7 +164,7 @@ class TextAreaAutosize extends React.Component {
     
     this.setState({
       previousValue: value,
-      previousMinRows: props.minRows,
+      previousMinRows: this.props.minRows,
     });
   };
   
