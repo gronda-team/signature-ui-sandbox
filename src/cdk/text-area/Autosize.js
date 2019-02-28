@@ -268,10 +268,10 @@ function cacheTextAreaLineHeight() {
   });
 
   // Min and max heights have to be re-calculated if the cached line height changes
-  window.setTimeout(() => {
+  window.requestAnimationFrame(() => {
     this.setMinHeight();
     this.setMaxHeight();
-  }, 0);
+  });
 }
 
 function storeInitialHeight() {
