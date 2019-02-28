@@ -52,6 +52,10 @@ class TextAreaAutosize extends React.Component {
         this.reset();
       }
     }
+
+    if (this.props.__platform.is('browser')) {
+      this.resizeToFitContent();
+    }
   }
   
   componentWillUnmount() {
@@ -264,8 +268,10 @@ function cacheTextAreaLineHeight() {
   });
 
   // Min and max heights have to be re-calculated if the cached line height changes
-  this.setMinHeight();
-  this.setMaxHeight();
+  window.setTimeout(() => {
+    this.setMinHeight();
+    this.setMaxHeight();
+  }, 0);
 }
 
 function storeInitialHeight() {
