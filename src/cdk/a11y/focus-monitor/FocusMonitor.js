@@ -27,10 +27,10 @@ class FocusMonitor extends React.Component {
    * Lifecycle
    */
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.elementInfo.length === 1 && prevState.elementInfo.length === 0) {
+    if (this.state.elementInfo.length > 0 && prevState.elementInfo.length === 0) {
       // if we're incrementing the state from zero to one
       registerGlobalListeners.call(this);
-    } else if (this.state.elementInfo.length === 0 && prevState.elementInfo.length === 1) {
+    } else if (this.state.elementInfo.length === 0 && prevState.elementInfo.length > 0) {
       // if we're decrementing from one to zero
       this.UNREGISTER.call(this);
       this.UNREGISTER = () => {};
