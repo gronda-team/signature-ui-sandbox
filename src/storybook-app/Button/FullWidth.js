@@ -66,7 +66,7 @@ class FullWidth extends React.Component {
         <Button
           size="full"
           appearance="fill"
-          disabled={!this.state.value || !this.state.password}
+          disabled={!this.state.username || !this.state.password}
         >
           Submit
         </Button>
