@@ -237,6 +237,8 @@ class Input extends React.Component {
     } = this.props;
     // todo: aria-invalid
 
+    const hasAutosize = as === 'textarea' && extensions.indexOf('autosize') > -1;
+
     const autocompleteAttributes = this.autocomplete.current ?
       this.autocomplete.current.getExtendedAttributes() :
       {};
@@ -249,12 +251,12 @@ class Input extends React.Component {
 
     return (
       <React.Fragment>
-        { extensions.indexOf('autosize') > -1 && as === 'textarea' ? (
+        { hasAutosize ? (
           <TextAreaAutosize
             input={this.EL}
             minRows={autosizeMinRows}
             maxRows={autosizeMaxRows}
-            enabled={autosizeEnabled}
+            enabled={_.isUndefined(autosizeEnabled) ? true : autosizeEnabled}
           />
         ) : null }
         { extensions.indexOf('autocomplete') > -1 ? (
@@ -302,7 +304,9 @@ class Input extends React.Component {
           aria-describedby={this.getAriaDescribedBy()}
           aria-invalid={false}
           aria-required={required.toString()}
+          data-autosize={as === 'textarea' && extensions.indexOf('autosize') > -1}
           data-autofilled={this.isAutofilled()}
+          {...(hasAutosize ? { rows: 1 } : {})}
           onChange={this.onChange}
           onKeyDown={this.onKeyDown}
           onFocus={this.handleFocusChange(true)}
