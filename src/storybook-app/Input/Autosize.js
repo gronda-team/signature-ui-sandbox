@@ -15,7 +15,7 @@ class Autosize extends React.Component {
 
   render() {
     return (
-      <FormField>
+      <FormField style={{ width: '300px' }}>
         <Label>Autosize textarea</Label>
         <Input
           as="textarea"
