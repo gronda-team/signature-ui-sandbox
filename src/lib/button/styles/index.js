@@ -78,11 +78,7 @@ ${ButtonDisabledOverlay} {
   }
 }
 
-&[data-appearance=standard],
-&[data-appearance=stroked],
-&[data-appearance=fill] {
-  ${buttonBaseThunk(components)}
-}
+${buttonBaseThunk(components)}
 
 &[data-appearance=stroked] { ${strokedButtonThunk(components)} }
 &[data-size=icon] { ${iconThunk(components)} }
