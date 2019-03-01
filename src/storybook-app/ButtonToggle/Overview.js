@@ -26,6 +26,9 @@ class Overview extends React.Component {
           <ButtonToggle value="underline">
             <FontAwesomeIcon icon="underline" />
           </ButtonToggle>
+          <ButtonToggle value="strikethrough" disabled>
+            <FontAwesomeIcon icon="strikethrough" />
+          </ButtonToggle>
         </ButtonToggleGroup>
         Selected: <code>{ this.state.value || 'none' }</code>
       </div>
