@@ -8,8 +8,8 @@ class RadioOverview extends React.Component {
     this.state = { value: null };
   }
 
-  changeValue = ({ value }) => {
-    this.setState({ value });
+  changeValue = (event) => {
+    this.setState({ value: event.target.value });
   };
 
   render() {
