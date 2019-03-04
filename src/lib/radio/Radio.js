@@ -164,8 +164,8 @@ class RadioButton extends React.Component {
         >
           {/* The actual radio part of the control */}
           <RadioContainer>
-            <RadioInnerCircle />
             <RadioOuterCircle />
+            <RadioInnerCircle />
             <RadioInput
               {...restProps}
               type="radio"
