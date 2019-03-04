@@ -236,7 +236,7 @@ RadioButton.propTypes = {
   __focusMonitor: FocusMonitorPropTypes,
 };
 
-RadioButton.propTypes = {
+RadioButton.defaultProps = {
   ...RadioButtonDefaultProps,
   /** Radio groups are OPTIONAL */
   __radioGroup: null,

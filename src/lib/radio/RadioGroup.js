@@ -78,7 +78,7 @@ RadioGroup.propTypes = {
   ...RadioGroupPropTypes,
 };
 
-RadioGroup.propTypes = {
+RadioGroup.defaultProps = {
   ...RadioGroupDefaultProps,
 };
 
