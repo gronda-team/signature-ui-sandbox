@@ -22,6 +22,7 @@ class RadioGroup extends React.Component {
     required: this.props.required,
     disabled: this.props.disabled,
     labelPosition: this.props.labelPosition,
+    onChange: this.props.onChange,
   });
   
   /** Get the final name */
