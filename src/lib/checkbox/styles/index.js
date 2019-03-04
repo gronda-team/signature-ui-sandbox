@@ -4,6 +4,7 @@ import { CHECKBOX_BORDER_WIDTH, CHECKBOX_SIZE } from '../../core/styles/checkbox
 import { TOGGLE_PADDING } from '../../core/styles/variables';
 import { themeThunk } from './theme';
 import VISUALLY_HIDDEN from '../../core/styles/a11y';
+import { CheckIcon } from '../../core/icons';
 
 // Manual SVG calculation
 const MARK_PATH_LENGTH = 13.462;
@@ -114,12 +115,14 @@ left: 50%;
 ${VISUALLY_HIDDEN}
 `;
 
+export const CheckboxCheckmark = styled(CheckIcon)``;
+
 export const CheckboxLabel = styled.div``;
 
 const components = {
   Frame: CheckboxFrame,
   Checkmark: CheckboxCheckmark,
-  CheckmarkPath: CheckboxCheckmarkPath,
+  IndeterminatePath: CheckboxIndeterminateMark,
 };
 
 export const CheckboxRoot = styled.div`
