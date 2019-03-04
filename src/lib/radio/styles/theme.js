@@ -13,7 +13,9 @@ const DISABLED_BACKGROUND = GREY[100];
 export const themeThunk = (components) => {
   const { OuterCircle, InnerCircle } = components;
   return css`
-  border-color: ${BORDER};
+  ${OuterCircle} {
+    border-color: ${BORDER};
+  }
   
   &[data-disabled=true] { background-color: ${DISABLED_BACKGROUND}; }
   
