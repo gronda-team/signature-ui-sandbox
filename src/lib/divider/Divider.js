@@ -24,3 +24,5 @@ Divider.defaultProps = {
   vertical: false,
   inset: false,
 };
+
+export default Divider;
