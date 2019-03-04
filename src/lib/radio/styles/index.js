@@ -103,3 +103,5 @@ display: inline-block;
 &[data-disabled=true] { cursor: default; }
 ${themeThunk(components)}
 `;
+
+export const RadioGroupRoot = styled.div``;

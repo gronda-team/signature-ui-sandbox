@@ -137,10 +137,10 @@ class RadioButton extends React.Component {
   render() {
     const { // keep className and style on root component
       id, style, className, tabIndex, labelBefore,
-      __focusMonitor, __radioGroup,
+      __focusMonitor, __radioGroup, children,
       ['aria-label']: ariaLabel, ['aria-describedby']: ariaDescribedBy,
       ['aria-labelledby']: ariaLabelledBy,
-      ...restProps,
+      ...restProps
     } = this.props;
     
     const checked = this.getChecked();
@@ -250,6 +250,8 @@ const StackedRadioButton = stack(
 
 StackedRadioButton.propTypes = RadioButtonPropTypes;
 StackedRadioButton.defaultProps = RadioButtonDefaultProps;
+
+export default StackedRadioButton;
 
 /**
  * Private methods

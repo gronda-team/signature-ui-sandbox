@@ -30,7 +30,7 @@ function withRadioGroupConsumer(Component) {
   function WithRadioGroupConsumer(props) {
     return (
       <RadioGroupConsumer>
-        { value => <Component {...props} __tagList={value} />}
+        { value => <Component {...props} __radioGroup={value} />}
       </RadioGroupConsumer>
     );
   }

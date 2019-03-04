@@ -2,6 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { RadioGroupProvider } from './context';
+import { RadioGroupRoot } from './styles';
 
 class RadioGroup extends React.Component {
   constructor() {
@@ -80,3 +81,5 @@ RadioGroup.propTypes = {
 RadioGroup.propTypes = {
   ...RadioGroupDefaultProps,
 };
+
+export default RadioGroup;
