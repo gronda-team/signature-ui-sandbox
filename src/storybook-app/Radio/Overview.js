@@ -1,5 +1,14 @@
 import React from 'react';
+import styled from 'styled-components';
 import { RadioGroup, Radio } from '../../lib/radio';
+
+const StyledRadio = styled(Radio)``;
+
+const Wrapper = styled.div`
+${StyledRadio} ~ ${StyledRadio} {
+  margin-left: 16px;
+}
+`;
 
 class RadioOverview extends React.Component {
   constructor() {
@@ -14,10 +23,12 @@ class RadioOverview extends React.Component {
 
   render() {
     return (
-      <RadioGroup value={this.state.value} onChange={this.changeValue}>
-        <Radio value="1">Option 1</Radio>
-        <Radio value="2">Option 2</Radio>
-      </RadioGroup>
+      <Wrapper>
+        <RadioGroup value={this.state.value} onChange={this.changeValue}>
+          <StyledRadio value="1">Option 1</StyledRadio>
+          <StyledRadio value="2">Option 2</StyledRadio>
+        </RadioGroup>
+      </Wrapper>
     );
   }
 }
