@@ -48,16 +48,16 @@ class TextAreaAutosize extends React.Component {
       this.resizeToFitContent();
     }
 
-    if (prevProps.minRows !== this.props.minRows) {
+    if (prevProps.autosizeMinRows !== this.props.autosizeMinRows) {
       this.setMinHeight();
     }
 
-    if (prevProps.maxRows !== this.props.maxRows) {
+    if (prevProps.autosizeMaxRows !== this.props.autosizeMaxRows) {
       this.setMaxHeight();
     }
 
-    if (prevProps.enabled !== this.props.enabled) {
-      if (this.props.enabled) {
+    if (prevProps.autosizeEnabled !== this.props.autosizeEnabled) {
+      if (this.props.autosizeEnabled) {
         // previously disable -> now enabled
         this.resizeToFitContent(true);
       } else {
@@ -91,8 +91,8 @@ class TextAreaAutosize extends React.Component {
    */
   /** Sets the minimum height of the textarea as determined by minRows. */
   setMinHeight = () => {
-    const minHeight = this.props.minRows && this.state.cachedLineHeight ?
-      `${this.props.minRows * this.state.cachedLineHeight}px` : null;
+    const minHeight = this.props.autosizeMinRows && this.state.cachedLineHeight ?
+      `${this.props.autosizeMinRows * this.state.cachedLineHeight}px` : null;
 
     if (minHeight) {
       this.props.__extensionManager.updateExtensionAttributes('autosize', {
@@ -108,8 +108,8 @@ class TextAreaAutosize extends React.Component {
 
   /** Sets the maximum height of the textarea as determined by maxRows. */
   setMaxHeight = () => {
-    const maxHeight = this.props.maxRows && this.state.cachedLineHeight ?
-      `${this.props.maxRows * this.state.cachedLineHeight}px` : null;
+    const maxHeight = this.props.autosizeMaxRows && this.state.cachedLineHeight ?
+      `${this.props.autosizeMaxRows * this.state.cachedLineHeight}px` : null;
 
     if (maxHeight) {
       this.props.__extensionManager.updateExtensionAttributes('autosize', {
@@ -129,7 +129,7 @@ class TextAreaAutosize extends React.Component {
    *    recalculated only if the value changed since the last call.
    */
   resizeToFitContent = (force = false) => {
-    if (!this.props.enabled) return;
+    if (!this.props.autosizeEnabled) return;
     cacheTextAreaLineHeight.call(this);
 
     if (!this.state.cachedLineHeight) return;
@@ -138,7 +138,7 @@ class TextAreaAutosize extends React.Component {
     const value = textArea.value;
     // Only resize if the value or minRows have changed since these calculations can be expensive.
     if (
-      !force && this.props.minRows === this.state.previousMinRows
+      !force && this.props.autosizeMinRows === this.state.previousMinRows
       && value === this.state.previousValue
     ) return;
 
@@ -194,7 +194,7 @@ class TextAreaAutosize extends React.Component {
 
     this.setState({
       previousValue: value,
-      previousMinRows: this.props.minRows,
+      previousMinRows: this.props.autosizeMinRows,
     });
   };
 
@@ -223,18 +223,18 @@ const TextAreaAutosizePropTypes = {
   /** Textarea input el */
   input: PropTypes.any,
   /** Minimum number of rows in the textarea */
-  minRows: PropTypes.number,
+  autosizeMinRows: PropTypes.number,
   /** Maximum number of rows in the textarea */
-  maxRows: PropTypes.number,
+  autosizeMaxRows: PropTypes.number,
   /** Whether autosizing is available or not */
-  enabled: PropTypes.bool,
+  autosizeEnabled: PropTypes.bool,
 };
 
 const TextAreaAutosizeDefaultProps = {
   input: null,
-  minRows: null,
-  maxRows: null,
-  enabled: true,
+  autosizeMinRows: null,
+  autosizeMaxRows: null,
+  autosizeEnabled: true,
 };
 
 TextAreaAutosize.propTypes = {
