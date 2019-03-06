@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { availableExtensions } from './extensions/available-extensions';
 
 class Extensions extends React.Component {
   constructor() {
@@ -24,6 +25,16 @@ class Extensions extends React.Component {
   /**
    * Derived data
    */
+  providerValue = () => ({
+    updateExtensionData: this.updateExtensionData,
+    updateExtensionAttributes: this.updateExtensionAttributes,
+    /** Reduce the extended attributes and spread it into the input element */
+    extendedAttributes: availableExtensions.reduce((attributes, extension) => {
+      if (!_.has(this.state, extension)) return attributes;
+      const extensionAttributes = _.get(this.state, [extension, 'attributes'], {});
+      return { ...attributes, ...extensionAttributes };
+    }, {}),
+  });
 
   /**
    * Actions
@@ -32,7 +43,7 @@ class Extensions extends React.Component {
   updateExtensionData = (key, value) => {
     this.setState(state => ({
       [key]: {
-        ...state[key],
+        ...(state[key] || { attributes: {}, data: {} }),
         data: {
           ...state[key].data,
           ...value,
@@ -45,7 +56,7 @@ class Extensions extends React.Component {
   updateExtensionAttributes = (key, value) => {
     this.setState(state => ({
       [key]: {
-        ...state[key],
+        ...(state[key] || { attributes: {}, data: {} }),
         attributes: {
           ...state[key].attributes,
           ...value,
@@ -55,5 +66,12 @@ class Extensions extends React.Component {
   };
 
   render() {
+    return (
+      <ExtensionsProvider value={this.providerValue()}>
+        { this.props.children }
+      </ExtensionsProvider>
+    )
   }
 }
+
+export default Extensions;
