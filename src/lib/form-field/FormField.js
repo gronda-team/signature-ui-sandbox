@@ -13,6 +13,7 @@ import {
 import { FormFieldControlProvider } from './context/FormFieldContext';
 import { byInternalType } from '../core/components/util';
 import {FormFieldBar} from './styles';
+import Extensions from './Extensions';
 
 const toArray = React.Children.toArray;
 
@@ -224,33 +225,35 @@ export default class FormField extends React.Component {
         data-field-type={this.state.type}
         innerRef={this.getRoot}
       >
-        <FormFieldWrapper>
-          <FormFieldControlProvider value={this.state}>
-            <FormFieldFlex
-              onClick={this.state.containerClick}
-              innerRef={this.connectionContainer}
-            >
-              <FormFieldBar>
-                { prefix ? <FormFieldPrefix>{ prefix }</FormFieldPrefix> : null }
-                <FormFieldInfix>
-                  { // don't pass through the hints, otherwise it'll show up twice
-                    this.getFlatChildren()
-                  }
-                  { this.props.appearance !== 'outline' ? this.renderLabel() : null }
-                </FormFieldInfix>
-                { suffix ? <FormFieldSuffix>{ suffix }</FormFieldSuffix> : null }
-              </FormFieldBar>
-              { this.props.appearance === 'outline' ?
-                // render the label as a child of FormFieldFlex for properly aligning label
-                this.renderLabel() :
-                null
-              }
-            </FormFieldFlex>
-            <FormFieldSubscriptWrapper>
-              { this.renderSubscript() }
-            </FormFieldSubscriptWrapper>
-          </FormFieldControlProvider>
-        </FormFieldWrapper>
+        <Extensions>
+          <FormFieldWrapper>
+            <FormFieldControlProvider value={this.state}>
+              <FormFieldFlex
+                onClick={this.state.containerClick}
+                innerRef={this.connectionContainer}
+              >
+                <FormFieldBar>
+                  { prefix ? <FormFieldPrefix>{ prefix }</FormFieldPrefix> : null }
+                  <FormFieldInfix>
+                    { // don't pass through the hints, otherwise it'll show up twice
+                      this.getFlatChildren()
+                    }
+                    { this.props.appearance !== 'outline' ? this.renderLabel() : null }
+                  </FormFieldInfix>
+                  { suffix ? <FormFieldSuffix>{ suffix }</FormFieldSuffix> : null }
+                </FormFieldBar>
+                { this.props.appearance === 'outline' ?
+                  // render the label as a child of FormFieldFlex for properly aligning label
+                  this.renderLabel() :
+                  null
+                }
+              </FormFieldFlex>
+              <FormFieldSubscriptWrapper>
+                { this.renderSubscript() }
+              </FormFieldSubscriptWrapper>
+            </FormFieldControlProvider>
+          </FormFieldWrapper>
+        </Extensions>
       </FormFieldRoot>
     );
   }

@@ -2,6 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { availableExtensions } from './extensions/available-extensions';
+import { ExtensionsProvider } from './context/ExtensionsContext';
 
 class Extensions extends React.Component {
   constructor() {
