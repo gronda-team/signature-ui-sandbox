@@ -52,6 +52,7 @@ class Extensions extends React.Component {
       const extensionAttributes = _.get(this.state, [extension.name, 'attributes'], {});
       return { ...attributes, ...extensionAttributes };
     }, {}),
+    setExtensions: this.setExtensions,
     setControl: this.setControl,
   });
 
@@ -101,12 +102,27 @@ class Extensions extends React.Component {
     this.setState({ control });
   };
 
+  /** Set the available extensions and provide the default state for each extension */
+  setExtensions = (extensions) => {
+    this.setState({
+      extensions,
+      ...extensions.reduce((defaultState, extension) => {
+        defaultState[extension] = {
+          data: {},
+          attributes: {},
+        };
+        return defaultState;
+      }, {}),
+    })
+  };
+
   render() {
     return (
       <React.Fragment>
         { availableExtensions.map((extension) => {
           // If the current extension does not support our current control type, return null
           if (extension.type.indexOf(this.props.controlType) === -1) return null;
+          if (this.state.extensions.indexOf(extension.name) === -1) return null;
           if (!extension.component) return null;
           const Component = extension.component;
           const inputProps = _.get(this.state, ['control', 'props'], {});

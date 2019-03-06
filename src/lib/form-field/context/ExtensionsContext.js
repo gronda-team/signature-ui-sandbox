@@ -22,6 +22,8 @@ export const ExtensionPropTypes = PropTypes.shape({
   setControl: PropTypes.func,
   /** Set the input props */
   setProps: PropTypes.func,
+  /** Set the available extensions */
+  setExtensions: PropTypes.func,
 });
 
 export const ExtensionDefaultProps = {
@@ -34,6 +36,7 @@ export const ExtensionDefaultProps = {
   extendedOnKeyDown: _.noop,
   setControl: _.noop,
   setProps: _.noop,
+  setExtensions: _.noop,
 };
 
 export const {
