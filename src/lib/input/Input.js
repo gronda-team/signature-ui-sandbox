@@ -10,6 +10,11 @@ import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor, TextAreaAutosize } from '../../cdk/text-area';
 import AutocompleteTrigger from './extensions/Autocomplete';
 import TagBehavior from './extensions/TagBehavior';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+  withExtensionManager
+} from '../form-field/context/ExtensionsContext';
 
 /**
  * The input and text area components contain very similar behavior
@@ -92,6 +97,8 @@ class Input extends React.Component {
     this.EL = input;
     this.setState({ mounted: !!input });
     if (this.EL) {
+      // Set the input ref for the extension bus
+      this.props.__extensionManager.setControl(this);
       // Set the autofill status for the global autofill monitor
       this.props.__autofillMonitor.monitor({
         id: this.DEFAULT_ID,
@@ -251,14 +258,6 @@ class Input extends React.Component {
 
     return (
       <React.Fragment>
-        { hasAutosize ? (
-          <TextAreaAutosize
-            input={this.EL}
-            minRows={autosizeMinRows}
-            maxRows={autosizeMaxRows}
-            enabled={_.isUndefined(autosizeEnabled) ? true : autosizeEnabled}
-          />
-        ) : null }
         { extensions.indexOf('autocomplete') > -1 ? (
           <AutocompleteTrigger
             input={this}
@@ -372,6 +371,7 @@ Input.propTypes = {
   __autofillMonitor: AutofillMonitorPropTypes,
   __formFieldControl: FormFieldPropTypes,
   __platform: PlatformPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 Input.defaultProps = {
@@ -379,10 +379,12 @@ Input.defaultProps = {
   __autofillMonitor: AutofillMonitorDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
   __platform: PlatformDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
 const StackedInput = stack(
   withAutofillMonitor,
+  withExtensionManager,
   withFormFieldConsumer,
   withPlatformConsumer,
 )(Input);
