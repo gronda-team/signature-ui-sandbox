@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { interpret } from 'xstate';
 import UIMachine from './UIMachine';
 import {
   FormFieldPrefix, FormFieldSuffix,
@@ -18,14 +19,18 @@ const toArray = React.Children.toArray;
 export default class FormField extends React.Component {
   constructor() {
     super();
-    
+
     this.setControl = key => (value) => {
       this.setState({ [key]: value });
     };
-    
+
+    this.service = interpret(UIMachine).onTransition((current) => {
+      this.setState({ ui: current });
+    });
+
     this.state = {
       // these are essentially passed down as context
-      ui: UIMachine.initialState.value,
+      ui: UIMachine.initialState,
       id: '',
       /** The control type, i.e., select, input, textarea, etc. */
       type: null,
@@ -44,23 +49,23 @@ export default class FormField extends React.Component {
       setExtension: this.setExtensions,
       setControlAttrs: this.setControlAttrs,
       getConnectionContainer: this.getConnectionContainer,
-      transitionUi: this.transition,
+      transitionUi: this.service.send,
       changeDescribedByIds: this.changeDescribedByIds,
       describedByIds: [],
     };
 
     this.connectionContainer = React.createRef();
+
+    /** Start service before mounting */
+    this.service.start();
   }
-  
-  // Transitioning the UI state only
-  transition = (event) => {
-    this.setState((state) => {
-      const nextUiState = UIMachine.transition(state.ui, event);
-      return _.isEqual(nextUiState.value, state.ui) ?
-        null :
-        { ui: nextUiState.value };
-    });
-  };
+
+  /**
+   * Lifecycle
+   */
+  componentWillUnmount() {
+    this.service.stop();
+  }
 
   /**
    * Refs
@@ -109,17 +114,17 @@ export default class FormField extends React.Component {
   hideRequiredMarker = () => this.props.hideRequiredMarker;
 
   /** is required, disabled, etc. */
-  isFocused = () => _.get(this.state.ui, 'field.enabled') === 'focused';
-  isFilled = () => _.get(this.state.ui, 'value') === 'filled';
-  isDisabled = () => _.get(this.state.ui, 'field') === 'disabled';
-  isRequired = () => _.get(this.state.ui, 'required-status') === 'required';
-  isAutofilled = () => _.get(this.state.ui, 'autofilled-status') === 'filled';
+  isFocused = () => this.state.ui.matches('field.enabled.focused');
+  isFilled = () => this.state.ui.matches('value.filled');
+  isDisabled = () => this.state.ui.matches('field.disabled');
+  isRequired = () => this.state.ui.matches('required-status.required');
+  isAutofilled = () => this.state.ui.matches('autofilled-status.filled');
 
   /** messages */
   getDisplayedMessages = () => this.props.errorState ? 'error' : 'hint';
-  
-  /*
-  Actions
+
+  /**
+   * Actions
    */
   changeDescribedByIds = ({ added = null, removed = null }) => {
     this.setState((state) => {
@@ -188,7 +193,7 @@ export default class FormField extends React.Component {
       // only return the first error
       return this.getErrors();
     }
-    
+
     if (messageType === 'hint') {
       // we may have hints (more than one) with align={start} or align={end}
       const hints = this.getHints();
@@ -200,10 +205,10 @@ export default class FormField extends React.Component {
         </FormFieldHintWrapper>
       )
     }
-    
+
     return null;
   };
-  
+
   render() {
     const prefix = this.getPrefix();
     const suffix = this.getSuffix();
