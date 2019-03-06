@@ -49,7 +49,7 @@ class Extensions extends React.Component {
     /** Reduce the extended attributes and spread it into the input element */
     extendedAttributes: availableExtensions.reduce((attributes, extension) => {
       if (!_.has(this.state, extension.name)) return attributes;
-      const extensionAttributes = _.get(this.state, [extension, 'attributes'], {});
+      const extensionAttributes = _.get(this.state, [extension.name, 'attributes'], {});
       return { ...attributes, ...extensionAttributes };
     }, {}),
     setControl: this.setControl,
@@ -64,7 +64,7 @@ class Extensions extends React.Component {
       [key]: {
         ...(state[key] || { attributes: {}, data: {} }),
         data: {
-          ...state[key].data,
+          ...(_.get(state[key], 'data', {})),
           ...value,
         },
       },
@@ -77,7 +77,7 @@ class Extensions extends React.Component {
       [key]: {
         ...(state[key] || { attributes: {}, data: {} }),
         attributes: {
-          ...state[key].attributes,
+          ...(_.get(state[key], 'attributes', {})),
           ...value,
         },
       },
