@@ -20,7 +20,7 @@ class Extensions extends React.Component {
      * },
      */
     this.state = {
-      inputProps: {}, // Proxy for the input's own props
+      control: null,
     };
 
     /**
@@ -52,6 +52,7 @@ class Extensions extends React.Component {
       const extensionAttributes = _.get(this.state, [extension, 'attributes'], {});
       return { ...attributes, ...extensionAttributes };
     }, {}),
+    setControl: this.setControl,
   });
 
   /**
@@ -95,6 +96,11 @@ class Extensions extends React.Component {
   /** Consolidate onKeyDown listeners */
   extendedOnKeyDown = consolidateRefListenersVia.bind(this, 'onKeyDown');
 
+  /** Set the control */
+  setControl = (control) => {
+    this.setState({ control });
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -105,9 +111,11 @@ class Extensions extends React.Component {
           if (!_.has(this.state, extension.name)) return null;
           if (extension.component) return null;
           const Component = extension.component;
+          const inputProps = _.get(this.state, ['input', 'props'], {});
           return (
             <Component
-              {...this.state.inputProps}
+              {...inputProps}
+              input={this.state.control}
               ref={this.registerRef(extension.name)}
             />
           )

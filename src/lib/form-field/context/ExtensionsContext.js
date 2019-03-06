@@ -9,7 +9,7 @@ export const ExtensionPropTypes = PropTypes.shape({
   /** Update the extension attributes in the FormField so that it will */
   updateExtensionAttributes: PropTypes.func,
   /** Extended attributes */
-  extendedAttributes: PropTypes.func,
+  extendedAttributes: PropTypes.object,
   /** Consolidates all of the extensions' onChange methods */
   extendedOnChange: PropTypes.func,
   /** Consolidates all of the extensions' onFocus methods */
@@ -18,16 +18,22 @@ export const ExtensionPropTypes = PropTypes.shape({
   extendedOnBlur: PropTypes.func,
   /** Consolidates all of the extensions' onKeyDown methods */
   extendedOnKeyDown: PropTypes.func,
+  /** Set the control */
+  setControl: PropTypes.func,
+  /** Set the input props */
+  setProps: PropTypes.func,
 });
 
 export const ExtensionDefaultProps = {
   updateExtensionData: _.noop,
   updateExtensionAttributes: _.noop,
-  extendedAttributes: _.noop,
+  extendedAttributes: {},
   extendedOnChange: _.noop,
   extendedOnFocus: _.noop,
   extendedOnBlur: _.noop,
   extendedOnKeyDown: _.noop,
+  setControl: _.noop,
+  setProps: _.noop,
 };
 
 export const {
