@@ -134,7 +134,7 @@ class TextAreaAutosize extends React.Component {
 
     if (!this.state.cachedLineHeight) return;
 
-    const textArea = this.props.input;
+    const textArea = this.props.input.EL;
     const value = textArea.value;
     // Only resize if the value or minRows have changed since these calculations can be expensive.
     if (
@@ -274,7 +274,7 @@ function cacheTextAreaLineHeight() {
   if (this.state.cachedLineHeight) return;
 
   // Use a clone element because we have to override some styles.
-  const textAreaClone = this.props.input.cloneNode(false);
+  const textAreaClone = this.props.input.EL.cloneNode(false);
   textAreaClone.rows = 1;
 
   // Use `position: absolute` so that this doesn't cause a browser layout and use
@@ -297,10 +297,10 @@ function cacheTextAreaLineHeight() {
 
 
   // append ghost node
-  this.props.input.parentNode.appendChild(textAreaClone);
+  this.props.input.EL.parentNode.appendChild(textAreaClone);
   this.setState({ cachedLineHeight: textAreaClone.clientHeight }, () => {
     // remove ghost node after caching line height
-    this.props.input.parentNode.removeChild(textAreaClone);
+    this.props.input.EL.parentNode.removeChild(textAreaClone);
   });
 
   // Min and max heights have to be re-calculated if the cached line height changes
@@ -313,7 +313,7 @@ function cacheTextAreaLineHeight() {
 function storeInitialHeight() {
   if (this.props.__platform.is('browser')) {
     // Remember the height which we started with in case autosizing is disabled
-    this.setState({ initialHeight: this.props.input.style.height }, () => {
+    this.setState({ initialHeight: this.props.input.EL.style.height }, () => {
       this.resizeToFitContent();
       window.addEventListener('resize', this.resizeListener);
     });
