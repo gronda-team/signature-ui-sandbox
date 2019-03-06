@@ -1,23 +1,23 @@
 export let availableExtensions = [
   {
     name: '##datepicker',
-    type: 'input',
+    type: ['input'],
   },
   {
     name: '##tag-list',
-    type: 'input',
+    type: ['input'],
   },
   {
     name: '##autosize',
-    type: 'textarea',
+    type: ['textarea'],
   },
   {
     name: '##autofill',
-    type: 'both',
+    type: ['input', 'textarea'],
   },
   {
     name: '##autocomplete',
-    type: 'both',
+    type: ['input', 'textarea'],
   },
 ];
 

@@ -20,6 +20,7 @@ class Extensions extends React.Component {
      * },
      */
     this.state = {
+      inputProps: {}, // Proxy for the input's own props
     };
 
     /**
@@ -27,6 +28,13 @@ class Extensions extends React.Component {
      */
     this.REFS =  {};
   }
+
+  /**
+   * Refs
+   */
+  registerRef = name => (ref) => {
+    this.REFS[name] = ref;
+  };
 
   /**
    * Derived data
@@ -40,7 +48,7 @@ class Extensions extends React.Component {
     extendedOnKeyDown: this.extendedOnKeyDown,
     /** Reduce the extended attributes and spread it into the input element */
     extendedAttributes: availableExtensions.reduce((attributes, extension) => {
-      if (!_.has(this.state, extension)) return attributes;
+      if (!_.has(this.state, extension.name)) return attributes;
       const extensionAttributes = _.get(this.state, [extension, 'attributes'], {});
       return { ...attributes, ...extensionAttributes };
     }, {}),
@@ -89,14 +97,38 @@ class Extensions extends React.Component {
 
   render() {
     return (
-      <ExtensionsProvider value={this.providerValue()}>
-        { this.props.children }
-      </ExtensionsProvider>
+      <React.Fragment>
+        { availableExtensions.map((extension) => {
+          // If the current extension does not support our current control type, return null
+          if (extension.type.indexOf(this.props.controlType) === -1) return null;
+          // If we don't even have the extension available, return null
+          if (!_.has(this.state, extension.name)) return null;
+          if (extension.component) return null;
+          const Component = extension.component;
+          return (
+            <Component
+              {...this.state.inputProps}
+              ref={this.registerRef(extension.name)}
+            />
+          )
+        })}
+        <ExtensionsProvider value={this.providerValue()}>
+          { this.props.children }
+        </ExtensionsProvider>
+      </React.Fragment>
     )
   }
 }
 
 export default Extensions;
+
+Extensions.propTypes = {
+  controlType: PropTypes.string,
+};
+
+Extensions.defaultProps = {
+  controlType: null,
+};
 
 /**
  * Private methods
@@ -111,7 +143,7 @@ export default Extensions;
 function consolidateRefListenersVia(callbackName) {
   return (event) => {
     availableExtensions.forEach((extension) => {
-      const path = [extension, 'current', callbackName];
+      const path = [extension.name, callbackName];
       if (!_.has(this.REFS, path)) return;
       _.invoke(this.REFS, path, event);
     });

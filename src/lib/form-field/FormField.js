@@ -225,7 +225,7 @@ export default class FormField extends React.Component {
         data-field-type={this.state.type}
         innerRef={this.getRoot}
       >
-        <Extensions>
+        <Extensions controlType={this.state.type}>
           <FormFieldWrapper>
             <FormFieldControlProvider value={this.state}>
               <FormFieldFlex
