@@ -53,6 +53,15 @@ class Input extends React.Component {
     this.updateRequired(this.props.required);
     this.updateValue();
 
+    // Set the extensions that are provided (not reactive)
+    this.props.__extensionManager.setExtensions(
+      this.props.extensions.map((extension) => {
+        if (['autosize', 'tag-list', 'autocomplete'].indexOf(extension) === -1) return extension;
+        // Return the namespaced version of the default ones we have
+        return `##${extension}`;
+      }),
+    );
+
     // set the onContainerClick
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
     this.props.__formFieldControl.setControlType(this.props.as);
@@ -344,7 +353,7 @@ const InputPropTypes = {
   value: PROP_TYPE_STRING_OR_NUMBER,
   /** Extensions like if it's an autocomplete or part of a tag list */
   extensions: PropTypes.arrayOf(PropTypes.oneOf([
-    'autocomplete', 'tag-list',
+    'autocomplete', 'tag-list', 'autosize',
   ])),
 };
 
