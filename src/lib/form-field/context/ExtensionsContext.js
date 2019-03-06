@@ -10,12 +10,24 @@ export const ExtensionPropTypes = PropTypes.shape({
   updateExtensionAttributes: PropTypes.func,
   /** Extended attributes */
   extendedAttributes: PropTypes.func,
+  /** Consolidates all of the extensions' onChange methods */
+  extendedOnChange: PropTypes.func,
+  /** Consolidates all of the extensions' onFocus methods */
+  extendedOnFocus: PropTypes.func,
+  /** Consolidates all of the extensions' onBlur methods */
+  extendedOnBlur: PropTypes.func,
+  /** Consolidates all of the extensions' onKeyDown methods */
+  extendedOnKeyDown: PropTypes.func,
 });
 
 export const ExtensionDefaultProps = {
   updateExtensionData: _.noop,
   updateExtensionAttributes: _.noop,
   extendedAttributes: _.noop,
+  extendedOnChange: _.noop,
+  extendedOnFocus: _.noop,
+  extendedOnBlur: _.noop,
+  extendedOnKeyDown: _.noop,
 };
 
 export const {

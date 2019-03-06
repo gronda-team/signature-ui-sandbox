@@ -21,6 +21,11 @@ class Extensions extends React.Component {
      */
     this.state = {
     };
+
+    /**
+     * Where all the refs will be located.
+     */
+    this.REFS =  {};
   }
 
   /**
@@ -29,6 +34,10 @@ class Extensions extends React.Component {
   providerValue = () => ({
     updateExtensionData: this.updateExtensionData,
     updateExtensionAttributes: this.updateExtensionAttributes,
+    extendedOnChange: this.extendedOnChange,
+    extendedOnFocus: this.extendedOnFocus,
+    extendedOnBlur: this.extendedOnBlur,
+    extendedOnKeyDown: this.extendedOnKeyDown,
     /** Reduce the extended attributes and spread it into the input element */
     extendedAttributes: availableExtensions.reduce((attributes, extension) => {
       if (!_.has(this.state, extension)) return attributes;
@@ -66,6 +75,18 @@ class Extensions extends React.Component {
     }));
   };
 
+  /** Consolidate onChange listeners */
+  extendedOnChange = consolidateRefListenersVia.bind(this, 'onChange');
+
+  /** Consolidate onFocus listeners */
+  extendedOnFocus = consolidateRefListenersVia.bind(this, 'onFocus');
+
+  /** Consolidate onBlur listeners */
+  extendedOnBlur = consolidateRefListenersVia.bind(this, 'onBlur');
+
+  /** Consolidate onKeyDown listeners */
+  extendedOnKeyDown = consolidateRefListenersVia.bind(this, 'onKeyDown');
+
   render() {
     return (
       <ExtensionsProvider value={this.providerValue()}>
@@ -76,3 +97,23 @@ class Extensions extends React.Component {
 }
 
 export default Extensions;
+
+/**
+ * Private methods
+ */
+/**
+ * Consolidate all of the on* functions. This iterates through of the refs that are present
+ * on extensions and then invokes the event listener if the ref exists.
+ *
+ * @param callbackName String callback name (onChange, onFocus, etc.) that will be searched
+ * for in every ref and then invoked.
+ */
+function consolidateRefListenersVia(callbackName) {
+  return (event) => {
+    availableExtensions.forEach((extension) => {
+      const path = [extension, 'current', callbackName];
+      if (!_.has(this.REFS, path)) return;
+      _.invoke(this.REFS, path, event);
+    });
+  }
+}
