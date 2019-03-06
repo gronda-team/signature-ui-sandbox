@@ -36,7 +36,7 @@ class TextAreaAutosize extends React.Component {
    * Lifecycle
    */
   componentDidMount() {
-    this.props.__extensionManager.updateExtensionAttributes('', {
+    this.props.__extensionManager.updateExtensionAttributes('##autosize', {
       style: {},
     });
   }
@@ -95,7 +95,7 @@ class TextAreaAutosize extends React.Component {
       `${this.props.autosizeMinRows * this.state.cachedLineHeight}px` : null;
 
     if (minHeight) {
-      this.props.__extensionManager.updateExtensionAttributes('autosize', {
+      this.props.__extensionManager.updateExtensionAttributes('##autosize', {
         style: {
           ...this.STYLE,
           minHeight,
@@ -112,7 +112,7 @@ class TextAreaAutosize extends React.Component {
       `${this.props.autosizeMaxRows * this.state.cachedLineHeight}px` : null;
 
     if (maxHeight) {
-      this.props.__extensionManager.updateExtensionAttributes('autosize', {
+      this.props.__extensionManager.updateExtensionAttributes('##autosize', {
         style: {
           ...this.STYLE,
           maxHeight,
@@ -203,7 +203,7 @@ class TextAreaAutosize extends React.Component {
     // Do not try to change the textarea, if the initialHeight has not been determined yet
     // This might potentially remove styles when reset() is called before ngAfterViewInit
     if (_.isUndefined(this.state.initialHeight)) return;
-    this.props.__extensionManager.updateExtensionAttributes('autosize', {
+    this.props.__extensionManager.updateExtensionAttributes('##autosize', {
       style: {
         ...this.STYLE,
         height: this.state.initialHeight,
