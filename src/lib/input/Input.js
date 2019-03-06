@@ -292,7 +292,7 @@ class Input extends React.Component {
           {...restProps}
           {...autocompleteAttributes}
           {...tagListAttributes}
-          {...controlAttrs}
+          {...extendedAttributes}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
@@ -301,9 +301,7 @@ class Input extends React.Component {
           aria-describedby={this.getAriaDescribedBy()}
           aria-invalid={false}
           aria-required={required.toString()}
-          data-autosize={as === 'textarea' && extensions.indexOf('autosize') > -1}
           data-autofilled={this.isAutofilled()}
-          {...(hasAutosize ? { rows: 1 } : {})}
           onChange={this.onChange}
           onKeyDown={this.onKeyDown}
           onFocus={this.handleFocusChange(true)}

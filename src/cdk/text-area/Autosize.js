@@ -37,6 +37,8 @@ class TextAreaAutosize extends React.Component {
    */
   componentDidMount() {
     this.props.__extensionManager.updateExtensionAttributes('##autosize', {
+      'data-autosize': 'true',
+      rows: 1,
       style: {},
     });
   }
