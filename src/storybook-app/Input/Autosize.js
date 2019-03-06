@@ -25,7 +25,6 @@ class Autosize extends React.Component {
           value={this.state.value}
           onChange={this.updateText}
           placeholder="Watch me autosize"
-          extensions={['autosize']}
         />
       </FormField>
     );
