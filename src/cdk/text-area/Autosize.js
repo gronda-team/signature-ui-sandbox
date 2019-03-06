@@ -2,11 +2,17 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../platform';
+import { stack } from '../../lib/core/components/util';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+  withExtensionManager
+} from '../../lib/form-field/context/ExtensionsContext';
 
 class TextAreaAutosize extends React.Component {
   constructor() {
     super();
-    
+
     this.state = {
       /** Keep track of the previous textarea value to avoid resizing when the value hasn't changed. */
       previousValue: '',
@@ -22,28 +28,35 @@ class TextAreaAutosize extends React.Component {
       minHeight: null,
       maxHeight: null,
     };
-    
+
+    this.STYLE = {};
     this.resizeListener = _.debounce(_.partial(this.resizeToFitContent, true), 16);
   }
-  
+
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    this.props.__extensionManager.updateExtensionAttributes('', {
+      style: {},
+    });
+  }
+
   componentDidUpdate(prevProps, prevState) {
     // listen to when we first have props.input
     if (!prevProps.input && this.props.input) {
       storeInitialHeight.call(this);
       this.resizeToFitContent();
     }
-    
+
     if (prevProps.minRows !== this.props.minRows) {
       this.setMinHeight();
     }
-    
+
     if (prevProps.maxRows !== this.props.maxRows) {
       this.setMaxHeight();
     }
-    
+
     if (prevProps.enabled !== this.props.enabled) {
       if (this.props.enabled) {
         // previously disable -> now enabled
@@ -57,7 +70,7 @@ class TextAreaAutosize extends React.Component {
       this.resizeToFitContent();
     }
   }
-  
+
   componentWillUnmount() {
     if (this.props.__platform.is('browser')) {
       window.removeEventListener('resize', this.resizeListener);
@@ -81,19 +94,33 @@ class TextAreaAutosize extends React.Component {
   setMinHeight = () => {
     const minHeight = this.props.minRows && this.state.cachedLineHeight ?
       `${this.props.minRows * this.state.cachedLineHeight}px` : null;
-  
+
     if (minHeight) {
-      this.props.input.style.minHeight = minHeight;
+      this.props.__extensionManager.updateExtensionAttributes('autosize', {
+        style: {
+          ...this.STYLE,
+          minHeight,
+        }
+      });
+
+      this.STYLE.minHeight = minHeight;
     }
   };
-  
+
   /** Sets the maximum height of the textarea as determined by maxRows. */
   setMaxHeight = () => {
     const maxHeight = this.props.maxRows && this.state.cachedLineHeight ?
       `${this.props.maxRows * this.state.cachedLineHeight}px` : null;
-  
+
     if (maxHeight) {
-      this.props.input.style.maxHeight = maxHeight;
+      this.props.__extensionManager.updateExtensionAttributes('autosize', {
+        style: {
+          ...this.STYLE,
+          maxHeight,
+        }
+      });
+
+      this.STYLE.maxHeight = maxHeight;
     }
   };
 
@@ -105,9 +132,9 @@ class TextAreaAutosize extends React.Component {
   resizeToFitContent = (force = false) => {
     if (!this.props.enabled) return;
     cacheTextAreaLineHeight.call(this);
-    
+
     if (!this.state.cachedLineHeight) return;
-    
+
     const textArea = this.props.input;
     const value = textArea.value;
     // Only resize if the value or minRows have changed since these calculations can be expensive.
@@ -115,16 +142,16 @@ class TextAreaAutosize extends React.Component {
       !force && this.props.minRows === this.state.previousMinRows
       && value === this.state.previousValue
     ) return;
-    
+
     const placeholderText = textArea.placeholder;
-  
+
     // Reset the textarea height to auto in order to shrink back to its default size.
     // Also temporarily force overflow:hidden, so scroll bars do not interfere with calculations.
     // Long placeholders that are wider than the textarea width may lead to a bigger scrollHeight
     // value. To ensure that the scrollHeight is not bigger than the content, the placeholders
     // need to be removed temporarily.
     const existingStyle = textArea.style.cssText;
-    
+
     // This class is temporarily applied to the textarea when it is being measured. It is immediately
     // removed when measuring is complete. We use `!important` rules here to make sure user-specified
     // rules do not interfere with the measurement.
@@ -137,7 +164,7 @@ class TextAreaAutosize extends React.Component {
     box-sizing: content-box !important;
     `;
     textArea.placeholder = '';
-  
+
     // The cdk-textarea-autosize-measuring class includes a 2px padding to workaround an issue with
     // Chrome, so we account for that extra space here by subtracting 4 (2px top + 2px bottom).
     const height = textArea.scrollHeight - 4;
@@ -145,15 +172,15 @@ class TextAreaAutosize extends React.Component {
     // to appear on the next paint
     textArea.style.cssText = existingStyle;
     textArea.style.height = `${height}px`;
-    
+
     textArea.placeholder = placeholderText;
-  
+
     // On Firefox resizing the textarea will prevent it from scrolling to the caret position.
     // We need to re-set the selection in order for it to scroll to the proper position.
     if (!_.isUndefined(window.requestAnimationFrame)) {
       window.requestAnimationFrame(() => {
         const { selectionStart, selectionEnd } = textArea;
-  
+
         // IE will throw an "Unspecified error" if we try to set the selection range after the
         // element has been removed from the DOM. Assert that the directive hasn't been destroyed
         // between the time we requested the animation frame and when it was executed.
@@ -165,20 +192,25 @@ class TextAreaAutosize extends React.Component {
         }
       });
     }
-    
+
     this.setState({
       previousValue: value,
       previousMinRows: this.props.minRows,
     });
   };
-  
+
   /** Reset the textArea to its original size */
   reset = () => {
     // Do not try to change the textarea, if the initialHeight has not been determined yet
     // This might potentially remove styles when reset() is called before ngAfterViewInit
     if (_.isUndefined(this.state.initialHeight)) return;
-
-    _.set(this.props.input, 'style.height', this.state.initialHeight);
+    this.props.__extensionManager.updateExtensionAttributes('autosize', {
+      style: {
+        ...this.STYLE,
+        height: this.state.initialHeight,
+      }
+    });
+    this.STYLE.height = this.state.initialHeight;
   };
 
   /**
@@ -209,14 +241,19 @@ const TextAreaAutosizeDefaultProps = {
 TextAreaAutosize.propTypes = {
   ...TextAreaAutosizePropTypes,
   __platform: PlatformPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 TextAreaAutosize.defaultProps = {
   ...TextAreaAutosizeDefaultProps,
   __platform: PlatformDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
-const StackedTextAreaAutosize = withPlatformConsumer(TextAreaAutosize);
+const StackedTextAreaAutosize = stack(
+  withExtensionManager,
+  withPlatformConsumer,
+)(TextAreaAutosize);
 
 StackedTextAreaAutosize.displayName = 'Autosize';
 StackedTextAreaAutosize.propTypes = TextAreaAutosizePropTypes;

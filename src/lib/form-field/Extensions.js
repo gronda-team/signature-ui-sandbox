@@ -107,11 +107,10 @@ class Extensions extends React.Component {
         { availableExtensions.map((extension) => {
           // If the current extension does not support our current control type, return null
           if (extension.type.indexOf(this.props.controlType) === -1) return null;
-          // If we don't even have the extension available, return null
-          if (!_.has(this.state, extension.name)) return null;
-          if (extension.component) return null;
+          if (!extension.component) return null;
           const Component = extension.component;
-          const inputProps = _.get(this.state, ['input', 'props'], {});
+          const inputProps = _.get(this.state, ['control', 'props'], {});
+          console.log(extension);
           return (
             <Component
               {...inputProps}
