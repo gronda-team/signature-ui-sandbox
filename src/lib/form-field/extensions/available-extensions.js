@@ -1,3 +1,5 @@
+import { TextAreaAutosize } from '../../../cdk/text-area';
+
 export let availableExtensions = [
   {
     name: '##datepicker',
@@ -10,6 +12,7 @@ export let availableExtensions = [
   {
     name: '##autosize',
     type: ['textarea'],
+    component: TextAreaAutosize,
   },
   {
     name: '##autofill',
