@@ -110,7 +110,6 @@ class Extensions extends React.Component {
           if (!extension.component) return null;
           const Component = extension.component;
           const inputProps = _.get(this.state, ['control', 'props'], {});
-          console.log(extension);
           return (
             <Component
               {...inputProps}
