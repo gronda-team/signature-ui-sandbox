@@ -114,6 +114,7 @@ class Extensions extends React.Component {
             <Component
               {...inputProps}
               input={this.state.control}
+              __extensionManager={this.providerValue()}
               ref={this.registerRef(extension.name)}
             />
           )
