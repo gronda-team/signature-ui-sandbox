@@ -6,7 +6,6 @@ import { stack } from '../../lib/core/components/util';
 import {
   ExtensionDefaultProps,
   ExtensionPropTypes,
-  withExtensionManager
 } from '../../lib/form-field/context/ExtensionsContext';
 
 class TextAreaAutosize extends React.Component {
@@ -250,8 +249,8 @@ TextAreaAutosize.defaultProps = {
   __extensionManager: ExtensionDefaultProps,
 };
 
+// Extension manager is automatically injected since it's in Extensions
 const StackedTextAreaAutosize = stack(
-  withExtensionManager,
   withPlatformConsumer,
 )(TextAreaAutosize);
 
