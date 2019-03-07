@@ -54,6 +54,7 @@ class Extensions extends React.Component {
       const extensionAttributes = _.get(this.state, [extension.name, 'attributes'], {});
       return { ...attributes, ...extensionAttributes };
     }, {}),
+    extendedData: this.state,
     setExtensions: this.setExtensions,
     setControl: this.setControl,
   });

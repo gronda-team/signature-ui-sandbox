@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ENTER } from '../../../cdk/keycodes/keys';
 import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../context/TagListInputContext';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+} from '../../form-field/context/ExtensionsContext';
+import { stack } from '../../core/components/util';
 
 class TagListExtension extends React.Component {
   constructor() {
@@ -36,7 +41,7 @@ class TagListExtension extends React.Component {
   getInput = () => this.props.input;
 
   /** Get the tag list */
-  getTagList = () => this.props.tagList;
+  getTagList = () => _.get(this.props.extendedData, ['##tag-list', 'list']);
 
   /** Get the non-null ID */
   getId = () => this.getInput().getId();
@@ -133,14 +138,18 @@ const TagListExtensionDefaultProps = {
 TagListExtension.propTypes = {
   ...TagListExtensionPropTypes,
   __tagListInput: TagInputContextPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 TagListExtension.defaultProps = {
   ...TagListExtensionDefaultProps,
   __tagListInput: TagInputContextDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
-const StackedTagListExtension = withTagInputConsumer(TagListExtension);
+const StackedTagListExtension = stack(
+  withTagInputConsumer,
+)(TagListExtension);
 
 StackedTagListExtension.propTypes = TagListExtensionPropTypes;
 StackedTagListExtension.defaultProps = TagListExtensionDefaultProps;
