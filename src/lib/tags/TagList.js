@@ -116,9 +116,7 @@ class TagList extends React.Component {
 
   /** Get the input extension attached to this tag list */
   getInput = () => (
-    this.state.inputExtension ?
-      this.state.inputExtension.getInput() :
-      null
+    _.get(this.props.__extensionManager, ['extendedData', 'control'])
   );
 
   /** ID for the tag list element */
