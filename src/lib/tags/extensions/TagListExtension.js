@@ -47,21 +47,15 @@ class TagListExtension extends React.Component {
   getInput = () => this.props.input;
 
   /** Get the tag list */
-  getTagList = () => _.get(this.props.extendedData, ['##tag-list', 'list']);
+  getTagList = () => _.get(this.props.__extensionManager, ['extendedData', '##tag-list', 'data', 'list']);
 
   /** Get the non-null ID */
   getId = () => this.getInput().getId();
 
-  /** Get the extended attributes to be merged into this.props.input */
-  getExtendedAttributes = () => ({
-    disabled: this.getFinalDisabled(),
-    'aria-invalid': false, // todo
-  });
-
   /** Whether the input is disabled */
   getFinalDisabled = () => (
     this.props.disabled
-    || _.get(this.props.extendedData, ['##tag-list', 'list', 'props', 'disabled'], false)
+    || _.get(this.props.__extensionManager, ['extendedData', '##tag-list', 'data', 'list', 'props', 'disabled'], false)
   );
 
   /**
