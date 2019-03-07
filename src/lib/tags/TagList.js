@@ -82,8 +82,8 @@ class TagList extends React.Component {
     }
 
     // Check to see if we have a destroyed chip and need to refocus
-    if (_.size(prevState.tagRefs) !== _.size(this.state.tagRefs)) {
-      if (_.size(prevState.tagRefs) > _.size(this.state.tagRefs)) {
+    if (this.getTagChildren(prevProps).length !== this.getTagChildren().length) {
+      if (this.getTagChildren(prevProps).length > this.getTagChildren().length) {
         // If we decreased the number of tags we have, then we have to
         // update the last deleted index.
         updateLastDeletedIndex.call(this, prevProps, this.props);
