@@ -9,7 +9,6 @@ import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor } from '../../cdk/text-area';
 import AutocompleteTrigger from './extensions/Autocomplete';
-import TagBehavior from '../tags/extensions/TagListExtension';
 import {
   ExtensionDefaultProps,
   ExtensionPropTypes,
@@ -39,7 +38,6 @@ class Input extends React.Component {
 
     // Get the extension refs
     this.autocomplete = React.createRef();
-    this.tagList = React.createRef();
   }
 
   /**
@@ -188,10 +186,6 @@ class Input extends React.Component {
       this.autocomplete.current.handleKeyDown(event);
     }
 
-    if (this.tagList.current) {
-      this.tagList.current.onKeyDown(event);
-    }
-
     _.invoke(this.props, 'onKeyDown', event);
   };
 
@@ -213,7 +207,7 @@ class Input extends React.Component {
   };
 
   /** Handle the UI focus change for the form field */
-  handleFocusChange = isFocused => () => {
+  handleFocusChange = isFocused => (event) => {
     if (this.EL && !this.props.readOnly && isFocused !== this.state.focused) {
       this.setState({ focused: isFocused });
       this.props.__formFieldControl.transitionUi(
@@ -224,22 +218,13 @@ class Input extends React.Component {
     // Handle extensions
     if (isFocused) {
       // Focus
-      if (this.autocomplete.current) {
-        this.autocomplete.current.handleFocus();
-      }
-
-      if (this.tagList.current) {
-        this.tagList.current.onFocus();
-      }
+      this.props.__extensionManager.extendedOnFocus(event);
     } else {
       // Blur
       if (this.autocomplete.current) {
         this.autocomplete.current.onTouched();
       }
-
-      if (this.tagList.current) {
-        this.tagList.current.onBlur();
-      }
+      this.props.__extensionManager.extendedOnBlur(event);
     }
   };
 
@@ -247,7 +232,6 @@ class Input extends React.Component {
     const {
       as, id, placeholder, disabled, required, type,
       autocomplete, autocompleteDisabled, // autocomplete props
-      tagListSeparatorKeyCodes, onTagEnd, tagListAddOnBlur, // tag list props
       __extensionManager,
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
@@ -257,10 +241,6 @@ class Input extends React.Component {
 
     const autocompleteAttributes = this.autocomplete.current ?
       this.autocomplete.current.getExtendedAttributes() :
-      {};
-
-    const tagListAttributes = this.tagList.current ?
-      this.tagList.current.getExtendedAttributes() :
       {};
 
     return (
@@ -276,18 +256,6 @@ class Input extends React.Component {
             ref={this.autocomplete}
           />
         ) : null }
-        { extensions.indexOf('tag-list') > -1 ? (
-          <TagBehavior
-            input={this}
-            tagListSeparatorKeyCodes={tagListSeparatorKeyCodes}
-            onTagEnd={onTagEnd}
-            tagListAddOnBlur={tagListAddOnBlur}
-            tagList={
-              _.get(this.props.__formFieldControl, 'extensions.tagList')
-            }
-            ref={this.tagList}
-          />
-        ) : null }
         {
           /**
            * The attributes that are before the {...} spread attributes
@@ -300,7 +268,6 @@ class Input extends React.Component {
           disabled={disabled}
           {...restProps}
           {...autocompleteAttributes}
-          {...tagListAttributes}
           {...extendedAttributes}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
