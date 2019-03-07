@@ -14,6 +14,7 @@ import {
   ExtensionPropTypes,
   withExtensionManager
 } from '../form-field/context/ExtensionsContext';
+import { RTLDefaultProps, RTLPropTypes } from '../../cdk/bidi';
 
 const toArray = React.Children.toArray;
 const count = React.Children.count;
@@ -123,6 +124,11 @@ class TagList extends React.Component {
    */
   /** Get the selection model without having to use .current */
   getSelectionModel = () => this.selectionModel.current || {};
+
+  /** Get the directionality */
+  getDir = () => ['ltr', 'rtl'].indexOf(this.props.dir) > -1 ?
+    this.props.dir :
+    'ltr';
 
   /** Get the key manager without having to use .current */
   getKeyManager = () => this.keyManager.current || {};
@@ -337,7 +343,7 @@ class TagList extends React.Component {
           items={this.getTagChildren()}
           wrap
           vertical
-          horizontal="ltr"
+          horizontal={this.getDir()}
           ref={this.keyManager}
         />
         <SelectionModel
@@ -391,6 +397,8 @@ const TagListPropTypes = {
   selectable: PropTypes.bool,
   /** Orientation of the tag list. */
   'aria-orientation': PropTypes.oneOf(['horizontal', 'vertical']),
+  /** Directionality */
+  dir: RTLPropTypes,
 };
 
 const TagListDefaultProps = {
@@ -399,6 +407,7 @@ const TagListDefaultProps = {
   required: false,
   selectable: true,
   'aria-orientation': 'horizontal',
+  dir: RTLDefaultProps,
 };
 
 TagList.propTypes = {
