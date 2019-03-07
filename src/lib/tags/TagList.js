@@ -9,13 +9,18 @@ import { TagListProvider } from './context/TagListContext';
 import { TagListRoot } from './styles/index';
 import { byInternalType, stack, toValue } from '../core/components/util';
 import { TagInputProvider } from './context/TagListInputContext';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+  withExtensionManager
+} from '../form-field/context/ExtensionsContext';
 
 const toArray = React.Children.toArray;
 const count = React.Children.count;
 class TagList extends React.Component {
   constructor() {
     super();
-    
+
     this.state = {
       /**
        * When a tag is destroyed, we store the index of the destroyed tag until the tags
@@ -51,14 +56,14 @@ class TagList extends React.Component {
         blur: this.blur,
       },
     };
-    
+
     this.DEFAULT_ID = _.uniqueId('sui-tag-list:');
     this.handleTabOut = handleTabOut.bind(this);
     // Refs
     this.selectionModel = React.createRef();
     this.keyManager = React.createRef();
   }
-  
+
   /**
    * Lifecycle
    */
@@ -68,7 +73,9 @@ class TagList extends React.Component {
       /** Set the onContainerClick fn */
       this.props.__formFieldControl.setContainerClick(this.onContainerClick);
       /** Register this guy as an extension */
-      this.props.__formFieldControl.setExtension('tagList', this);
+      this.props.__extensionManager.updateExtensionData('##tag-list', {
+        list: this,
+      });
       this.setState({ setFormFieldProperties: true });
     }
 
@@ -91,14 +98,14 @@ class TagList extends React.Component {
       this.props.__formFieldControl.transitionUi('FILL');
     }
   }
-  
+
   /**
    * Refs
    */
   getTagListRoot = (tagList) => {
     this.EL = tagList;
   };
-  
+
   /**
    * Derived data
    */
@@ -117,7 +124,7 @@ class TagList extends React.Component {
 
   /** ID for the tag list element */
   getId = (props = this.props) => props.id || this.DEFAULT_ID;
-  
+
   isEmpty = () => (
     /**
      * Empty if there's no input, if the input is empty, AND if there
@@ -126,16 +133,16 @@ class TagList extends React.Component {
     (!this.getInput() || this.getInput().isEmpty())
     && this.getChildrenCount() === 0
   );
-  
+
   /** aria role */
   getRole = () => {
     if (this.isEmpty()) return null;
     return 'listbox';
   };
-  
+
   /** aria described by */
   getAriaDescribedBy = () => this.state.describedByIds.join(' ');
-  
+
   getFinalTabIndex = () => {
     /*
     we must use state first because that controls tabbing capability
@@ -148,29 +155,29 @@ class TagList extends React.Component {
     if (!_.isNil(this.props.tabIndex)) return this.props.tabIndex;
     return 0;
   };
-  
+
   // get the children count
   getChildrenCount = (props = this.props) => count(props.children);
-  
+
   // get children
   getChildren = (props = this.props) => toArray(props.children);
-  
+
   // get the children that are tags
   getTagChildren = (props = this.props) => this.getChildren(props)
     .filter(byInternalType('Tag'));
-  
+
   // Get whether the state is focused
   getFocused = () => this.state.focused;
-  
+
   /** Check to see if associated input target is empty */
   isInputEmpty = (element) => {
     if (element && element.nodeName.toLowerCase() === 'input') {
       return !element.value;
     }
-  
+
     return false;
   };
-  
+
   /**
    * Actions, listeners
    */
@@ -183,15 +190,15 @@ class TagList extends React.Component {
       if (arrayRemoved.length > 0) {
         ids = _.without(ids, ...arrayRemoved);
       }
-      
+
       if (arrayAdded.length > 0) {
         ids = _.concat(ids, arrayAdded);
       }
-      
+
       return { describedByIds: ids };
     });
   };
-  
+
   /** Set state.tagInput for this guy */
   setTagInputState = (options) => {
     this.setState((state) => ({
@@ -230,7 +237,7 @@ class TagList extends React.Component {
       }
     });
   };
-  
+
   /** Pass events to the keyboard manager. */
   keyDown = (event) => {
     const target = event.target;
@@ -252,7 +259,7 @@ class TagList extends React.Component {
       }
     }
   };
-  
+
   /** When blurred, mark the field as touched when focus moved outside the tag list. */
   blur = (event) => {
     window.setTimeout(() => {
@@ -265,7 +272,7 @@ class TagList extends React.Component {
         this.getKeyManager().setActiveItem(-1);
       }
     }, 0);
-    
+
     if (!this.props.disabled) {
       if (this.state.__tagInput) {
         // If there's a tag input, we should check whether the focus moved to tag input.
@@ -285,14 +292,14 @@ class TagList extends React.Component {
       }
     }
   };
-  
+
   /** Perform when the formField does a container click */
   onContainerClick = (event) => {
     if (!originatesFromTag.call(this, event)) {
       this.focus(event);
     }
   };
-  
+
   render() {
     const {
       id,
@@ -376,14 +383,17 @@ const TagListDefaultProps = {
 TagList.propTypes = {
   ...TagListPropTypes,
   __formFieldControl: FormFieldPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 TagList.defaultProps = {
   ...TagListDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
 const StackedTagList = stack(
+  withExtensionManager,
   withFormFieldConsumer,
 )(TagList);
 
@@ -417,13 +427,13 @@ function handleTabOut() {
 /** Checks whether an event comes from inside a chip element. */
 function originatesFromTag(event) {
   let currentElement = event.target;
-  
+
   while (currentElement && currentElement !== this.EL) {
     if (_.get(currentElement, 'dataset.suiType') === 'tag') return true;
-    
+
     currentElement = currentElement.parentElement;
   }
-  
+
   return false;
 }
 
