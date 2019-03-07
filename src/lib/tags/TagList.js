@@ -50,7 +50,6 @@ class TagList extends React.Component {
         focus: _.noop,
       },
       __tagInputProvider: { // TagInput is the provider (of getters and w/e)
-        setTagInputState: this.setTagInputState,
         keydown: this.keyDown,
         isFocused: this.getFocused,
         blur: this.blur,
@@ -217,15 +216,6 @@ class TagList extends React.Component {
     });
   };
 
-  /** Set state.tagInput for this guy */
-  setTagInputState = (options) => {
-    this.setState((state) => ({
-      __tagInput: {
-        ...state.__tagInput,
-        ...options,
-      },
-    }));
-  };
   /**
    * Focuses the the first non-disabled tag in this tag list, or the associated input when there
    * are no eligible tags.
