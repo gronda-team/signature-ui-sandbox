@@ -26,6 +26,12 @@ class TagListExtension extends React.Component {
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    this.props.__extensionManager.updateExtensionAttributes('##tag-list', {
+      disabled: this.getFinalDisabled(),
+    });
+  }
+
   componentDidUpdate() {
     /** One-time installation of context */
     if (!this.state.setInputOnTagList && this.getTagList()) {
@@ -54,8 +60,8 @@ class TagListExtension extends React.Component {
 
   /** Whether the input is disabled */
   getFinalDisabled = () => (
-    _.get(this.getInput(), 'props.disabled')
-    || _.get(this.getTagList(), 'props.disabled')
+    this.props.disabled
+    || _.get(this.props.extendedData, ['##tag-list', 'list', 'props', 'disabled'], false)
   );
 
   /**
@@ -115,8 +121,6 @@ class TagListExtension extends React.Component {
 const TagListExtensionPropTypes = {
   /** Input component to which this is trigger is associated */
   input: PropTypes.any.isRequired,
-  /** Parent tag list */
-  tagList: PropTypes.any.isRequired,
   /**
    * The list of key codes that will trigger a chipEnd event.
    *
