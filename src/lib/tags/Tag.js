@@ -2,18 +2,9 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import TagRoot, { TagClose } from './styles/index';
-import {
-  ListKeyManagerDefaultProps, ListKeyManagerPropTypes,
-  withListKeyConsumer,
-} from '../../cdk/a11y';
 import { BACKSPACE, DELETE, SPACE, SPACEBAR } from '../../cdk/keycodes/keys';
-import {
-  SelectionModelDefaultProps, SelectionModelPropTypes,
-  withSelectionModelConsumer,
-} from '../../cdk/collections/selection-model';
-import { byInternalType, stack } from '../core/components/util';
+import { stack } from '../core/components/util';
 import { TagListContextDefaultProps, TagListContextPropTypes, withTagListConsumer } from './context/TagListContext';
-import Close from '../core/icons/Close';
 
 class Tag extends React.Component {
   constructor() {
@@ -39,9 +30,8 @@ class Tag extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.__keyManager.activeItemIndex !== this.props.__keyManager.activeItemIndex) {
-      const activeItem = this.props.__keyManager.activeItem;
-      if (_.get(activeItem, 'props.value') === this.props.value) {
+    if (prevProps.__tagList.activeItemId !== this.props.__tagList.activeItemId) {
+      if (this.props.__tagList.activeItemId === this.DEFAULT_ID) {
         // if the newly focused item is this current Tag, then focus this tag
         this.focus();
       }
@@ -254,22 +244,16 @@ const TagDefaultProps = {
 
 Tag.propTypes = {
   ...TagPropTypes,
-  __keyManager: ListKeyManagerPropTypes,
-  __selectionModel: SelectionModelPropTypes,
   __tagList: TagListContextPropTypes,
 };
 
 Tag.defaultProps = {
   ...TagDefaultProps,
-  __keyManager: ListKeyManagerDefaultProps,
-  __selectionModel: SelectionModelDefaultProps,
   __tagList: TagListContextDefaultProps,
 };
 
 const StackedTag = stack(
   withTagListConsumer,
-  withListKeyConsumer,
-  withSelectionModelConsumer,
 )(Tag);
 
 StackedTag.displayName = 'Tag';

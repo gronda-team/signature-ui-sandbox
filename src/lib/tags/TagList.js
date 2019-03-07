@@ -215,6 +215,17 @@ class TagList extends React.Component {
     });
   };
 
+  /** Handle the currently active tag item */
+  handleCurrentActiveIndex = (index) => {
+    const value = _.get(toArray(this.props.children), [index, 'props', 'value']);
+    const currentActiveRef = _.find(this.state.tagRefs, { props: { value } });
+    this.setState({
+      activeItemId: currentActiveRef ?
+        currentActiveRef.DEFAULT_ID :
+        null,
+    });
+  };
+
   /** Change the describedByIds */
   changeDescribedByIds = ({ added = [], removed = [] }) => {
     this.setState((state) => {
@@ -246,7 +257,7 @@ class TagList extends React.Component {
       // Focus on first element if there's no tagInput inside tag-list
       if (this.state.__tagInput.id && this.state.__tagInput.getFocused()) {
         // do nothing
-      } else if (this.getTagChildren().length > 0) {
+      } else if (_.size(this.state.tagRefs) > 0) {
         const target = event.target;
         const children = _.filter(this.EL.children, child => (
           _.get(child, 'dataset.suiType') === 'tag'
@@ -340,6 +351,7 @@ class TagList extends React.Component {
       <React.Fragment>
         <ListKeyManager
           onTabOut={this.handleTabOut}
+          onChange={this.handleCurrentActiveIndex}
           items={this.getTagChildren()}
           wrap
           vertical
@@ -369,6 +381,7 @@ class TagList extends React.Component {
           <TagListProvider value={{
             disabled,
             selectable,
+            activeItemId: this.state.activeItemId,
             register: this.register,
             deregister: this.deregister,
             changeDescribedByIds: this.changeDescribedByIds

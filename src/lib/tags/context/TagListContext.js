@@ -13,6 +13,8 @@ const TagListContextPropTypes = PropTypes.shape({
   register: PropTypes.func,
   /** Function to deregister the tag item */
   unregister: PropTypes.func,
+  /** Currently active (non-focused) ID */
+  activeItemId: PropTypes.string,
 });
 
 const TagListContextDefaultProps = {
@@ -21,6 +23,7 @@ const TagListContextDefaultProps = {
   changeDescribedByIds: _.noop,
   register: _.noop,
   deregister: _.noop,
+  activeItemId: null,
 };
 
 const {
