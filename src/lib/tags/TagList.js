@@ -255,7 +255,7 @@ class TagList extends React.Component {
     window.requestAnimationFrame(() => {
       // TODO: ARIA says this should focus the first `selected` tag if any are selected.
       // Focus on first element if there's no tagInput inside tag-list
-      if (this.state.__tagInput.id && this.state.__tagInput.getFocused()) {
+      if (this.state.inputExtension.state.focused) {
         // do nothing
       } else if (_.size(this.state.tagRefs) > 0) {
         const target = event.target;
