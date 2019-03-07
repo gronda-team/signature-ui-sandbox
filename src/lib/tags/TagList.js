@@ -82,21 +82,19 @@ class TagList extends React.Component {
     }
 
     // Check to see if we have a destroyed chip and need to refocus
-    const prevChildren = this.getTagChildren(prevProps);
-    const thisChildren = this.getTagChildren();
-    if (prevChildren.length !== thisChildren.length) {
-      if (prevChildren.length > thisChildren.length) {
-        // if we decreased the number of children we have to
-        // update the last deleted index
+    if (_.size(prevState.tagRefs) !== _.size(this.state.tagRefs)) {
+      if (_.size(prevState.tagRefs) > _.size(this.state.tagRefs)) {
+        // If we decreased the number of tags we have, then we have to
+        // update the last deleted index.
         updateLastDeletedIndex.call(this, prevProps, this.props);
         // fix the tab index
         updateTabIndex.call(this, this.props);
       }
     }
 
-    if (thisChildren.length ===  0 && _.get(this.getInput(), 'props.value') === '') {
+    if (_.size(this.state.tagRefs) ===  0 && _.get(this.getInput(), 'props.value') === '' && !this.props.__formFieldControl.ui.matches('value.empty')) {
       this.props.__formFieldControl.transitionUi('CLEAR');
-    } else {
+    } else if (!this.props.__formFieldControl.ui.matches('value.filled')) {
       this.props.__formFieldControl.transitionUi('FILL');
     }
   }
