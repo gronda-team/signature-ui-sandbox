@@ -1,4 +1,5 @@
 import { TextAreaAutosize } from '../../../cdk/text-area';
+import TagListExtension from '../../tags/extensions/TagListExtension';
 
 export let availableExtensions = [
   {
@@ -8,6 +9,7 @@ export let availableExtensions = [
   {
     name: '##tag-list',
     type: ['input'],
+    component: TagListExtension,
   },
   {
     name: '##autosize',
