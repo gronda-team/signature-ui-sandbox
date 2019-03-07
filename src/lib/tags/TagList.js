@@ -91,16 +91,21 @@ class TagList extends React.Component {
       }
     }
 
+    /**
+     * Save this to a variable because we might call this if FormField unmounts first,
+     * which might lead to a "ui is not defined" error.
+     */
+    const ui = this.props.__formFieldControl.ui;
     if (
       (_.size(prevState.tagRefs) > 0 && _.size(this.state.tagRefs) === 0)
       && _.get(this.getInput(), 'props.value') === ''
-      && !this.props.__formFieldControl.ui.matches('value.empty')
+      && !_.invoke(ui, 'matches', 'value.empty')
     ) {
       this.props.__formFieldControl.transitionUi('CLEAR');
     } else if (
       (_.size(prevState.tagRefs) === 0 && _.size(this.state.tagRefs) > 0)
       || (_.get(this.getInput(), 'props.value') !== '')
-      && !this.props.__formFieldControl.ui.matches('value.filled')
+      && !_.invoke(ui, 'matches', 'value.filled')
     ) {
       this.props.__formFieldControl.transitionUi('FILL');
     }
@@ -136,7 +141,7 @@ class TagList extends React.Component {
      * are no tag children
      */
     (!this.getInput() || this.getInput().isEmpty())
-    && this.getChildrenCount() === 0
+    && _.size(this.state.tagRefs) === 0
   );
 
   /** aria role */
@@ -230,7 +235,7 @@ class TagList extends React.Component {
     if (this.props.disabled) return;
     event.persist();
     // must defer this because we have to register tagInput.focused when it focuses
-    _.defer(() => {
+    window.requestAnimationFrame(() => {
       // TODO: ARIA says this should focus the first `selected` tag if any are selected.
       // Focus on first element if there's no tagInput inside tag-list
       if (this.state.__tagInput.id && this.state.__tagInput.getFocused()) {
