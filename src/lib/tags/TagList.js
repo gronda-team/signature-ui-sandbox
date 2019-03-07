@@ -97,14 +97,14 @@ class TagList extends React.Component {
      */
     const ui = this.props.__formFieldControl.ui;
     if (
-      (_.size(prevState.tagRefs) > 0 && _.size(this.state.tagRefs) === 0)
+      _.size(this.state.tagRefs) === 0
       && _.get(this.getInput(), 'props.value') === ''
       && !_.invoke(ui, 'matches', 'value.empty')
     ) {
       this.props.__formFieldControl.transitionUi('CLEAR');
     } else if (
-      (_.size(prevState.tagRefs) === 0 && _.size(this.state.tagRefs) > 0)
-      || (_.get(this.getInput(), 'props.value') !== '')
+      (_.size(this.state.tagRefs) > 0
+      || (_.get(this.getInput(), 'props.value') !== ''))
       && !_.invoke(ui, 'matches', 'value.filled')
     ) {
       this.props.__formFieldControl.transitionUi('FILL');
