@@ -3,15 +3,24 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 const TagListContextPropTypes = PropTypes.shape({
+  /** Whether the list is disabled */
   disabled: PropTypes.bool,
+  /** Whether each tag is selectable */
   selectable: PropTypes.bool,
+  /** Function to update the describedby IDs */
   changeDescribedByIds: PropTypes.func,
+  /** Function to register the tag item */
+  register: PropTypes.func,
+  /** Function to deregister the tag item */
+  unregister: PropTypes.func,
 });
 
 const TagListContextDefaultProps = {
   disabled: false,
   selectable: false,
   changeDescribedByIds: _.noop,
+  register: _.noop,
+  deregister: _.noop,
 };
 
 const {
@@ -30,9 +39,9 @@ function withTagListConsumer(Component) {
       </TagListConsumer>
     );
   }
-  
+
   WithTagListConsumer.displayName = `WithTagListConsumer(${Component.displayName})`;
-  
+
   return WithTagListConsumer;
 }
 

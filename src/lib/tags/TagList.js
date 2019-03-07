@@ -55,6 +55,8 @@ class TagList extends React.Component {
         isFocused: this.getFocused,
         blur: this.blur,
       },
+      /** References to tags, keyed by their default IDs */
+      tagRefs: {},
     };
 
     this.DEFAULT_ID = _.uniqueId('sui-tag-list:');
@@ -181,6 +183,24 @@ class TagList extends React.Component {
   /**
    * Actions, listeners
    */
+  /** Register a tag item */
+  register = (id, ref) => {
+    this.setState(state => ({
+      tagRefs: {
+        ...state.tagRefs,
+        [id]: ref,
+      },
+    }));
+  };
+
+  /** Remove a tag reference from the state */
+  deregister = (id) => {
+    this.setState((state) => {
+      const { [id]: unused, ...restRefs } = state.tagRefs;
+      return { tagRefs: restRefs };
+    });
+  };
+
   /** Change the describedByIds */
   changeDescribedByIds = ({ added = [], removed = [] }) => {
     this.setState((state) => {
@@ -344,6 +364,8 @@ class TagList extends React.Component {
           <TagListProvider value={{
             disabled,
             selectable,
+            register: this.register,
+            deregister: this.deregister,
             changeDescribedByIds: this.changeDescribedByIds
           }}>
             <TagInputProvider value={this.state.__tagInputProvider}>

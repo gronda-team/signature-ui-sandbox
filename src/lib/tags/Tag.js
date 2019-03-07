@@ -18,7 +18,7 @@ import Close from '../core/icons/Close';
 class Tag extends React.Component {
   constructor() {
     super();
-    
+
     this.state = {
       /**
        * We have to keep hasFocus in state here because Tag.focus is both programmatic
@@ -27,13 +27,17 @@ class Tag extends React.Component {
        */
       hasFocus: false,
     };
-    
+
     this.DEFAULT_ID = _.uniqueId('sui-tag:');
   }
 
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    this.props.__tagList.register(this.DEFAULT_ID, this);
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.__keyManager.activeItemIndex !== this.props.__keyManager.activeItemIndex) {
       const activeItem = this.props.__keyManager.activeItem;
@@ -43,31 +47,35 @@ class Tag extends React.Component {
       }
     }
   }
-  
+
+  componentWillUnmount() {
+    this.props.__tagList.deregister(this.DEFAULT_ID);
+  }
+
   /**
    * Refs
    */
   getTagRoot = (tag) => {
     this.EL = tag;
   };
-  
+
   /**
    * Derived data
    */
   getId = (props = this.props) => props.id || this.DEFAULT_ID;
-  
+
   getAriaSelected = () => (
     this.getFinalSelectable() ?
       this.props.selected.toString() :
       null
   );
-  
+
   /** Get final selectable state based on own props and parent tag list */
   getFinalSelectable = () => this.props.selectable && this.props.__tagList.selectable;
-  
+
   /** Get final disabled state based on own props and parent tag list */
   getFinalDisabled = () => this.props.disabled || this.props.__tagList.disabled;
-  
+
   /**
    * Actions, listeners
    */
@@ -85,7 +93,7 @@ class Tag extends React.Component {
       });
     }
   };
-  
+
   /** Handles click events on the tag. */
   onClick = (event) => {
     if (this.getFinalDisabled()) {
@@ -98,11 +106,11 @@ class Tag extends React.Component {
       this.props.onClick(event);
     }
   };
-  
+
   /** Calls the parent tag's public `remove()` method if applicable. */
   handleCloseClick = (event) => {
     this.remove();
-  
+
     // We need to stop event propagation because otherwise the event will bubble up to the
     // form field and cause the `onContainerClick` method to be invoked. This method would then
     // reset the focused tag that has been focused after tag removal. Usually the parent
@@ -110,7 +118,7 @@ class Tag extends React.Component {
     // that the tag is being removed before the event bubbles up.
     event.stopPropagation();
   };
-  
+
   /** Allows for programmatic focusing of the tag. */
   focus = () => {
     if (!this.state.hasFocus && this.EL) {
@@ -125,7 +133,7 @@ class Tag extends React.Component {
     }
     this.setState({ hasFocus: true });
   };
-  
+
   /** Allows for programmatic blurring of the tag. */
   blur = (event) => {
     // When animations are enabled, the tag may be removed a tad earlier.
@@ -138,7 +146,7 @@ class Tag extends React.Component {
       }
     });
   };
-  
+
   /** Handle custom key presses. */
   onKeyDown = (event) => {
     if (this.getFinalDisabled()) return;
@@ -156,17 +164,17 @@ class Tag extends React.Component {
         if (this.getFinalSelectable()) {
           this.props.__selectionModel.toggle(this.props.value);
         }
-  
+
         // Always prevent space from scrolling the page since the list has focus
         event.preventDefault();
         break;
     }
-    
+
     if (_.isFunction(this.props.onKeyDown)) {
       this.props.onKeyDown(event);
     }
   };
-  
+
   render() {
     const {
       value,
@@ -181,9 +189,9 @@ class Tag extends React.Component {
       ['__sui-internal-type']: SIT,
       ...restProps
     } = this.props;
-    
+
     const finalDisabled = this.getFinalDisabled();
-    
+
     return (
       /*
       Tab index must be -1 because we don't want to trap focus here. We want this
