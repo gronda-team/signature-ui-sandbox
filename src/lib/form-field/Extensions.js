@@ -4,6 +4,8 @@ import _ from 'lodash';
 import { availableExtensions } from './extensions/available-extensions';
 import { ExtensionsProvider } from './context/ExtensionsContext';
 
+const DEFAULT_EXTENSION_BUS = { attributes: {}, data: {} };
+
 class Extensions extends React.Component {
   constructor() {
     super();
@@ -60,29 +62,77 @@ class Extensions extends React.Component {
    * Actions
    */
   /** Update the extension data key */
-  updateExtensionData = (key, value) => {
-    this.setState(state => ({
-      [key]: {
-        ...(state[key] || { attributes: {}, data: {} }),
-        data: {
-          ...(_.get(state[key], 'data', {})),
-          ...value,
-        },
+  updateExtensionData = (...args) => {
+    const [key, second, last, ...rest] = args;
+
+    /**
+     * The callback function at the end of setState is an optional argument,
+     * and we treat it as the third argument here.
+     *
+     * Here we create an array of arguments (that can be applied using function.apply)
+     * for setState.
+     *
+     * The first ENTRY in the array is the setState callback (this.setState(() => {})).
+     *
+     * Here we see which extension we're targeting by using the first ARGUMENT `key`,
+     * which should be a string.
+     *
+     * The second ARGUMENT can either be a plain object ({ isShown: false }) and is
+     * consequently spread as a normal setState argument, OR it can be a callback function
+     * that somewhat acts like this.setState(() => {}).
+     */
+    const setStateArgs = [
+      (state) => {
+        let data = _.get(state, [key, 'data'], {});
+        if (_.isPlainObject(second)) {
+          data = { ...data, ...second };
+        } else if (_.isFunction(second)) {
+          data = { ...data, ...second(data) };
+        }
+
+        return {
+          [key]: {
+            ...(state[key] || DEFAULT_EXTENSION_BUS),
+            data,
+          },
+        };
       },
-    }));
+    ];
+
+    if (_.isFunction(last)) {
+      setStateArgs.concat(last);
+    }
+
+    this.setState.apply(this, setStateArgs);
   };
 
   /** Update the extension attributes key */
-  updateExtensionAttributes = (key, value) => {
-    this.setState(state => ({
-      [key]: {
-        ...(state[key] || { attributes: {}, data: {} }),
-        attributes: {
-          ...(_.get(state[key], 'attributes', {})),
-          ...value,
-        },
+  updateExtensionAttributes = (...args) => {
+    const [key, second, last, ...rest] = args;
+    /** See how updateExtensionData works for an explanation */
+    const setStateArgs = [
+      (state) => {
+        let attributes = _.get(state, [key, 'attributes'], {});
+        if (_.isPlainObject(second)) {
+          attributes = { ...attributes, ...second };
+        } else if (_.isFunction(second)) {
+          attributes = { ...attributes, ...second(attributes) };
+        }
+
+        return {
+          [key]: {
+            ...(state[key] || DEFAULT_EXTENSION_BUS),
+            attributes,
+          },
+        };
       },
-    }));
+    ];
+
+    if (_.isFunction(last)) {
+      setStateArgs.concat(last);
+    }
+
+    this.setState.apply(this, setStateArgs);
   };
 
   /** Consolidate onChange listeners */
@@ -107,10 +157,7 @@ class Extensions extends React.Component {
     this.setState({
       extensions,
       ...extensions.reduce((defaultState, extension) => {
-        defaultState[extension] = {
-          data: {},
-          attributes: {},
-        };
+        defaultState[extension] = { ...DEFAULT_EXTENSION_BUS };
         return defaultState;
       }, {}),
     })
