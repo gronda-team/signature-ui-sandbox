@@ -2,12 +2,12 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ENTER } from '../../../cdk/keycodes/keys';
-import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../../tags/context/TagListInputContext';
+import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../context/TagListInputContext';
 
-class TagExtension extends React.Component {
+class TagListExtension extends React.Component {
   constructor() {
     super();
-    
+
     this.DEFAULT_ID = _.uniqueId('sui-tag-input:');
 
     this.state = {
@@ -28,7 +28,7 @@ class TagExtension extends React.Component {
       this.setState({ setInputOnTagList: true });
     }
   }
-  
+
   /**
    * Derived data
    */
@@ -60,7 +60,7 @@ class TagExtension extends React.Component {
   onKeyDown = (event) => {
     this.emitTagEnd(event);
   };
-  
+
   /** Checks to see if the blur should emit the (chipEnd) event. */
   onBlur = () => {
     if (this.props.tagListAddOnBlur) {
@@ -73,7 +73,7 @@ class TagExtension extends React.Component {
       this.getTagList().blur();
     }
   };
-  
+
   /** focus listener */
   onFocus = () => {
     this.setState({ focused: true });
@@ -107,7 +107,7 @@ class TagExtension extends React.Component {
   }
 }
 
-const TagExtensionPropTypes = {
+const TagListExtensionPropTypes = {
   /** Input component to which this is trigger is associated */
   input: PropTypes.any.isRequired,
   /** Parent tag list */
@@ -124,25 +124,25 @@ const TagExtensionPropTypes = {
   tagListAddOnBlur: PropTypes.bool,
 };
 
-const TagExtensionDefaultProps = {
+const TagListExtensionDefaultProps = {
   tagListSeparatorKeyCodes: [ENTER],
   onTagEnd: _.noop,
   tagListAddOnBlur: false,
 };
 
-TagExtension.propTypes = {
-  ...TagExtensionPropTypes,
+TagListExtension.propTypes = {
+  ...TagListExtensionPropTypes,
   __tagListInput: TagInputContextPropTypes,
 };
 
-TagExtension.defaultProps = {
-  ...TagExtensionDefaultProps,
+TagListExtension.defaultProps = {
+  ...TagListExtensionDefaultProps,
   __tagListInput: TagInputContextDefaultProps,
 };
 
-const StackedTagExtension = withTagInputConsumer(TagExtension);
+const StackedTagListExtension = withTagInputConsumer(TagListExtension);
 
-StackedTagExtension.propTypes = TagExtensionPropTypes;
-StackedTagExtension.defaultProps = TagExtensionDefaultProps;
+StackedTagListExtension.propTypes = TagListExtensionPropTypes;
+StackedTagListExtension.defaultProps = TagListExtensionDefaultProps;
 
-export default StackedTagExtension;
+export default StackedTagListExtension;

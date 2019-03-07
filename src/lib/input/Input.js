@@ -9,7 +9,7 @@ import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor } from '../../cdk/text-area';
 import AutocompleteTrigger from './extensions/Autocomplete';
-import TagBehavior from './extensions/TagBehavior';
+import TagBehavior from '../tags/extensions/TagListExtension';
 import {
   ExtensionDefaultProps,
   ExtensionPropTypes,
