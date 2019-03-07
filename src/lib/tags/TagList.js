@@ -102,7 +102,6 @@ class TagList extends React.Component {
       || (_.get(this.getInput(), 'props.value') !== '')
       && !this.props.__formFieldControl.ui.matches('value.filled')
     ) {
-      console.log('filling');
       this.props.__formFieldControl.transitionUi('FILL');
     }
   }
