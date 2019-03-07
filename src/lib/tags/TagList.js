@@ -91,9 +91,18 @@ class TagList extends React.Component {
       }
     }
 
-    if (_.size(this.state.tagRefs) ===  0 && _.get(this.getInput(), 'props.value') === '' && !this.props.__formFieldControl.ui.matches('value.empty')) {
+    if (
+      (_.size(prevState.tagRefs) > 0 && _.size(this.state.tagRefs) === 0)
+      && _.get(this.getInput(), 'props.value') === ''
+      && !this.props.__formFieldControl.ui.matches('value.empty')
+    ) {
       this.props.__formFieldControl.transitionUi('CLEAR');
-    } else if (!this.props.__formFieldControl.ui.matches('value.filled')) {
+    } else if (
+      (_.size(prevState.tagRefs) === 0 && _.size(this.state.tagRefs) > 0)
+      || (_.get(this.getInput(), 'props.value') !== '')
+      && !this.props.__formFieldControl.ui.matches('value.filled')
+    ) {
+      console.log('filling');
       this.props.__formFieldControl.transitionUi('FILL');
     }
   }
