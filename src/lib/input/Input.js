@@ -182,9 +182,7 @@ class Input extends React.Component {
 
   /** Handle keydown events for extensions */
   onKeyDown = (event) => {
-    if (this.autocomplete.current) {
-      this.autocomplete.current.handleKeyDown(event);
-    }
+    this.props.__extensionManager.extendedOnKeyDown(event);
 
     _.invoke(this.props, 'onKeyDown', event);
   };

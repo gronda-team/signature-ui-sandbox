@@ -137,16 +137,16 @@ class Extensions extends React.Component {
   };
 
   /** Consolidate onChange listeners */
-  extendedOnChange = consolidateRefListenersVia.bind(this, 'onChange');
+  extendedOnChange = consolidateRefListenersVia.call(this, 'onChange');
 
   /** Consolidate onFocus listeners */
-  extendedOnFocus = consolidateRefListenersVia.bind(this, 'onFocus');
+  extendedOnFocus = consolidateRefListenersVia.call(this, 'onFocus');
 
   /** Consolidate onBlur listeners */
-  extendedOnBlur = consolidateRefListenersVia.bind(this, 'onBlur');
+  extendedOnBlur = consolidateRefListenersVia.call(this, 'onBlur');
 
   /** Consolidate onKeyDown listeners */
-  extendedOnKeyDown = consolidateRefListenersVia.bind(this, 'onKeyDown');
+  extendedOnKeyDown = consolidateRefListenersVia.call(this, 'onKeyDown');
 
   /** Set the control */
   setControl = (control) => {
