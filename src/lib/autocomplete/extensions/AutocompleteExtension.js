@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {ARROW_DOWN, ARROW_UP, DOWN, ENTER, ESC, ESCAPE, TAB, UP} from '../../../cdk/keycodes/keys';
 import {countGroupLabelsBeforeOption, getOptionScrollPosition} from '../../core/option/util';
 import {MENU_ITEM_HEIGHT, OVERLAY_MAX_HEIGHT} from '../../core/styles/menu-common';
-import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../../form-field';
+import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../../form-field/context/FormFieldContext';
 import {ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler} from '../../../cdk/scrolling';
 import {stack} from '../../core/components/util';
 

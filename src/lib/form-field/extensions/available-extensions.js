@@ -1,5 +1,5 @@
 import { TextAreaAutosize } from '../../../cdk/text-area';
-import AutocompleteExtension from '../../autocomplete/extensions/Autocomplete';
+import AutocompleteExtension from '../../autocomplete/extensions/AutocompleteExtension';
 import TagListExtension from '../../tags/extensions/TagListExtension';
 
 export let availableExtensions = [
