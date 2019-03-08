@@ -111,6 +111,13 @@ class TagList extends React.Component {
       && !_.invoke(ui, 'matches', 'value.filled')
     ) {
       this.props.__formFieldControl.transitionUi('FILL');
+    } else if (
+      _.size(this.state.tagRefs) === 0
+      && (_.get(this.getInput(), 'props.value') === '')
+      && !(_.get(this.getInput(), 'state.focused', false))
+      && _.invoke(ui, 'matches', 'field.enabled.focused')
+    ) {
+      this.props.__formFieldControl.transitionUi('BLUR');
     }
 
     /**
@@ -328,7 +335,7 @@ class TagList extends React.Component {
     });
 
     if (!this.props.disabled) {
-      if (this.state.__tagInput) {
+      if (this.getInput()) {
         // If there's a tag input, we should check whether the focus moved to tag input.
         // If the focus is not moved to tag input, mark the field as touched. If the focus moved
         // to tag input, do nothing.
@@ -469,8 +476,8 @@ export default StackedTagList;
  */
 /** Attempt to focus an input if we have one. */
 function focusInput() {
-  if (this.state.__tagInput.focus) {
-    this.state.__tagInput.focus();
+  if (this.getInput()) {
+    this.getInput().focus();
   }
 }
 
