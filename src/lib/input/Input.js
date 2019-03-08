@@ -8,7 +8,7 @@ import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor } from '../../cdk/text-area';
-import AutocompleteTrigger from './extensions/Autocomplete';
+import AutocompleteTrigger from '../autocomplete/extensions/Autocomplete';
 import {
   ExtensionDefaultProps,
   ExtensionPropTypes,
