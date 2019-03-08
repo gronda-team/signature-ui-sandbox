@@ -42,14 +42,6 @@ class TagList extends React.Component {
       inputExtension: null,
       /** Set the form field properties when it mounts */
       setFormFieldProperties: false,
-      /** Tag input information */
-      __tagInput: { // TagList is the consumer
-        id: null,
-        placeholder: '',
-        getFocused: _.noop,
-        isEmpty: null,
-        focus: _.noop,
-      },
       __tagInputProvider: { // TagInput is the provider (of getters and w/e)
         keydown: this.keyDown,
         isFocused: this.getFocused,
