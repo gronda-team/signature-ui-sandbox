@@ -112,6 +112,22 @@ class TagList extends React.Component {
     ) {
       this.props.__formFieldControl.transitionUi('FILL');
     }
+
+    /**
+     * Handle the focus styling. We use activeItemId for a proxy
+     * for which tag item is currently focused. If it's null, then
+     * obviously we're not focusing any tag.
+     *
+     * We also check to see if we have a value in the input field
+     * using this.isFocused().
+     */
+    if (prevState.activeItemId !== this.state.activeItemId) {
+      if (this.isFocused()) {
+        this.props.__formFieldControl.transitionUi('FOCUS');
+      } else {
+        this.props.__formFieldControl.transitionUi('BLUR');
+      }
+    }
   }
 
   /**
@@ -150,6 +166,11 @@ class TagList extends React.Component {
      */
     (!this.getInput() || this.getInput().isEmpty())
     && _.size(this.state.tagRefs) === 0
+  );
+
+  /** Check to see if this tag list is focused */
+  isFocused = () => (
+    this.getInput() && this.getInput().state.focused || !_.isNil(this.state.activeItemId)
   );
 
   /** aria role */
