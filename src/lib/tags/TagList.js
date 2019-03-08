@@ -300,16 +300,11 @@ class TagList extends React.Component {
 
   /** When blurred, mark the field as touched when focus moved outside the tag list. */
   blur = (event) => {
-    window.setTimeout(() => {
-      /*
-      check to see if the next actively focused item is inside the tag list
-      Must be deferred because we want to wait for the document to change
-      focus
-       */
-      if (!this.EL.contains(document.activeElement)) {
+    window.requestAnimationFrame(() => {
+      if (!hasFocusedTag.call(this)) {
         this.getKeyManager().setActiveItem(-1);
       }
-    }, 0);
+    });
 
     if (!this.props.disabled) {
       if (this.state.__tagInput) {
@@ -532,4 +527,9 @@ function updateLastDeletedIndex(prevProps, props = this.props) {
     // and update focus for any removed tags
     updateFocusForRemovedTags.call(this);
   });
+}
+
+/** Checks whether any of the tags are focused */
+function hasFocusedTag(state = this.state) {
+  return _.some(state.tagRefs, ref => _.get(ref, 'state.focused', false));
 }
