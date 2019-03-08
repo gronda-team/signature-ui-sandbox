@@ -57,6 +57,8 @@ class TagList extends React.Component {
       },
       /** References to tags, keyed by their default IDs */
       tagRefs: {},
+      /** Currently active item by its tag ID */
+      activeItemId: null,
     };
 
     this.DEFAULT_ID = _.uniqueId('sui-tag-list:');
