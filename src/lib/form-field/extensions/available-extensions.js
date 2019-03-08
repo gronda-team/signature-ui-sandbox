@@ -1,4 +1,5 @@
 import { TextAreaAutosize } from '../../../cdk/text-area';
+import AutocompleteExtension from '../../autocomplete/extensions/Autocomplete';
 import TagListExtension from '../../tags/extensions/TagListExtension';
 
 export let availableExtensions = [
@@ -19,6 +20,7 @@ export let availableExtensions = [
   {
     name: '##autocomplete',
     type: ['input', 'textarea'],
+    component: AutocompleteExtension,
   },
 ];
 
