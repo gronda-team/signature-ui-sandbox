@@ -8,7 +8,6 @@ import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
 import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor } from '../../cdk/text-area';
-import AutocompleteTrigger from '../autocomplete/extensions/Autocomplete';
 import {
   ExtensionDefaultProps,
   ExtensionPropTypes,
@@ -229,7 +228,6 @@ class Input extends React.Component {
   render() {
     const {
       as, id, placeholder, disabled, required, type,
-      autocomplete, autocompleteDisabled, // autocomplete props
       __extensionManager,
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
@@ -237,23 +235,8 @@ class Input extends React.Component {
 
     const extendedAttributes = _.get(__extensionManager, 'extendedAttributes', {});
 
-    const autocompleteAttributes = this.autocomplete.current ?
-      this.autocomplete.current.getExtendedAttributes() :
-      {};
-
     return (
       <React.Fragment>
-        { extensions.indexOf('autocomplete') > -1 ? (
-          <AutocompleteTrigger
-            input={this}
-            autocomplete={
-              _.get(this.props.__formFieldControl, 'extensions.autocomplete')
-            }
-            autocompleteAttribute={autocomplete}
-            autocompleteDisabled={autocompleteDisabled}
-            ref={this.autocomplete}
-          />
-        ) : null }
         {
           /**
            * The attributes that are before the {...} spread attributes
@@ -265,7 +248,6 @@ class Input extends React.Component {
         <this.INPUT_TYPE
           disabled={disabled}
           {...restProps}
-          {...autocompleteAttributes}
           {...extendedAttributes}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
