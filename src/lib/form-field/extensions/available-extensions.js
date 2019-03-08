@@ -17,10 +17,6 @@ export let availableExtensions = [
     component: TextAreaAutosize,
   },
   {
-    name: '##autofill',
-    type: ['input', 'textarea'],
-  },
-  {
     name: '##autocomplete',
     type: ['input', 'textarea'],
   },
