@@ -25,15 +25,15 @@ export const createTypographyLevel = ({
  */
 const DEFAULT_TYPOGRAPHY_CONFIG = {
   fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
-  display1: createTypographyLevel({ fontSize: '30px', lineHeight: '36px', fontWeight: '500' }),
-  display2: createTypographyLevel({ fontSize: '24px', lineHeight: '32px', fontWeight: '500' }),
-  display3: createTypographyLevel({ fontSize: '20px', lineHeight: '32px', fontWeight: '500' }),
-  display4: createTypographyLevel({ fontSize: '16px', lineHeight: '28px', fontWeight: '500' }),
-  display5: createTypographyLevel({ fontSize: '14px', lineHeight: '24px', fontWeight: '500' }),
-  body1: createTypographyLevel({ fontSize: '19px', lineHeight: '32px' }),
-  body2: createTypographyLevel({ fontSize: '16px', lineHeight: '24px' }),
-  body3: createTypographyLevel({ fontSize: '14px', lineHeight: '20px' }),
-  micro: createTypographyLevel({ fontSize: '12px', lineHeight: '20px' }),
+  display1: createTypographyLevel({ fontSize: '30px', lineHeight: '41px', fontWeight: '700' }),
+  display2: createTypographyLevel({ fontSize: '24px', lineHeight: '33px', fontWeight: '700' }),
+  display3: createTypographyLevel({ fontSize: '20px', lineHeight: '27px', fontWeight: '700' }),
+  display4: createTypographyLevel({ fontSize: '16px', lineHeight: '28px', fontWeight: '700' }),
+  display5: createTypographyLevel({ fontSize: '14px', lineHeight: '24px', fontWeight: '700' }),
+  body1: createTypographyLevel({ fontSize: '19px', lineHeight: '30px' }),
+  body2: createTypographyLevel({ fontSize: '16px', lineHeight: '27px' }),
+  body3: createTypographyLevel({ fontSize: '14px', lineHeight: '22px' }),
+  micro: createTypographyLevel({ fontSize: '12px', lineHeight: '22px' }),
   button: createTypographyLevel({ fontSize: '14px', lineHeight: '14px' }),
   input: createTypographyLevel({ fontSize: 'inherit', lineHeight: '1.125' }),
 };
@@ -57,6 +57,9 @@ export const createTypographyConfig = (typographyConfig = DEFAULT_TYPOGRAPHY_CON
  * Create the base typography to be injected into the Text component.
  */
 export const suiBaseTypography = (config, extraSelector) => css`
+padding: 0;
+margin: 0;
+
 &[data-text-level=display1] {
   ${convertLevelToStyles(config, 'display1')}
   margin: 0 0 64px;
@@ -84,6 +87,14 @@ export const suiBaseTypography = (config, extraSelector) => css`
   ${convertLevelToStyles(config, 'display5')}
   letter-spacing: -0.05em;
   margin: 0 0 64px;
+}
+
+&[data-text-level=body3] {
+  ${convertLevelToStyles(config, 'body3')}
+}
+
+&[data-text-level=body1] {
+  ${convertLevelToStyles(config, 'body1')}
 }
 `;
 
