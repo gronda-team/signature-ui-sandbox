@@ -48,7 +48,7 @@ class AutocompleteExtension extends React.Component {
 
     /** Set the form field control attributes upon instantiation */
     const disabled = this.props.autocompleteDisabled;
-    this.props.__formFieldControl.setControlAttrs({
+    this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
       role: disabled ? null : 'combobox',
       'aria-autocomplete': disabled ? null : 'list',
       autoComplete: this.props.autocompleteAttribute,
@@ -89,7 +89,7 @@ class AutocompleteExtension extends React.Component {
     /** Apply the correct attribute for aria-autocomplete */
     if (prevProps.autocompleteDisabled !== this.props.autocompleteDisabled) {
       const disabled = this.props.autocompleteDisabled;
-      this.props.__formFieldControl.setControlAttrs({
+      this.props.__extensionManager.updateExtensionAttributes({
         role: disabled ? null : 'combobox',
         'aria-autocomplete': disabled ? null : 'list',
         'aria-expanded': disabled ? null : this.getPanelOpen(),
@@ -100,7 +100,7 @@ class AutocompleteExtension extends React.Component {
 
     /** Apply the correct attribute for input autoComplete */
     if (prevProps.autocompleteAttribute !== this.props.autocompleteAttribute) {
-      this.props.__formFieldControl.setControlAttrs({
+      this.props.__extensionManager.updateExtensionAttributes({
         autoComplete: this.props.autocompleteAttribute,
       });
     }
@@ -160,14 +160,6 @@ class AutocompleteExtension extends React.Component {
     && !_.get(input, 'props.disabled')
     && !this.props.autocompleteDisabled;
   };
-
-  /** Get the attributes that are associated with the autocomplete */
-  getExtendedAttributes = () => ({
-    'aria-expanded': this.props.autocompleteDisabled ?
-      null : this.getPanelOpen(),
-    'aria-owns': (this.props.autocompleteDisabled || !this.getPanelOpen()) ?
-      null : this.getAutocomplete().getId(),
-  });
 
   /**
    * Actions
