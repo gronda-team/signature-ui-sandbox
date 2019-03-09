@@ -15,7 +15,7 @@ export const convertPropertiesToShorthand = ({
     font-size: ${fontSize};
     line-height: ${lineHeight};
     font-weight: ${fontWeight};
-    ${fontFamily ? `font-family: ${fontFamily};` : ''}
+    font-family: ${fontFamily};
     `;
   } else {
     return css`font: ${fontWeight} ${fontSize}/${lineHeight} ${fontFamily};`;
@@ -29,7 +29,6 @@ export const convertLevelToStyles = (config, level) => {
   const { fontSize, fontWeight, lineHeight, fontFamily, letterSpacing } = _.get(config, level);
 
   const font = convertPropertiesToShorthand({ fontSize, fontWeight, lineHeight, fontFamily });
-
   return css`
   ${font}
   letter-spacing: ${letterSpacing};

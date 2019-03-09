@@ -16,37 +16,41 @@ export const createTypographyLevel = ({
   fontWeight = 400,
   fontFamily = null,
   letterSpacing = null,
-}) => arguments[0];
+}) => ({
+  fontSize, lineHeight, fontWeight, fontFamily, letterSpacing,
+});
 
 /**
  * Create default configuration
  */
-export const createTypographyConfig = ({
-  fontFamily = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
-  display1 = createTypographyLevel({ fontSize: '30px', lineHeight: '36px', fontWeight: '500' }),
-  display2 = createTypographyLevel({ fontSize: '24px', lineHeight: '32px', fontWeight: '500' }),
-  display3 = createTypographyLevel({ fontSize: '20px', lineHeight: '32px', fontWeight: '500' }),
-  display4 = createTypographyLevel({ fontSize: '16px', lineHeight: '28px', fontWeight: '500' }),
-  display5 = createTypographyLevel({ fontSize: '14px', lineHeight: '24px', fontWeight: '500' }),
-  body1 = createTypographyLevel({ fontSize: '19px', lineHeight: '32px' }),
-  body2 = createTypographyLevel({ fontSize: '16px', lineHeight: '24px' }),
-  body3 = createTypographyLevel({ fontSize: '14px', lineHeight: '20px' }),
-  micro = createTypographyLevel({ fontSize: '12px', lineHeight: '20px' }),
-  button = createTypographyLevel({ fontSize: '14px', lineHeight: '14px' }),
-  input = createTypographyLevel({ fontSize: 'inherit', lineHeight: '1.125' }),
-}) => {
+const DEFAULT_TYPOGRAPHY_CONFIG = {
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+  display1: createTypographyLevel({ fontSize: '30px', lineHeight: '36px', fontWeight: '500' }),
+  display2: createTypographyLevel({ fontSize: '24px', lineHeight: '32px', fontWeight: '500' }),
+  display3: createTypographyLevel({ fontSize: '20px', lineHeight: '32px', fontWeight: '500' }),
+  display4: createTypographyLevel({ fontSize: '16px', lineHeight: '28px', fontWeight: '500' }),
+  display5: createTypographyLevel({ fontSize: '14px', lineHeight: '24px', fontWeight: '500' }),
+  body1: createTypographyLevel({ fontSize: '19px', lineHeight: '32px' }),
+  body2: createTypographyLevel({ fontSize: '16px', lineHeight: '24px' }),
+  body3: createTypographyLevel({ fontSize: '14px', lineHeight: '20px' }),
+  micro: createTypographyLevel({ fontSize: '12px', lineHeight: '20px' }),
+  button: createTypographyLevel({ fontSize: '14px', lineHeight: '14px' }),
+  input: createTypographyLevel({ fontSize: 'inherit', lineHeight: '1.125' }),
+};
+
+export const createTypographyConfig = (typographyConfig = DEFAULT_TYPOGRAPHY_CONFIG) => {
   /**
    * Iterate through all the levels in the config (above, accessed via arguments[0]) and add the
    * font-family property (fontFamily) for any levels that don't currently have it.
    */
-  const { fontFamily: font, ...levels } = arguments[0];
-  _.each(levels, (value, key, config) => {
+  const { fontFamily, ...levels } = typographyConfig;
+  _.each(levels, (value, key) => {
     if (!value.fontFamily) {
-      config[key] = { ...value, fontFamily };
+      levels[key] = { ...value, fontFamily };
     }
   });
 
-  return { ...config, fontFamily };
+  return { ...levels, fontFamily };
 };
 
 /**
