@@ -55,3 +55,13 @@ export const getFontFamily = (config, level = null) => {
 export const getLineHeight = (config, level) => (
   getPropertyValue(config, level, 'lineHeight')
 );
+
+/** Get the font size */
+export const getFontSize = (config, level) => (
+  getPropertyValue(config, level, 'fontSize')
+);
+
+/** Get the font size */
+export const getFontWeight = (config, level) => (
+  getPropertyValue(config, level, 'fontWeight')
+);
