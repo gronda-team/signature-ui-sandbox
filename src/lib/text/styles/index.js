@@ -98,8 +98,8 @@ margin: 0;
 }
 `;
 
-const DEFAULT_CONFIG = createTypographyConfig();
+export const TYPOGRAPHY_DEFAULTS = createTypographyConfig();
 
 export const BaseText = styled.span`
-${suiBaseTypography(DEFAULT_CONFIG)}
+${suiBaseTypography(TYPOGRAPHY_DEFAULTS)}
 `;
