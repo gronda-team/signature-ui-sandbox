@@ -1,6 +1,8 @@
 import { css } from 'styled-components';
 import { GREY, GREEN, RED } from '../../../cdk/theme/colors';
 import {SelectArrowWrapper} from '../../select/styles';
+import { getLineHeight } from '../../text';
+import { convertLevelToStyles } from '../../text/styles/utils';
 
 const DEFAULT_TEXT = GREY[900];
 const PRIMARY = GREEN[500];
@@ -54,34 +56,7 @@ transform: translateY(${-infixMarginTop - infixPadding}em) scale(${fontScale});
 width: calc(100% / ${fontScale});
 `;
 
-/**
- * Typographic styles
- */
-const LINE_HEIGHT = 1.125; // em
-// The amount to scale the font for the floating label and subscript.
-const SUBSCRIPT_FONT_SCALE = 0.75;
-// The amount to scale the font for the prefix and suffix icons.
-const PREFIX_SUFFIX_ICON_FONT_SCALE = 1.5;
-
-// The padding on the infix. Mocks show half of the text size.
-const INFIX_PADDING = 0.5; // em
-// The margin applied to the form-field-infix to reserve space for the floating label.
-const INFIX_MARGIN_TOP = LINE_HEIGHT * SUBSCRIPT_FONT_SCALE; // em
-// Font size to use for the label and subscript text.
-const SUBSCRIPT_FONT_SIZE = SUBSCRIPT_FONT_SCALE * 100; // %
-// Font size to use for the for the prefix and suffix icons.
-const PREFIX_SUFFIX_ICON_FONT_SIZE = PREFIX_SUFFIX_ICON_FONT_SCALE * 100; // %
-// The space between the bottom of the .mat-form-field-flex area and the subscript wrapper.
-// Mocks show half of the text size, but this margin is applied to an element with the subscript
-// text font size, so we need to divide by the scale factor to make it half of the original text
-// size.
-const SUBSCRIPT_MARGIN_TOP = 0.5 / SUBSCRIPT_FONT_SCALE; // em
-// The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
-// absolutely positioned. This is a combination of the subscript's margin and line-height, but we
-// need to multiply by the subscript font scale factor since the wrapper has a larger font size.
-const WRAPPER_PADDING_BOTTOM = (SUBSCRIPT_MARGIN_TOP + LINE_HEIGHT) * SUBSCRIPT_FONT_SCALE; // em
-
-export const typographyThunk = (components) => {
+export const typographyThunk = (components, config) => {
   const {
     FormFieldLabel,
     FormFieldLabelWrapper,
@@ -91,11 +66,36 @@ export const typographyThunk = (components) => {
     FormFieldSubscriptWrapper,
     FormFieldWrapper,
   } = components;
+
+  /**
+   * Typographic styles
+   */
+  const LINE_HEIGHT = Number.parseFloat(getLineHeight(config, 'input')); // em
+// The amount to scale the font for the floating label and subscript.
+  const SUBSCRIPT_FONT_SCALE = 0.75;
+// The amount to scale the font for the prefix and suffix icons.
+  const PREFIX_SUFFIX_ICON_FONT_SCALE = 1.5;
+
+// The padding on the infix. Mocks show half of the text size.
+  const INFIX_PADDING = 0.5; // em
+// The margin applied to the form-field-infix to reserve space for the floating label.
+  const INFIX_MARGIN_TOP = LINE_HEIGHT * SUBSCRIPT_FONT_SCALE; // em
+// Font size to use for the label and subscript text.
+  const SUBSCRIPT_FONT_SIZE = SUBSCRIPT_FONT_SCALE * 100; // %
+// Font size to use for the for the prefix and suffix icons.
+  const PREFIX_SUFFIX_ICON_FONT_SIZE = PREFIX_SUFFIX_ICON_FONT_SCALE * 100; // %
+// The space between the bottom of the .mat-form-field-flex area and the subscript wrapper.
+// Mocks show half of the text size, but this margin is applied to an element with the subscript
+// text font size, so we need to divide by the scale factor to make it half of the original text
+// size.
+  const SUBSCRIPT_MARGIN_TOP = 0.5 / SUBSCRIPT_FONT_SCALE; // em
+// The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
+// absolutely positioned. This is a combination of the subscript's margin and line-height, but we
+// need to multiply by the subscript font scale factor since the wrapper has a larger font size.
+  const WRAPPER_PADDING_BOTTOM = (SUBSCRIPT_MARGIN_TOP + LINE_HEIGHT) * SUBSCRIPT_FONT_SCALE; // em
   return css`
   & {
-    font-size: inherit;
-    line-height: ${LINE_HEIGHT}em;
-    font-weight: 400;
+    ${convertLevelToStyles(config, 'input')}
   }
   
   ${FormFieldWrapper} { padding-bottom: ${WRAPPER_PADDING_BOTTOM}em; }
