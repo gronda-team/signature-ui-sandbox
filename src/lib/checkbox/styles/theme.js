@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
+import { getFontFamily, getLineHeight } from '../../text';
 
 // border colors
 const inactiveBorder = GREY[500];
@@ -42,6 +43,19 @@ export const themeThunk = (components) => {
     
     [data-shape=check-path] { stroke: ${disabledCheck} !important; }
     ${IndeterminatePath} { background-color: ${disabledCheck}; }
+  }
+  `;
+};
+
+export const typographyThunk = (components, config) => {
+  const { CheckboxLayout, CheckboxLabel } = components;
+  return css`
+  & {
+    font-family: ${getFontFamily(config)};
+  }
+  
+  ${CheckboxLayout} ${CheckboxLabel} {
+    line-height: ${getLineHeight(config, 'body3')} 
   }
   `;
 };
