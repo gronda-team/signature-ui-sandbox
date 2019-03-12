@@ -167,11 +167,11 @@ const components = {
 // outline theme
 const outlineStyle = outlineAppearanceThunk(components);
 const outlineTheme = outlineThemeThunk(components);
-const outlineTypography = outlineTypographyThunk(components);
+const outlineTypography = outlineTypographyThunk(components, TYPOGRAPHY_DEFAULTS);
 // fill theme
 const fillStyle = fillAppearanceThunk(components);
 const fillTheme = fillThemeThunk(components);
-const fillTypography = fillTypographyThunk(components);
+const fillTypography = fillTypographyThunk(components, TYPOGRAPHY_DEFAULTS);
 
 export const FormFieldRoot = styled.div`
 display: inline-block;

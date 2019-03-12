@@ -1,6 +1,7 @@
 import { css } from 'styled-components';
 import { GREEN, GREY, RED } from '../../../cdk/theme/colors';
 import {formFieldLabelPositioning} from './theme-base';
+import { getLineHeight } from '../../text';
 
 const ACTIVE_BORDER = GREEN[500];
 const UNFILLED_BORDER = GREY[300];
@@ -44,7 +45,7 @@ export const outlineThemeThunk = (components) => {
   `;
 };
 
-export const outlineTypographyThunk = (components) => {
+export const outlineTypographyThunk = (components, config) => {
   const {
     FormFieldWrapper,
     FormFieldInfix,
@@ -52,7 +53,7 @@ export const outlineTypographyThunk = (components) => {
     FormFieldLabel,
   } = components;
 
-  const LINE_HEIGHT = 1.125; // em
+  const LINE_HEIGHT = Number.parseFloat(getLineHeight(config, 'input')); // em
   // The amount to scale the label.
   const LABEL_FONT_SCALE = 1; // unitless
   // Padding for the infix
