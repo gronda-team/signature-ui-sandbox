@@ -2,11 +2,16 @@
  * Utility functions for styled helpers.
  */
 import { css } from 'styled-components';
+import _ from 'lodash';
 
 export const convertPropertiesToShorthand = ({
   fontSize, fontWeight, lineHeight, fontFamily
 }) => {
-  if (_.some(arguments[0], property => property === null || property === 'inherit')) {
+  if (
+    _.some(
+      { fontSize, fontWeight, lineHeight, fontFamily },
+        property => property === null || property === 'inherit')
+  ) {
     /**
      * If any of the values are set to `inherit`, then we can't use the `font: ...`
      * shorthand property. We have to set them all individually.
