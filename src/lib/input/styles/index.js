@@ -1,8 +1,9 @@
 import styled, { css } from 'styled-components';
-import inputTheme from './theme';
+import { themeThunk, typographyThunk } from './theme';
 import { EASE_OUT } from '../../core/styles/animation';
 import { PLACEHOLDER } from '../../core/styles/vendor';
 import {TEXT_FIELD_AUTOFILL_MONITOR} from '../../../cdk/text-area/styles';
+import { TYPOGRAPHY_DEFAULTS } from '../../text';
 
 const baseInput = css`
 // Font needs to be inherited, because by default <input> has a system font.
@@ -104,7 +105,11 @@ ${PLACEHOLDER(`
 ${TEXT_FIELD_AUTOFILL_MONITOR}
 `;
 
-export const BaseInput = styled.input`${baseInput} ${inputTheme}`;
+export const BaseInput = styled.input`
+${baseInput}
+${themeThunk()}
+${typographyThunk(TYPOGRAPHY_DEFAULTS)}
+`;
 
 export const BaseTextArea = styled.textarea`
 ${baseInput}
@@ -120,5 +125,5 @@ overflow: auto;
 // We also add a negative margin to negate the effect of the padding on the layout.
 padding: 2px 0;
 margin: -2px 0;
-${inputTheme}
+${themeThunk()}
 `;
