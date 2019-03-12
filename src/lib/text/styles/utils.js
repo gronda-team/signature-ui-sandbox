@@ -34,3 +34,24 @@ export const convertLevelToStyles = (config, level) => {
   letter-spacing: ${letterSpacing};
   `;
 };
+
+/** Get property value for the theme */
+export const getPropertyValue = (config, level, property) => (
+  _.get(config, [level, property])
+);
+
+/** Get the font family from the typography config */
+export const getFontFamily = (config, level = null) => {
+  let fontFamily = _.get(config, 'fontFamily');
+
+  if (!_.isNil(level)) {
+    fontFamily = _.get(config, [level, 'fontFamily']);
+  }
+
+  return fontFamily;
+};
+
+/** Get the line height */
+export const getLineHeight = (config, level) => (
+  getPropertyValue(config, level, 'lineHeight')
+);
