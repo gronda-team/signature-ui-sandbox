@@ -1,5 +1,6 @@
 import { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
+import { getFontFamily, getFontSize, getFontWeight, TYPOGRAPHY_DEFAULTS } from '../../text';
 
 const primary = GREEN[500];
 const darkPrimaryText = GREY[900];
@@ -30,8 +31,9 @@ const strokedColor = foreground => (
 );
 
 const buttonTypography = css`
-font-size: 14px;
-font-weight: 500;
+font-size: ${getFontSize(TYPOGRAPHY_DEFAULTS, 'button')};
+font-weight: ${getFontWeight(TYPOGRAPHY_DEFAULTS, 'button')};
+font-family: ${getFontFamily(TYPOGRAPHY_DEFAULTS)}
 `;
 
 const themeThunk = (components) => {
