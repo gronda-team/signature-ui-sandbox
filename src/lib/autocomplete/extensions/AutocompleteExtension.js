@@ -104,9 +104,14 @@ class AutocompleteExtension extends React.Component {
       });
     }
 
-    /** Count the options and then mark the change */
+    /** Count the options and then mark the change if we go from 0 -> >0 or >0 -> 0 */
     if (_.size(this.getChildRefs(prevProps)) !== _.size(this.getChildRefs())) {
-      this.updateAriaExpanded(this.props.autocompleteDisabled, this.state.overlayAttached);
+      if (
+        _.size(this.getChildRefs(prevProps)) === 0
+        || _.size(this.getChildRefs()) === 0
+      ) {
+        this.updatePanelDependentAttributes(this.props.autocompleteDisabled, this.state.overlayAttached);
+      }
     }
   }
 
