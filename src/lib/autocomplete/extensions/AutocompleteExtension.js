@@ -76,7 +76,7 @@ class AutocompleteExtension extends React.Component {
 
     /** Install the tabOut listener on the key manager when it's created */
     if (prevState.overlayAttached !== this.state.overlayAttached) {
-      this.updateAriaExpanded(this.props.autocompleteDisabled, this.state.overlayAttached);
+      this.updatePanelDependentAttributes(this.props.autocompleteDisabled, this.state.overlayAttached);
       if (this.state.overlayAttached) {
         this.getAutocomplete().setState(state => ({
           service: {
@@ -90,12 +90,10 @@ class AutocompleteExtension extends React.Component {
     /** Apply the correct attribute for aria-autocomplete */
     if (prevProps.autocompleteDisabled !== this.props.autocompleteDisabled) {
       const disabled = this.props.autocompleteDisabled;
-      this.updateAriaExpanded(disabled, this.state.overlayAttached);
+      this.updatePanelDependentAttributes(disabled, this.state.overlayAttached);
       this.props.__extensionManager.updateExtensionAttributes({
         role: disabled ? null : 'combobox',
         'aria-autocomplete': disabled ? null : 'list',
-        'aria-owns': (disabled || !this.getPanelOpen()) ?
-          null : this.getAutocomplete().getId(),
       });
     }
 
@@ -222,10 +220,12 @@ class AutocompleteExtension extends React.Component {
     }
   };
 
-  updateAriaExpanded = (disabled, attached) => {
+  updatePanelDependentAttributes = (disabled, attached) => {
     const valid = this.getAutocomplete() && this.getAutocomplete().getOptions().length > 0;
     this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
       'aria-expanded': disabled ? null : (attached && valid),
+      'aria-owns': (disabled || !(attached && valid)) ?
+        null : this.getAutocomplete().getId(),
     });
   };
 
