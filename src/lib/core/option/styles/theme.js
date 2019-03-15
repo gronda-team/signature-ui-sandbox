@@ -1,7 +1,8 @@
 import { css } from 'styled-components';
 import { GREY, CYAN } from '../../../../cdk/theme/colors';
+import { getFontFamily, getFontSize } from '../../../text';
 
-const optionThemeThunk = () => {
+export const optionThemeThunk = () => {
   return css`
   color: ${GREY[900]};
   &:hover:not([aria-disabled=true]),
@@ -14,4 +15,7 @@ const optionThemeThunk = () => {
   `;
 };
 
-export default optionThemeThunk;
+export const optionTypographyThunk = config => css`
+font-family: ${getFontFamily(config)};
+font-size: ${getFontSize(config, 'body2')};
+`;
