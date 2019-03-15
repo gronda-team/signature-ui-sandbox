@@ -151,7 +151,7 @@ class Autocomplete extends React.Component {
     const options = this.getOptions();
     const activeItemValue = _.get(options, [index, 'props', 'value']);
     const activeItem = _.find(this.state.childRefs, { props: { value: activeItemValue } });
-    this.setState({
+    this.props.__extensionManager.updateExtensionData('##autocomplete', {
       /**
        * Manually sync the active item here
        * because otherwise the Autocomplete component
@@ -164,7 +164,7 @@ class Autocomplete extends React.Component {
       activeItem,
     });
 
-    this.props.__formFieldControl.setControlAttrs({
+    this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
       'aria-activedescendant': _.invoke(activeItem, 'getId'),
     });
   };
