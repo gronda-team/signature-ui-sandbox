@@ -121,7 +121,10 @@ class AutocompleteExtension extends React.Component {
    * Derived data
    */
   /** Get the autocomplete */
-  getAutocomplete = () => this.props.autocomplete;
+  getAutocomplete = () => _.get(
+    this.props.__extensionManager,
+    ['extendedData', '##autocomplete', 'data', 'autocomplete'],
+  );
 
   /** Get whether te panel is open or not */
   getPanelOpen = () => {

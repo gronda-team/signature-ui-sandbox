@@ -12,6 +12,11 @@ import { OptionParentProvider } from '../core/option';
 import {AutocompletePanel, AutocompletePanelRoot} from './styles';
 import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../form-field';
 import {RTLDefaultProps, RTLPropTypes} from '../../cdk/bidi';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+  withExtensionManager
+} from '../form-field/context/ExtensionsContext';
 
 const toArray = React.Children.toArray;
 
@@ -73,8 +78,10 @@ class Autocomplete extends React.Component {
    */
   componentDidMount() {
     /** Register this extension in the form field container */
-    if (this.props.__formFieldControl) {
-      this.props.__formFieldControl.setExtension('autocomplete', this);
+    if (this.props.__extensionManager) {
+      this.props.__extensionManager.updateExtensionData('##autocomplete', {
+        autocomplete: this,
+      });
     }
   }
 
@@ -277,15 +284,18 @@ const AutocompleteDefaultProps = {
 Autocomplete.propTypes = {
   ...AutocompletePropTypes,
   __formFieldControl: FormFieldPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 Autocomplete.defaultProps = {
   ...AutocompleteDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
 const StackedAutocomplete = stack(
   withFormFieldConsumer,
+  withExtensionManager,
 )(Autocomplete);
 
 StackedAutocomplete.propTypes = AutocompletePropTypes;
