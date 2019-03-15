@@ -229,7 +229,7 @@ class AutocompleteExtension extends React.Component {
   };
 
   /** Event to be called when this.props.input is focused */
-  handleFocus = () => {
+  onFocus = () => {
     if (!this.state.canOpenOnNextFocus) {
       this.setState({ canOpenOnNextFocus: true });
     } else if (this.canOpen() && !this.state.overlayAttached) {
@@ -246,7 +246,7 @@ class AutocompleteExtension extends React.Component {
   };
 
   /** Callback onInput for this.props.input */
-  handleInput = (event) => {
+  onInput = (event) => {
     const target = event.target;
     let value = target.value;
 
@@ -269,7 +269,7 @@ class AutocompleteExtension extends React.Component {
   };
 
   /** Called when keydown events are triggered on this.props.input */
-  handleKeyDown = (event) => {
+  onKeyDown = (event) => {
     const key = event.key;
 
     // Prevent the default action on all escape key presses. This is here primarily to bring IE
