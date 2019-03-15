@@ -139,7 +139,10 @@ class Autocomplete extends React.Component {
   /** Get the provider parent to determine what to do on selection change */
   providerValue = () => ({
     onSelectionChange: this.state.service.onSelectionChange,
-    activeItem: this.state.activeItem,
+    activeItem: _.get(
+      this.props.__extensionManager,
+      ['extendedData', '##autocomplete', 'data', 'activeItem']
+    ),
     monitor: this.monitor,
     stopMonitoring: this.stopMonitoring,
   });
@@ -158,7 +161,7 @@ class Autocomplete extends React.Component {
        * would be one tick behind the key manager
        * component.
        *
-       * This way, this.state.activeItem will reflect
+       * This way, this.props.__extensionManager. ... .activeItem will reflect
        * the actual item instead of prevState.activeItem.
        */
       activeItem,
