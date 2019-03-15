@@ -16,12 +16,18 @@ describe('Autocomplete', () => {
   let panel;
   let autocompleteExtension; // autocomplete behavior
   let ace; // instance for autocompleteExtension
+  let createKeyDownEvent;
 
   beforeAll(() => {
     /**
      * Must use fake timers because most of the components
      * involved (Overlays, etc.) handle asynchronous actions.
      */
+    createKeyDownEvent = key => new KeyboardEvent('keydown', {
+      key,
+      cancelable: true,
+      bubbles: true,
+    });
     root = document.createElement('div');
     document.body.appendChild(root);
     jest.useFakeTimers();
@@ -372,11 +378,6 @@ describe('Autocomplete', () => {
     let downEvent;
     let upEvent;
     let enterEvent;
-    const createKeyDownEvent = key => new KeyboardEvent('keydown', {
-      key,
-      cancelable: true,
-      bubbles: true,
-    });
 
     beforeEach(() => {
       downEvent = createKeyDownEvent(ARROW_DOWN);
@@ -393,13 +394,13 @@ describe('Autocomplete', () => {
       const optionNode = option.getDOMNode();
       const focusSpy = jest.spyOn(optionNode, 'focus');
 
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
       expect(focusSpy).not.toHaveBeenCalled();
     });
 
     it('should not close the panel when the DOWN key is pressed', () => {
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(ace.getPanelOpen()).toBe(true);
@@ -410,7 +411,7 @@ describe('Autocomplete', () => {
     it('should set the active item to the first option when the DOWN key is pressed', () => {
       expect(ace.getPanelOpen()).toBe(true);
 
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(ace.getActiveOption().props.value).toEqual({ code: 'AL', name: 'Alabama' });
@@ -423,7 +424,7 @@ describe('Autocomplete', () => {
     it('should set the active item to the last option when the UP key is pressed', () => {
       expect(ace.getPanelOpen()).toBe(true);
 
-      ace.handleKeyDown(upEvent);
+      ace.onKeyDown(upEvent);
       jest.runOnlyPendingTimers();
 
       expect(ace.getActiveOption().props.value).toEqual({ code: 'WY', name: 'Wyoming' });
@@ -436,7 +437,7 @@ describe('Autocomplete', () => {
 
     it('should set the active item properly after filtering', () => {
       wrapper.setState({ value: 'o' });
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(ace.getActiveOption().props.value).toEqual({ code: 'CA', name: 'California' });
@@ -447,12 +448,12 @@ describe('Autocomplete', () => {
     });
 
     it('should fill the text field when an option is selected with ENTER', () => {
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(ace.getActiveOption().props.value).toEqual({ code: 'AL', name: 'Alabama' });
 
-      ace.handleKeyDown(enterEvent);
+      ace.onKeyDown(enterEvent);
       jest.runOnlyPendingTimers();
       wrapper.update();
 
@@ -460,24 +461,24 @@ describe('Autocomplete', () => {
     });
 
     it('should prevent the default enter key action', () => {
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
-      ace.handleKeyDown(enterEvent);
+      ace.onKeyDown(enterEvent);
       jest.runOnlyPendingTimers();
 
       expect(enterEvent.defaultPrevented).toBe(true);
     });
 
     it('should not prevent the default enter action for a closed panel after a user action', () => {
-      ace.handleKeyDown(upEvent);
+      ace.onKeyDown(upEvent);
       jest.runOnlyPendingTimers();
 
       ace.closePanel();
       jest.runOnlyPendingTimers();
       wrapper.update();
 
-      ace.handleKeyDown(enterEvent);
+      ace.onKeyDown(enterEvent);
       jest.runOnlyPendingTimers();
 
       expect(enterEvent.defaultPrevented).toBe(false);
@@ -488,10 +489,10 @@ describe('Autocomplete', () => {
       wrapper.setState({ value: 'New' });
       const spaceEvent = createKeyDownEvent(SPACE);
 
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
-      ace.handleKeyDown(spaceEvent);
+      ace.onKeyDown(spaceEvent);
       jest.runOnlyPendingTimers();
 
       expect(wrapper.state('value')).not.toContain('New York');
@@ -504,10 +505,10 @@ describe('Autocomplete', () => {
     });
 
     it('should open the panel again when typing after making a selection', () => {
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
-      ace.handleKeyDown(enterEvent);
+      ace.onKeyDown(enterEvent);
       jest.runOnlyPendingTimers();
       wrapper.update();
 
@@ -558,58 +559,58 @@ describe('Autocomplete', () => {
     });
 
     it('should scroll to active options below the fold', () => {
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       // Should not scroll
       expect(panel.instance().state.scrollTop).toBe(0);
 
       // Simulate down events to go below the fold
-      _.times(5, () => ace.handleKeyDown(downEvent));
+      _.times(5, () => ace.onKeyDown(downEvent));
       jest.runOnlyPendingTimers();
 
       expect(panel.instance().state.scrollTop).toBeGreaterThan(0);
     });
 
     it('should scroll to active options on UP arrow', () => {
-      ace.handleKeyDown(upEvent);
+      ace.onKeyDown(upEvent);
       jest.runOnlyPendingTimers();
 
       expect(panel.instance().state.scrollTop).toBeGreaterThan(0);
     });
 
     it('should not scroll to active options that are fully in the panel', () => {
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(panel.instance().state.scrollTop).toBe(0);
 
       // Simulate down events to go below the fold
-      _.times(5, () => ace.handleKeyDown(downEvent));
+      _.times(5, () => ace.onKeyDown(downEvent));
       jest.runOnlyPendingTimers();
 
       const scrollTop = panel.instance().state.scrollTop;
       expect(scrollTop).toBeGreaterThan(0);
 
       // Set the second item active (which is still visible in the panel)
-      _.times(4, () => ace.handleKeyDown(upEvent));
+      _.times(4, () => ace.onKeyDown(upEvent));
       jest.runOnlyPendingTimers();
 
       expect(panel.instance().state.scrollTop).toBe(scrollTop);
     });
 
     it('should scroll to active options that are above the panel', () => {
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(panel.instance().state.scrollTop).toBe(0);
 
       // Simulate down events to go below the fold
-      _.times(6, () => ace.handleKeyDown(downEvent));
+      _.times(6, () => ace.onKeyDown(downEvent));
       jest.runOnlyPendingTimers();
 
       // Set the second item active (which is still visible in the panel)
-      _.times(5, () => ace.handleKeyDown(upEvent));
+      _.times(5, () => ace.onKeyDown(upEvent));
       jest.runOnlyPendingTimers();
 
       expect(panel.instance().state.scrollTop).toBeGreaterThan(0);
@@ -685,7 +686,7 @@ describe('Autocomplete', () => {
       expect(ace.getActiveOption()).toBeFalsy();
 
       // Press the down arrow a few times
-      _.times(3, () => ace.handleKeyDown(downEvent));
+      _.times(3, () => ace.onKeyDown(downEvent));
       jest.runOnlyPendingTimers();
 
       expect(ace.getActiveOption()).toBeTruthy();
@@ -705,12 +706,12 @@ describe('Autocomplete', () => {
       expect(ace.getActiveOption()).toBeFalsy();
 
       // Press the arrow key a few times
-      _.times(3, () => ace.handleKeyDown(downEvent));
+      _.times(3, () => ace.onKeyDown(downEvent));
       jest.runOnlyPendingTimers();
 
       expect(ace.getActiveOption()).toBeTruthy();
 
-      ace.handleKeyDown(enterEvent);
+      ace.onKeyDown(enterEvent);
       jest.runOnlyPendingTimers();
 
       expect(ace.getActiveOption()).toBeFalsy();
@@ -727,6 +728,7 @@ describe('Autocomplete', () => {
     let inputInstance;
     beforeEach(() => {
       inputInstance = input.getDOMNode();
+      downEvent = createKeyDownEvent(ARROW_DOWN);
     });
 
     it('should set input[role=combobox]', () => {
@@ -752,12 +754,12 @@ describe('Autocomplete', () => {
 
       expect(inputInstance.hasAttribute('aria-activedescendant')).toBe(false);
 
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(inputInstance.getAttribute('aria-activedescendant')).toEqual('AL');
 
-      ace.handleKeyDown(downEvent);
+      ace.onKeyDown(downEvent);
       jest.runOnlyPendingTimers();
 
       expect(inputInstance.getAttribute('aria-activedescendant')).toEqual('CA');
