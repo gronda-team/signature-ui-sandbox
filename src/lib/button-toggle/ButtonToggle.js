@@ -131,7 +131,7 @@ class ButtonToggle extends React.Component {
       ['aria-labelledby']: ariaLabelledBy,
       __buttonToggleGroup,
       type, value, onChange,
-      ...restProps,
+      ...restProps
     } = this.props;
     const disabledStatus = this.isDisabled();
     const checkedStatus = this.isChecked();

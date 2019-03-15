@@ -12,6 +12,11 @@ import { OptionParentProvider } from '../core/option';
 import {AutocompletePanel, AutocompletePanelRoot} from './styles';
 import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../form-field';
 import {RTLDefaultProps, RTLPropTypes} from '../../cdk/bidi';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+  withExtensionManager
+} from '../form-field/context/ExtensionsContext';
 
 const toArray = React.Children.toArray;
 
@@ -36,8 +41,6 @@ class Autocomplete extends React.Component {
         /** Action to be done when an option is selected */
         onSelectionChange: _.noop,
       },
-      /** Map of child refs to register and deregister */
-      childRefs: {},
     };
 
     this.DEFAULT_ID = _.uniqueId('sui-autocomplete-panel:');
@@ -73,8 +76,10 @@ class Autocomplete extends React.Component {
    */
   componentDidMount() {
     /** Register this extension in the form field container */
-    if (this.props.__formFieldControl) {
-      this.props.__formFieldControl.setExtension('autocomplete', this);
+    if (this.props.__extensionManager) {
+      this.props.__extensionManager.updateExtensionData('##autocomplete', {
+        autocomplete: this,
+      });
     }
   }
 
@@ -132,7 +137,10 @@ class Autocomplete extends React.Component {
   /** Get the provider parent to determine what to do on selection change */
   providerValue = () => ({
     onSelectionChange: this.state.service.onSelectionChange,
-    activeItem: this.state.activeItem,
+    activeItem: _.get(
+      this.props.__extensionManager,
+      ['extendedData', '##autocomplete', 'data', 'activeItem']
+    ),
     monitor: this.monitor,
     stopMonitoring: this.stopMonitoring,
   });
@@ -143,21 +151,28 @@ class Autocomplete extends React.Component {
   handleActiveItemChange = (index) => {
     const options = this.getOptions();
     const activeItemValue = _.get(options, [index, 'props', 'value']);
-    const activeItem = _.find(this.state.childRefs, { props: { value: activeItemValue } });
-    this.setState({
+    const activeItem = _.find(
+      _.get(
+        this.props.__extensionManager,
+        ['extendedData', '##autocomplete', 'data', 'childRefs'],
+        {}
+      ),
+      { props: { value: activeItemValue } }
+    );
+    this.props.__extensionManager.updateExtensionData('##autocomplete', {
       /**
        * Manually sync the active item here
        * because otherwise the Autocomplete component
        * would be one tick behind the key manager
        * component.
        *
-       * This way, this.state.activeItem will reflect
+       * This way, this.props.__extensionManager. ... .activeItem will reflect
        * the actual item instead of prevState.activeItem.
        */
       activeItem,
     });
 
-    this.props.__formFieldControl.setControlAttrs({
+    this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
       'aria-activedescendant': _.invoke(activeItem, 'getId'),
     });
   };
@@ -171,7 +186,7 @@ class Autocomplete extends React.Component {
   };
 
   monitor = ({ id, source }) => {
-    this.setState(state => ({
+    this.props.__extensionManager.updateExtensionData('##autocomplete', state => ({
       childRefs: {
         ...state.childRefs,
         [id]: source,
@@ -180,7 +195,7 @@ class Autocomplete extends React.Component {
   };
 
   stopMonitoring = (value) => {
-    this.setState((state) => {
+    this.props.__extensionManager.updateExtensionData('##autocomplete', (state) => {
       const { [value]: omit, ...rest } = state.childRefs;
       return { childRefs: rest };
     });
@@ -277,15 +292,18 @@ const AutocompleteDefaultProps = {
 Autocomplete.propTypes = {
   ...AutocompletePropTypes,
   __formFieldControl: FormFieldPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 Autocomplete.defaultProps = {
   ...AutocompleteDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
 const StackedAutocomplete = stack(
   withFormFieldConsumer,
+  withExtensionManager,
 )(Autocomplete);
 
 StackedAutocomplete.propTypes = AutocompletePropTypes;

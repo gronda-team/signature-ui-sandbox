@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
+import { getFontFamily, getLineHeight } from '../../text';
 
 // border colors
 const inactiveBorder = GREY[500];
@@ -14,7 +15,7 @@ const defaultCheck = activeBorder;
 const disabledCheck = GREY[700];
 
 export const themeThunk = (components) => {
-  const { Frame, Checkmark, IndeterminatePath, CheckmarkPath } = components;
+  const { Frame, Checkmark, IndeterminatePath } = components;
   return css`
   ${Frame} {
     border-color: ${inactiveBorder};
@@ -25,9 +26,13 @@ export const themeThunk = (components) => {
     ${Frame} { border-color: ${activeBorder}; }
   }
   
+  ${Checkmark} {
+    fill: none;
+  }
+  
   &[data-focus-origin=keyboard] ${Checkmark} { fill: ${activeBackground}; }
   
-  ${CheckmarkPath} { stroke: ${defaultCheck} !important; }
+  [data-shape=check-path] { stroke: ${defaultCheck} !important; }
   ${IndeterminatePath} { background-color: ${defaultCheck}; }
   
   &[data-disabled=true] {
@@ -36,8 +41,21 @@ export const themeThunk = (components) => {
       background-color: ${disabledBackground};
     }
     
-    ${CheckmarkPath} { stroke: ${disabledCheck} !important; }
+    [data-shape=check-path] { stroke: ${disabledCheck} !important; }
     ${IndeterminatePath} { background-color: ${disabledCheck}; }
+  }
+  `;
+};
+
+export const typographyThunk = (components, config) => {
+  const { CheckboxLayout, CheckboxLabel } = components;
+  return css`
+  & {
+    font-family: ${getFontFamily(config)};
+  }
+  
+  ${CheckboxLayout} ${CheckboxLabel} {
+    line-height: ${getLineHeight(config, 'body3')} 
   }
   `;
 };

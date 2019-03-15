@@ -60,11 +60,6 @@ export const ButtonToggleRoot = styled.div`
 white-space: nowrap;
 position: relative;
 
-& svg, & i {
-  // Fixes SVG icons that get thrown off because of the "vertical-align" on the parent.
-  vertical-align: top;
-}
-
 &[data-focus-origin=keyboard] {
   ${ButtonToggleFocusOverlay} {
     opacity: 1;
@@ -73,7 +68,7 @@ position: relative;
 
 &[data-standalone=true] { ${standaloneWrapper} }
 
-&:not(&[data-disabled=true]):hover ${ButtonToggleFocusOverlay} {
+&:not([data-disabled=true]):hover ${ButtonToggleFocusOverlay} {
   opacity: 0.04;
 }
 
@@ -81,7 +76,7 @@ position: relative;
 // overlay for ".cdk-program-focused" because mouse clicks on the label element would be always
 // treated as programmatic focus. Note that it needs the extra ":not" in order to have more
 // specificity than the ":hover" above.
-&[data-focused=true]:not(&[data-disabled=true]) ${ButtonToggleFocusOverlay} {
+&[data-focused=true]:not([data-disabled=true]) ${ButtonToggleFocusOverlay} {
   opacity: 0.12;
 }
 
@@ -90,7 +85,7 @@ position: relative;
 // because we still want to preserve the keyboard focus state for hybrid devices that have
 // a keyboard and a touchscreen.
 @media (hover: none) {
-  &:not(&[data-disabled=true]):hover ${ButtonToggleFocusOverlay} { display: none; }
+  &:not([data-disabled=true]):hover ${ButtonToggleFocusOverlay} { display: none; }
 }
 `;
 

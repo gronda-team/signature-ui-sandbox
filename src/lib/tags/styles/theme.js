@@ -1,5 +1,6 @@
 import { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
+import { getFontSize, getFontWeight } from '../../text';
 
 // font
 const fontSize = '13px';
@@ -46,7 +47,17 @@ export const themeThunk = (components) => {
     background-color: ${activeBackground};
     color: ${activeForeground};
   }
+  `;
+};
+
+export const tagTypography = (components, config) => {
+  const { Close } = components;
+  return css`
+  font-weight: ${getFontWeight(config, 'body2')};
+  font-size: ${getFontSize(config, 'body2')};
   
-  font-size: ${fontSize};
+  ${Close} {
+    font-size: 18px;
+  }
   `;
 };

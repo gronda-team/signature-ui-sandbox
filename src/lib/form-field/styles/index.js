@@ -8,6 +8,7 @@ import fillAppearanceThunk from './fill-style';
 import { fillThemeThunk, fillTypographyThunk} from './fill-theme';
 import {SELECT_PLACEHOLDER_ARROW_SPACE} from '../../select/styles';
 import {formFieldBaseThemeMixin, typographyThunk } from './theme-base';
+import { TYPOGRAPHY_DEFAULTS } from '../../text';
 
 // Min amount of space between start and end hint.
 const HINT_MIN_SPACE = 1; // em
@@ -166,11 +167,11 @@ const components = {
 // outline theme
 const outlineStyle = outlineAppearanceThunk(components);
 const outlineTheme = outlineThemeThunk(components);
-const outlineTypography = outlineTypographyThunk(components);
+const outlineTypography = outlineTypographyThunk(components, TYPOGRAPHY_DEFAULTS);
 // fill theme
 const fillStyle = fillAppearanceThunk(components);
 const fillTheme = fillThemeThunk(components);
-const fillTypography = fillTypographyThunk(components);
+const fillTypography = fillTypographyThunk(components, TYPOGRAPHY_DEFAULTS);
 
 export const FormFieldRoot = styled.div`
 display: inline-block;
@@ -191,7 +192,7 @@ text-align: left;
 }
 
 ${formFieldBaseThemeMixin(components)}
-${typographyThunk(components)}
+${typographyThunk(components, TYPOGRAPHY_DEFAULTS)}
 
 &[data-appearance=outline] {${outlineStyle} ${outlineTheme} ${outlineTypography} }
 &[data-appearance=fill] { ${fillStyle} ${fillTheme} ${fillTypography} }

@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 const RadioGroupContextPropTypes = PropTypes.shape({
   touch: PropTypes.func,
+  onChange: PropTypes.func,
   name: PropTypes.string,
   value: PropTypes.any,
   required: PropTypes.bool,
@@ -12,6 +13,7 @@ const RadioGroupContextPropTypes = PropTypes.shape({
 
 const RadioGroupContextDefaultProps = {
   touch: _.noop,
+  onChange: _.noop,
   name: null,
   value: null,
   required: false,
@@ -30,7 +32,7 @@ function withRadioGroupConsumer(Component) {
   function WithRadioGroupConsumer(props) {
     return (
       <RadioGroupConsumer>
-        { value => <Component {...props} __tagList={value} />}
+        { value => <Component {...props} __radioGroup={value} />}
       </RadioGroupConsumer>
     );
   }

@@ -1,5 +1,6 @@
 import { css } from 'styled-components';
 import {formFieldLabelPositioning} from './theme-base';
+import { getLineHeight } from '../../text';
 
 /**
  * Colors TBD
@@ -24,10 +25,10 @@ export const fillThemeThunk = (components) => {
   `;
 };
 
-export const fillTypographyThunk = (components) => {
+export const fillTypographyThunk = (components, config) => {
   const { FormFieldInfix, FormFieldLabel } = components;
 
-  const LINE_HEIGHT = 1.125; // em
+  const LINE_HEIGHT = Number.parseFloat(getLineHeight(config, 'input')); // em
   // The amount to scale the font for the floating label and subscript.
   const SUBSCRIPT_FONT_SCALE = 0.75;
   // The padding on top of the infix.

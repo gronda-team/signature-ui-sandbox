@@ -7,9 +7,12 @@ import { BaseInput, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
-import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor} from '../../cdk/text-area';
-import AutocompleteTrigger from './extensions/Autocomplete';
-import TagBehavior from './extensions/TagBehavior';
+import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor } from '../../cdk/text-area';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+  withExtensionManager
+} from '../form-field/context/ExtensionsContext';
 
 /**
  * The input and text area components contain very similar behavior
@@ -34,7 +37,6 @@ class Input extends React.Component {
 
     // Get the extension refs
     this.autocomplete = React.createRef();
-    this.tagList = React.createRef();
   }
 
   /**
@@ -47,6 +49,15 @@ class Input extends React.Component {
     this.updatePlaceholder();
     this.updateRequired(this.props.required);
     this.updateValue();
+
+    // Set the extensions that are provided (not reactive)
+    this.props.__extensionManager.setExtensions(
+      this.props.extensions.map((extension) => {
+        if (['autosize', 'tag-list', 'autocomplete'].indexOf(extension) === -1) return extension;
+        // Return the namespaced version of the default ones we have
+        return `##${extension}`;
+      }),
+    );
 
     // set the onContainerClick
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
@@ -92,6 +103,8 @@ class Input extends React.Component {
     this.EL = input;
     this.setState({ mounted: !!input });
     if (this.EL) {
+      // Set the input ref for the extension bus
+      this.props.__extensionManager.setControl(this);
       // Set the autofill status for the global autofill monitor
       this.props.__autofillMonitor.monitor({
         id: this.DEFAULT_ID,
@@ -168,13 +181,7 @@ class Input extends React.Component {
 
   /** Handle keydown events for extensions */
   onKeyDown = (event) => {
-    if (this.autocomplete.current) {
-      this.autocomplete.current.handleKeyDown(event);
-    }
-
-    if (this.tagList.current) {
-      this.tagList.current.onKeyDown(event);
-    }
+    this.props.__extensionManager.extendedOnKeyDown(event);
 
     _.invoke(this.props, 'onKeyDown', event);
   };
@@ -197,7 +204,7 @@ class Input extends React.Component {
   };
 
   /** Handle the UI focus change for the form field */
-  handleFocusChange = isFocused => () => {
+  handleFocusChange = isFocused => (event) => {
     if (this.EL && !this.props.readOnly && isFocused !== this.state.focused) {
       this.setState({ focused: isFocused });
       this.props.__formFieldControl.transitionUi(
@@ -208,69 +215,28 @@ class Input extends React.Component {
     // Handle extensions
     if (isFocused) {
       // Focus
-      if (this.autocomplete.current) {
-        this.autocomplete.current.handleFocus();
-      }
-
-      if (this.tagList.current) {
-        this.tagList.current.onFocus();
-      }
+      this.props.__extensionManager.extendedOnFocus(event);
     } else {
       // Blur
       if (this.autocomplete.current) {
         this.autocomplete.current.onTouched();
       }
-
-      if (this.tagList.current) {
-        this.tagList.current.onBlur();
-      }
+      this.props.__extensionManager.extendedOnBlur(event);
     }
   };
 
   render() {
     const {
       as, id, placeholder, disabled, required, type,
-      autocomplete, autocompleteDisabled, // autocomplete props
-      tagListSeparatorKeyCodes, onTagEnd, tagListAddOnBlur, // tag list props
+      __extensionManager,
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
 
-    const autocompleteAttributes = this.autocomplete.current ?
-      this.autocomplete.current.getExtendedAttributes() :
-      {};
-
-    const tagListAttributes = this.tagList.current ?
-      this.tagList.current.getExtendedAttributes() :
-      {};
-
-    const controlAttrs = _.get(__formFieldControl, 'controlAttrs', {});
+    const extendedAttributes = _.get(__extensionManager, 'extendedAttributes', {});
 
     return (
       <React.Fragment>
-        { extensions.indexOf('autocomplete') > -1 ? (
-          <AutocompleteTrigger
-            input={this}
-            autocomplete={
-              _.get(this.props.__formFieldControl, 'extensions.autocomplete')
-            }
-            autocompleteAttribute={autocomplete}
-            autocompleteDisabled={autocompleteDisabled}
-            ref={this.autocomplete}
-          />
-        ) : null }
-        { extensions.indexOf('tag-list') > -1 ? (
-          <TagBehavior
-            input={this}
-            tagListSeparatorKeyCodes={tagListSeparatorKeyCodes}
-            onTagEnd={onTagEnd}
-            tagListAddOnBlur={tagListAddOnBlur}
-            tagList={
-              _.get(this.props.__formFieldControl, 'extensions.tagList')
-            }
-            ref={this.tagList}
-          />
-        ) : null }
         {
           /**
            * The attributes that are before the {...} spread attributes
@@ -282,9 +248,7 @@ class Input extends React.Component {
         <this.INPUT_TYPE
           disabled={disabled}
           {...restProps}
-          {...autocompleteAttributes}
-          {...tagListAttributes}
-          {...controlAttrs}
+          {...extendedAttributes}
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
@@ -336,7 +300,7 @@ const InputPropTypes = {
   value: PROP_TYPE_STRING_OR_NUMBER,
   /** Extensions like if it's an autocomplete or part of a tag list */
   extensions: PropTypes.arrayOf(PropTypes.oneOf([
-    'autocomplete', 'tag-list',
+    'autocomplete', 'tag-list', 'autosize',
   ])),
 };
 
@@ -359,6 +323,7 @@ Input.propTypes = {
   __autofillMonitor: AutofillMonitorPropTypes,
   __formFieldControl: FormFieldPropTypes,
   __platform: PlatformPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 Input.defaultProps = {
@@ -366,10 +331,12 @@ Input.defaultProps = {
   __autofillMonitor: AutofillMonitorDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
   __platform: PlatformDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
 const StackedInput = stack(
   withAutofillMonitor,
+  withExtensionManager,
   withFormFieldConsumer,
   withPlatformConsumer,
 )(Input);

@@ -2,8 +2,10 @@ import styled, { css, keyframes } from 'styled-components';
 import FILL from '../../core/styles/layout-common';
 import { CHECKBOX_BORDER_WIDTH, CHECKBOX_SIZE } from '../../core/styles/checkbox-common';
 import { TOGGLE_PADDING } from '../../core/styles/variables';
-import { themeThunk } from './theme';
+import { themeThunk, typographyThunk } from './theme';
 import VISUALLY_HIDDEN from '../../core/styles/a11y';
+import { CheckIcon } from '../../core/icons';
+import { TYPOGRAPHY_DEFAULTS } from '../../text';
 
 // Manual SVG calculation
 const MARK_PATH_LENGTH = 13.462;
@@ -114,12 +116,16 @@ left: 50%;
 ${VISUALLY_HIDDEN}
 `;
 
+export const CheckboxCheckmark = styled(CheckIcon)``;
+
 export const CheckboxLabel = styled.div``;
 
 const components = {
   Frame: CheckboxFrame,
   Checkmark: CheckboxCheckmark,
-  CheckmarkPath: CheckboxCheckmarkPath,
+  IndeterminatePath: CheckboxIndeterminateMark,
+  CheckboxLabel,
+  CheckboxLayout,
 };
 
 export const CheckboxRoot = styled.div`
@@ -127,4 +133,5 @@ cursor: pointer;
 -webkit-tap-highlight-color: transparent;
 [data-disabled=true] { cursor: default; }
 ${themeThunk(components)}
+${typographyThunk(components, TYPOGRAPHY_DEFAULTS)}
 `;

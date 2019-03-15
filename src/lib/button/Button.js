@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ButtonRoot, ButtonFocusOverlay, ButtonWrapper } from './styles/index';
 import { FocusMonitorPropTypes, FocusMonitorDefaultProps, withFocusMonitor } from '../../cdk/a11y';
+import { ButtonDisabledOverlay } from './styles';
 
 /** Default color palette for round buttons (mat-fab and mat-mini-fab) */
 const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
@@ -90,12 +91,13 @@ class Button extends React.Component {
       >
         <ButtonWrapper>{ this.props.children }</ButtonWrapper>
         <ButtonFocusOverlay />
+        <ButtonDisabledOverlay />
       </this.BUTTON_ROOT>
     )
   }
 }
 
-Button.propTypes = {
+const ButtonPropTypes = {
   /** HTML element */
   is: PropTypes.oneOf(['button', 'a']),
   /** Whether or not the button is disabled */
@@ -103,23 +105,31 @@ Button.propTypes = {
   /** appearance, one of standard, flat, icon, raised, stroked, floating */
   appearance: PropTypes.oneOf(['standard', 'fill', 'stroked']),
   /** size of the button. icon, standard, full */
-  size: PropTypes.oneOf(['icon', 'standard', 'fill']),
+  size: PropTypes.oneOf(['icon', 'standard', 'full']),
   /** color: green = primary, grey = secondary */
   color: PropTypes.oneOf(['primary', 'secondary']),
-  /** Focus monitor */
-  __focusMonitor: FocusMonitorPropTypes,
 };
 
-Button.defaultProps = {
+const ButtonDefaultProps = {
   is: 'button',
   disabled: false,
   appearance: 'standard',
   size: 'standard',
   color: 'primary',
+};
+
+Button.propTypes = {
+  ...ButtonPropTypes,
+  /** Focus monitor */
+  __focusMonitor: FocusMonitorPropTypes,
+};
+
+Button.defaultProps = {
+  ...ButtonDefaultProps,
   __focusMonitor: FocusMonitorDefaultProps,
 };
 
 const MonitoredButton = withFocusMonitor(Button);
-MonitoredButton.propTypes = Button.propTypes;
-MonitoredButton.defaultProps = Button.defaultProps;
+MonitoredButton.propTypes = ButtonPropTypes;
+MonitoredButton.defaultProps = ButtonDefaultProps;
 export default MonitoredButton;

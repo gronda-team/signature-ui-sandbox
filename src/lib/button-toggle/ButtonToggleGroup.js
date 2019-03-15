@@ -13,6 +13,10 @@ class ButtonToggleGroup extends React.Component {
     this.selectionModel = React.createRef();
   }
 
+  componentDidMount() {
+    this.setState({ mounted: true });
+  }
+
   /**
    * Derived data
    */
@@ -32,15 +36,16 @@ class ButtonToggleGroup extends React.Component {
   render() {
     const {
       vertical, multiple, disabled, name, onTouched,
-      onSelectionChange, onChange, value, ...restProps,
+      onSelectionChange, onChange, value, ...restProps
     } = this.props;
     return (
-      <SelectionModel
-        multiple={multiple}
-        onChange={onSelectionChange}
-        value={value}
-        ref={this.selectionModel}
-      >
+      <React.Fragment>
+        <SelectionModel
+          multiple={multiple}
+          onChange={onSelectionChange}
+          value={value}
+          ref={this.selectionModel}
+        />
         <ButtonToggleGroupRoot
           {...restProps}
           role="group"
@@ -51,7 +56,7 @@ class ButtonToggleGroup extends React.Component {
             { this.props.children }
           </ButtonToggleGroupProvider>
         </ButtonToggleGroupRoot>
-      </SelectionModel>
+      </React.Fragment>
     );
   }
 }

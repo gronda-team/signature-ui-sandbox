@@ -1,5 +1,6 @@
 import { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
+import { getFontFamily, getFontSize, getFontWeight, TYPOGRAPHY_DEFAULTS } from '../../text';
 
 const primary = GREEN[500];
 const darkPrimaryText = GREY[900];
@@ -10,7 +11,7 @@ const buttonColors = (foreground, background, border) => {
   return css`
   color: ${foreground};
   background: ${background};
-  ${border ? `border-color: ${border}` : ''}
+  ${border ? `border-color: ${border};` : ''}
   `;
 };
 
@@ -30,12 +31,13 @@ const strokedColor = foreground => (
 );
 
 const buttonTypography = css`
-font-size: 14px;
-font-weight: 500;
+font-size: ${getFontSize(TYPOGRAPHY_DEFAULTS, 'button')};
+font-weight: ${getFontWeight(TYPOGRAPHY_DEFAULTS, 'button')};
+font-family: ${getFontFamily(TYPOGRAPHY_DEFAULTS)}
 `;
 
 const themeThunk = (components) => {
-  const { FocusOverlay } = components;
+  const { FocusOverlay, DisabledOverlay } = components;
   return css`
   // Buttons without a background color should inherit the font color. This is necessary to
   // ensure that the button is readable on custom background colors. It's wrong to always assume
@@ -46,7 +48,7 @@ const themeThunk = (components) => {
     background: transparent;
     
     &[data-color=primary] > ${FocusOverlay} { background-color: ${primary}; }
-    &[data-color=secondary] > ${FocusOverlay} { background-color: ${secondary}; }
+    &[data-color=secondary] > 
     &[disabled=true] > ${FocusOverlay} { background-color: transparent; }
   }
   
@@ -57,7 +59,9 @@ const themeThunk = (components) => {
   
   &[data-appearance=fill] {
     &[data-color=primary] { ${fillColor(primary)} }
-    &[data-color=secondary] { ${standardColor(darkPrimaryText)} }
+    &[data-color=secondary] {
+      ${standardColor(darkPrimaryText)}
+    }
   }
   
   &[data-appearance=stroked] {
@@ -66,6 +70,7 @@ const themeThunk = (components) => {
   }
   
   ${FocusOverlay} { background-color: black; }
+  ${DisabledOverlay} { background-color: white; }
   
   &[data-appearance=stroked]:not([disabled=true]) {
     border-color: ${strokedBorder};

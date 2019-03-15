@@ -24,8 +24,18 @@ opacity: 0;
 transition: ${BUTTON_FOCUS_TRANSITION};
 `;
 
+/**
+ * To be shown if the button is disabled. Note that we can't just change
+ * the color of the background in ButtonFocusOverlay because going between
+ * disabled/new color would flicker the background color while the opacity
+ * is being changed as well. (It would look weird going from not disabled
+ * to disabled).
+ */
+export const ButtonDisabledOverlay = ButtonFocusOverlay.extend``;
+
 const components = {
   FocusOverlay: ButtonFocusOverlay,
+  DisabledOverlay: ButtonDisabledOverlay,
   Wrapper: ButtonWrapper,
 };
 
@@ -39,9 +49,19 @@ ${ButtonFocusOverlay} > * {
   vertical-align: middle;
 }
 
+${ButtonDisabledOverlay} {
+  opacity: 0.3;
+}
+
+&:not([disabled]) {
+  ${ButtonDisabledOverlay} {
+    opacity: 0;
+  }
+}
+
 // Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
-&[data-appearance=standard], &[data-appearance=stroked] {
+&[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
   &:hover {
     ${ButtonFocusOverlay} { opacity: 0.04; }
   }
@@ -51,18 +71,14 @@ ${ButtonFocusOverlay} > * {
 // enhancement and not all desktop browsers support this kind of media query, we can't
 // use something like @media (hover).
 @media (hover: none) {
-  &[data-appearance=standard], &[data-appearance=stroked] {
+  &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
     &:hover {
       ${ButtonFocusOverlay} { opacity: 0; }
     }
   }
 }
 
-&[data-appearance=standard],
-&[data-appearance=stroked],
-&[data-appearance=fill] {
-  ${buttonBaseThunk(components)}
-}
+${buttonBaseThunk(components)}
 
 &[data-appearance=stroked] { ${strokedButtonThunk(components)} }
 &[data-size=icon] { ${iconThunk(components)} }
