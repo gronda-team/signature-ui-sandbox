@@ -76,7 +76,7 @@ class AutocompleteExtension extends React.Component {
 
     /** Install the tabOut listener on the key manager when it's created */
     if (prevState.overlayAttached !== this.state.overlayAttached) {
-      this.updateAriaExpanded(this.state.overlayAttached);
+      this.updateAriaExpanded(this.props.autocompleteDisabled, this.state.overlayAttached);
       if (this.state.overlayAttached) {
         this.getAutocomplete().setState(state => ({
           service: {
@@ -90,6 +90,7 @@ class AutocompleteExtension extends React.Component {
     /** Apply the correct attribute for aria-autocomplete */
     if (prevProps.autocompleteDisabled !== this.props.autocompleteDisabled) {
       const disabled = this.props.autocompleteDisabled;
+      this.updateAriaExpanded(disabled, this.state.overlayAttached);
       this.props.__extensionManager.updateExtensionAttributes({
         role: disabled ? null : 'combobox',
         'aria-autocomplete': disabled ? null : 'list',
@@ -103,6 +104,11 @@ class AutocompleteExtension extends React.Component {
       this.props.__extensionManager.updateExtensionAttributes({
         autoComplete: this.props.autocompleteAttribute,
       });
+    }
+
+    /** Count the options and then mark the change */
+    if (_.size(this.getChildRefs(prevProps)) !== _.size(this.getChildRefs())) {
+      this.updateAriaExpanded(this.props.autocompleteDisabled, this.state.overlayAttached);
     }
   }
 
@@ -121,9 +127,14 @@ class AutocompleteExtension extends React.Component {
    * Derived data
    */
   /** Get the autocomplete */
-  getAutocomplete = () => _.get(
-    this.props.__extensionManager,
+  getAutocomplete = (props = this.props) => _.get(
+    props.__extensionManager,
     ['extendedData', '##autocomplete', 'data', 'autocomplete'],
+  );
+
+  getChildRefs = (props = this.props) => _.get(
+    props.__extensionManager,
+    ['extendedData', '##autocomplete', 'data', 'childRefs'],
   );
 
   /** Get whether te panel is open or not */
@@ -149,7 +160,7 @@ class AutocompleteExtension extends React.Component {
     if (!this.getActiveOption()) return '';
     const activeOption = this.getActiveOption();
     const activeOptionValue = _.get(activeOption, 'props.value');
-    const options = this.getAutocomplete().state.childRefs;
+    const options = this.getChildRefs();
     // Return the value that corresponds to props.value in options
     const optionRef = _.find(options, { props: { value: activeOptionValue } });
     return optionRef || null;
@@ -211,10 +222,10 @@ class AutocompleteExtension extends React.Component {
     }
   };
 
-  updateAriaExpanded = (attached) => {
+  updateAriaExpanded = (disabled, attached) => {
     const valid = this.getAutocomplete() && this.getAutocomplete().getOptions().length > 0;
     this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
-      'aria-expanded': attached && valid,
+      'aria-expanded': disabled ? null : (attached && valid),
     });
   };
 
@@ -290,7 +301,7 @@ class AutocompleteExtension extends React.Component {
     if (this.getActiveOptionRef() && key === ENTER && this.getPanelOpen()) {
       const value = _.get(this.getActiveOptionRef(), 'props.value');
       /** Find the Option whose values in childRefs matches this value */
-      const refs = _.get(this.getAutocomplete(), ['state', 'childRefs']);
+      const refs = this.getChildRefs();
       const option = _.find(refs, optionObj => (
         _.isEqual(_.get(optionObj, 'props.value'), value)
       ));
