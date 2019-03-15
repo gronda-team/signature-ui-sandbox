@@ -76,6 +76,7 @@ class AutocompleteExtension extends React.Component {
 
     /** Install the tabOut listener on the key manager when it's created */
     if (prevState.overlayAttached !== this.state.overlayAttached) {
+      this.updateAriaExpanded(this.state.overlayAttached);
       if (this.state.overlayAttached) {
         this.getAutocomplete().setState(state => ({
           service: {
@@ -92,7 +93,6 @@ class AutocompleteExtension extends React.Component {
       this.props.__extensionManager.updateExtensionAttributes({
         role: disabled ? null : 'combobox',
         'aria-autocomplete': disabled ? null : 'list',
-        'aria-expanded': disabled ? null : this.getPanelOpen(),
         'aria-owns': (disabled || !this.getPanelOpen()) ?
           null : this.getAutocomplete().getId(),
       });
@@ -209,6 +209,13 @@ class AutocompleteExtension extends React.Component {
        */
       window.requestAnimationFrame(overlay.detach);
     }
+  };
+
+  updateAriaExpanded = (attached) => {
+    const valid = this.getAutocomplete() && this.getAutocomplete().getOptions().length > 0;
+    this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
+      'aria-expanded': attached && valid,
+    });
   };
 
   updatePosition = () => {
