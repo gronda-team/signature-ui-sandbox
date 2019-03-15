@@ -726,6 +726,7 @@ describe('Autocomplete', () => {
 
   describe('ARIA', () => {
     let inputInstance;
+    let downEvent;
     beforeEach(() => {
       inputInstance = input.getDOMNode();
       downEvent = createKeyDownEvent(ARROW_DOWN);
@@ -932,7 +933,7 @@ function AutocompleteWithAutocompleteAttribute(props) {
     <SUIProvider>
       <FormField>
         <Input
-          autocomplete="changed"
+          autocompleteAttribute="changed"
           value={props.value}
           extensions={['autocomplete']}
         />
