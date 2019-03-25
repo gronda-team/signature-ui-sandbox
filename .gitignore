@@ -33,3 +33,6 @@ node_modules
 # Cypress directories
 screenshotsFolder
 videosFolder
+
+# Builds
+dist
