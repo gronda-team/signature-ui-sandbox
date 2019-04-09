@@ -19,7 +19,6 @@
     "start": "react-scripts start",
     "build": "./node_modules/.bin/rollup -c",
     "test": "react-scripts test --env=jsdom",
-    "postinstall": "npm run build",
     "eject": "react-scripts eject",
     "flow": "flow",
     "storybook": "start-storybook -p 9001 -c .storybook"
