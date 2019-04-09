@@ -10,14 +10,14 @@ export default {
   },
   plugins: [
     resolve(),
+    babel({
+      exclude: 'node_modules/**',
+    }),
     cjs({
       include: /node_modules/,
       namedExports: {
         'react-is': ['isValidElementType'],
       },
-    }),
-    babel({
-      exclude: 'node_modules/**',
     }),
   ],
   external: [
