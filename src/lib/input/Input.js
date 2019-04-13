@@ -61,7 +61,13 @@ class Input extends React.Component {
 
     // set the onContainerClick
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    this.props.__formFieldControl.setControlType(this.props.as);
+
+    /** Check to see which type of underlying control we are, and then make modifications */
+    let as = this.props.as;
+    if (as === 'select') {
+      as = this.props.multiple ? 'select-multiple' : as;
+    }
+    this.props.__formFieldControl.setControlType(as);
 
     // handle the iOS bug
     handleIOSQuirk.call(this);
@@ -98,6 +104,9 @@ class Input extends React.Component {
   /**
    * Derived data
    */
+  /** If the underlying DOM element is a select */
+  isNativeSelect = () => this.props.as === 'select';
+
   /** Get the root input element */
   getInputRef = (input) => {
     this.EL = input;
@@ -252,7 +261,7 @@ class Input extends React.Component {
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
-          readOnly={readOnly}
+          readOnly={readOnly && !this.isNativeSelect() || null}
           required={required}
           aria-describedby={this.getAriaDescribedBy()}
           aria-invalid={false}
@@ -272,8 +281,8 @@ class Input extends React.Component {
 const InputPropTypes = {
   /** The id associated with the input field */
   id: PROP_TYPE_STRING_OR_NUMBER,
-  /** The DOM node type, either a textarea or an input */
-  as: PropTypes.oneOf(['textarea', 'input']),
+  /** The DOM node type, either a textarea or an input, OR native select */
+  as: PropTypes.oneOf(['textarea', 'input', 'select']),
   /** Placeholder -- required for FormFieldControl */
   placeholder: PROP_TYPE_STRING_OR_NUMBER,
   /** Whether or not the field is disabled -- FormFieldControl */
@@ -355,6 +364,7 @@ function handleIOSQuirk() {
   if (this.props.__platform.is('ios') && this.EL) {
     this.EL.addEventListener('keyup', (event) => {
       const el = event.target;
+      /** Checking these properties already detects if it's input-like or a native select */
       if (!el.value && !el.selectionStart && !el.selectionEnd) {
         // Note: Just setting `0, 0` doesn't fix the issue. Setting
         // `1, 1` fixes it for the first time that you type text and
