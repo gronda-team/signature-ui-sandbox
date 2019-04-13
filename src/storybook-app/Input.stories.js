@@ -6,6 +6,7 @@ import InputHints from './Input/Hints';
 import { CenteredDecorator } from './styles';
 import InputClearable from './Input/Clearable';
 import InputAutosize from './Input/Autosize';
+import InputNativeSelect from './Input/NativeSelect';
 import inputOverview from './Input/notes/InputOverview.md';
 
 storiesOf('Input & TextArea', module)
@@ -18,4 +19,5 @@ storiesOf('Input & TextArea', module)
   .add('with prefixes and suffixes', () => <InputPrefixSuffix />)
   .add('with hints', () => <InputHints />)
   .add('with clearing feature', () => <InputClearable />)
-  .add('with autosize', () => <InputAutosize />);
+  .add('with autosize', () => <InputAutosize />)
+  .add('as native select', () => <InputNativeSelect />);
