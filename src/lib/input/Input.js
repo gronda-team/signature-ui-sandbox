@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field';
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../../cdk/platform';
-import { BaseInput, BaseTextArea } from './styles/index';
+import { BaseInput, BaseSelect, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
@@ -29,9 +29,18 @@ class Input extends React.Component {
     };
 
     // Determine the type to show. this is NOT reactive
-    this.INPUT_TYPE = _.toLower(props.as) === 'input' ?
-      BaseInput :
-      BaseTextArea;
+    switch (_.toLower(props.as)) {
+      case 'select':
+        this.INPUT_TYPE = BaseSelect;
+        break;
+      case 'textarea':
+        this.INPUT_TYPE = BaseTextArea;
+        break;
+      case 'input':
+      default:
+        this.INPUT_TYPE = BaseInput;
+        break;
+    }
 
     this.DEFAULT_ID = _.uniqueId('sui-input:');
 
