@@ -16,15 +16,11 @@ class NativeSelect extends React.Component {
   render() {
     return (
       <FormField>
-        <Label>Telephone number</Label>
-        <Prefix>
-          +1&nbsp;
-        </Prefix>
+        <Label>Favorite car brand</Label>
         <Input
           as="select"
           value={this.state.value}
           onChange={this.updateCarType}
-          placeholder="Favorite car brand"
         >
           <option value="volvo">Volvo</option>
           <option value="saab">Saab</option>
