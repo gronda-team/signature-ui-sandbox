@@ -13,6 +13,8 @@ import {
   ExtensionPropTypes,
   withExtensionManager
 } from '../form-field/context/ExtensionsContext';
+import { SelectArrow, SelectArrowWrapper, SelectTrigger, SelectValue } from '../select/styles';
+import { NativeSelectArrow, NativeSelectArrowWrapper } from './styles';
 
 /**
  * The input and text area components contain very similar behavior
@@ -74,7 +76,7 @@ class Input extends React.Component {
     /** Check to see which type of underlying control we are, and then make modifications */
     let as = this.props.as;
     if (as === 'select') {
-      as = this.props.multiple ? 'select-multiple' : as;
+      as = this.props.multiple ? 'native-select-multiple' : 'native-select';
     }
     this.props.__formFieldControl.setControlType(as);
 
@@ -282,6 +284,11 @@ class Input extends React.Component {
           onBlur={this.handleFocusChange(false)}
           innerRef={this.getInputRef}
         />
+        { this.props.as === 'select' ? (
+          <NativeSelectArrowWrapper>
+            <NativeSelectArrow />
+          </NativeSelectArrowWrapper>
+        ) : null }
       </React.Fragment>
     );
   }
