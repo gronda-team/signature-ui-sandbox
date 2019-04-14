@@ -5,6 +5,7 @@ import { getLineHeight } from '../../text';
 import { convertLevelToStyles } from '../../text/styles/utils';
 
 const DEFAULT_TEXT = GREY[900];
+const ARROW_STROKE = GREY[700];
 const PRIMARY = GREEN[500];
 const WARN = RED[500];
 const REQUIRED_LABEL_COLOR = WARN;
@@ -132,6 +133,17 @@ export const typographyThunk = (components, config) => {
     the padding amount
      */
     top: calc(100% - ${WRAPPER_PADDING_BOTTOM / SUBSCRIPT_FONT_SCALE}em);
+  }
+  `;
+};
+
+/** Themes for the native select (arrow mostly) */
+export const nativeSelectThemeThunk = (components) => {
+  const { Arrow } = components;
+  return css`
+  ${Arrow} {
+    fill: none;
+    stroke: ${ARROW_STROKE};
   }
   `;
 };
