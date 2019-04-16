@@ -174,7 +174,7 @@ class BaseExpansionPanel extends React.Component {
             role="region"
             aria-labelledby={this.getHeaderId()}
             id={__accordionItem.id}
-            innerRef={this.getPanelContentRef}
+            ref={this.getPanelContentRef}
             data-expansion-state={this.getExpandedState()}
             data-animation-state={this.state.panelAnimationPhase}
             height={this.state.panelHeight}

@@ -130,7 +130,7 @@ const components = {
   PanelDescription: ExpansionPanelDescription,
 };
 
-AccordionRoot = AccordionRoot.extend`
+AccordionRoot = styled(AccordionRoot)`
 ${accordionThemeThunk(components)}
 `;
 

@@ -262,7 +262,7 @@ class Input extends React.Component {
           onKeyDown={this.onKeyDown}
           onFocus={this.handleFocusChange(true)}
           onBlur={this.handleFocusChange(false)}
-          innerRef={this.getInputRef}
+          ref={this.getInputRef}
         />
       </React.Fragment>
     );

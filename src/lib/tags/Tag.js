@@ -201,7 +201,7 @@ class Tag extends React.Component {
         onFocus={this.focus}
         onBlur={this.blur}
         onKeyDown={this.onKeyDown}
-        innerRef={this.getTagRoot}
+        ref={this.getTagRoot}
       >
         { this.props.children }
         { removable ? (

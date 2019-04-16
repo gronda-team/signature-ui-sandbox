@@ -259,11 +259,11 @@ class SlideToggle extends React.Component {
         data-checked={checked}
         data-label-before={labelPosition === 'before'}
         data-label-empty={!this.hasLabelContent()}
-        innerRef={this.getToggleRoot}
+        ref={this.getToggleRoot}
       >
         <SlideToggleLabel>
           <SlideToggleBar
-            innerRef={this.getToggleBarRef}
+            ref={this.getToggleBarRef}
           >
             <SlideToggleInput
               id={this.getInputId()}
@@ -277,7 +277,7 @@ class SlideToggle extends React.Component {
               aria-labelledby={ariaLabelledBy}
               onChange={this.inputChangeEvent}
               onClick={this.inputClickEvent}
-              innerRef={this.getInputRef}
+              ref={this.getInputRef}
             />
             <SlideToggleThumbContainer
               {...this.EVENT_LISTENERS}
@@ -286,12 +286,12 @@ class SlideToggle extends React.Component {
                   `translate3d(${this.state.dragX}px, 0, 0)` :
                   null
               }}
-              innerRef={this.getThumbContainerRef}
+              ref={this.getThumbContainerRef}
             >
               <SlideToggleThumb />
             </SlideToggleThumbContainer>
           </SlideToggleBar>
-          <SlideToggleContent innerRef={this.getLabelContentRef}>
+          <SlideToggleContent ref={this.getLabelContentRef}>
             { this.props.children }
           </SlideToggleContent>
         </SlideToggleLabel>

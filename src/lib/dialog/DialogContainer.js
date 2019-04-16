@@ -107,7 +107,7 @@ class DialogContainer extends React.Component {
           data-state={this.state.animationState}
           onAnimationStart={this.emitOnTransitionStart}
           onAnimationEnd={this.onTransitionEnd}
-          innerRef={this.EL}
+          ref={this.EL}
         >
           { this.props.children }
         </DialogContainerRoot>

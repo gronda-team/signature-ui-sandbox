@@ -377,7 +377,7 @@ class Select extends React.Component {
         onKeydown={this.handleKeyDown}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
-        innerRef={this.getRoot}
+        ref={this.getRoot}
       >
         <SelectionModel
           value={this.props.value}
@@ -396,7 +396,7 @@ class Select extends React.Component {
         <SelectTrigger
           aria-hidden="true"
           onClick={this.toggle}
-          innerRef={this.getTriggerEl}
+          ref={this.getTriggerEl}
         >
           <SelectValue>{ this.renderSelectValue() }</SelectValue>
           <SelectArrowWrapper>
@@ -422,7 +422,7 @@ class Select extends React.Component {
               transformOrigin: this.state.transformOrigin,
             }}
             onKeydown={this.handleKeyDown}
-            innerRef={this.getPanelEl}
+            ref={this.getPanelEl}
           >
             <OptionParentProvider value={this.getOptionParentProviderValue()}>
               { this.renderNonTriggerChildren() }

@@ -19,11 +19,13 @@ pointer-events: none;
 `;
 
 // "Draws" in the checkmark when the checkbox goes from unchecked -> checked.
-const checkedUncheckedAnimation = keyframes`
+const baseCheckedUncheckedAnimation = keyframes`
 0%, 50% { stroke-dashoffset: ${MARK_PATH_LENGTH}; }
 50% { animation-timing-function: cubic-bezier(0, 0, 0.2, 0.1); }
 100% { stroke-dashoffset: 0; }
 `;
+/** SC v4 syntax */
+const checkedUncheckedAnimation = css`${baseCheckedUncheckedAnimation}`;
 
 export const CheckboxLayout = styled.label`
 // "cursor: inherit" ensures that the wrapper element gets the same cursor as the checkbox

@@ -60,7 +60,7 @@ class OverlayContainer extends React.Component {
           <React.Fragment>
             { this.props.children }
             { this.state.renderDummyContainer ?
-              <OverlayContainerRoot innerRef={this.getDummyRoot} /> : null
+              <OverlayContainerRoot ref={this.getDummyRoot} /> : null
             }
           </React.Fragment>
         </OverlayKeyboardDispatcher>

@@ -50,9 +50,9 @@ flex: none;
 position: relative;
 `;
 
-export const FormFieldPrefix = FormFieldFix.withComponent('div');
+export const FormFieldPrefix = styled(FormFieldFix)``;
 FormFieldPrefix.defaultProps = { '__sui-internal-type': 'Prefix' };
-export const FormFieldSuffix = FormFieldFix.withComponent('div');
+export const FormFieldSuffix = styled(FormFieldFix)``;
 FormFieldSuffix.defaultProps = { '__sui-internal-type': 'Suffix' };
 
 export const FormFieldInfix = styled.div`
