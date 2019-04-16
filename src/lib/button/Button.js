@@ -11,8 +11,6 @@ const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
 class Button extends React.Component {
   constructor(props) {
     super(props);
-    
-    this.BUTTON_ROOT = ButtonRoot.withComponent(props.is);
 
     this.state = {
       focusOrigin: null,
@@ -76,11 +74,12 @@ class Button extends React.Component {
   };
   
   render() {
-    const { appearance, size, is, color, __focusMonitor, ...restProps } = this.props;
+    const { appearance, size, as, color, __focusMonitor, ...restProps } = this.props;
     return (
-      <this.BUTTON_ROOT
+      <ButtonRoot
         {...restProps}
         {...this.getNodeAttrs()}
+        as={as}
         data-sui-type={'button'}
         data-appearance={appearance}
         data-size={size}
@@ -92,14 +91,14 @@ class Button extends React.Component {
         <ButtonWrapper>{ this.props.children }</ButtonWrapper>
         <ButtonFocusOverlay />
         <ButtonDisabledOverlay />
-      </this.BUTTON_ROOT>
+      </ButtonRoot>
     )
   }
 }
 
 const ButtonPropTypes = {
   /** HTML element */
-  is: PropTypes.oneOf(['button', 'a']),
+  as: PropTypes.oneOf(['button', 'a']),
   /** Whether or not the button is disabled */
   disabled: PropTypes.bool,
   /** appearance, one of standard, flat, icon, raised, stroked, floating */
@@ -111,7 +110,7 @@ const ButtonPropTypes = {
 };
 
 const ButtonDefaultProps = {
-  is: 'button',
+  as: 'button',
   disabled: false,
   appearance: 'standard',
   size: 'standard',
