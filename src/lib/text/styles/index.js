@@ -101,6 +101,8 @@ margin: 0;
 
 export const TYPOGRAPHY_DEFAULTS = createTypographyConfig();
 
-export const BaseText = styled.span`
+export const BaseText = styled.span.attrs(props => ({
+  'data-text-level': props.level
+}))`
 ${suiBaseTypography(TYPOGRAPHY_DEFAULTS)}
 `;
