@@ -1,25 +1,19 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { BaseText } from './styles';
+import { getDisplayName } from '../../cdk/util';
 
-class Text extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.TEXT = BaseText.withComponent(props.is);
-  }
-
-  render() {
-    const { children, level, is, ...rest } = this.props;
-    return (
-      <this.TEXT
-        {...rest}
-        data-text-level={level}
-      >
-        { children }
-      </this.TEXT>
-    );
-  }
+function Text({ children, level, as, forwardedRef, ...rest }) {
+  return (
+    <BaseText
+      {...rest}
+      as={as}
+      ref={forwardedRef}
+      data-text-level={level}
+    >
+      { children }
+    </BaseText>
+  );
 }
 
 Text.propTypes = {
@@ -36,4 +30,13 @@ Text.defaultProps = {
   level: 'body3',
 };
 
-export default Text;
+Text.displayName = 'Text';
+
+const TextWithForwardedRef = React.forwardRef((props, ref) => (
+  <Text {...props} forwardedRef={ref} />
+));
+
+TextWithForwardedRef.propTypes = Text.propTypes;
+TextWithForwardedRef.defaultProps = Text.defaultProps;
+
+export default TextWithForwardedRef;
