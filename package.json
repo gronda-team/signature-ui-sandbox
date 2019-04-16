@@ -57,6 +57,6 @@
     "styled-components": "^4.1.2"
   },
   "peerDependencies": {
-    "styled-components": "^4"
+    "styled-components": ">=4.0.0"
   }
 }
