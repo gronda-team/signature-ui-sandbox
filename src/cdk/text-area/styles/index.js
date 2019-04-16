@@ -8,13 +8,17 @@ needed to prevent LibSass from stripping the keyframes out.
  */
 
 /** Disable the yellow background when inputs are autofilled */
-export const AUTOFILL_ANIMATION_START = keyframes`
+export const autofillStart = keyframes`
   to {
     color: currentColor;
     background: transparent;
   }
 `;
-export const AUTOFILL_ANIMATION_END = keyframes`/*!*/`;
+export const autofillEnd = keyframes`/*!*/`;
+
+/** Use SC v4 syntax */
+export const AUTOFILL_ANIMATION_START = css`${autofillStart}`;
+export const AUTOFILL_ANIMATION_END = css`${autofillEnd}`;
 
 export const TEXT_FIELD_AUTOFILL_MONITOR = css`
 &[data-autofill-monitored]:-webkit-autofill {
