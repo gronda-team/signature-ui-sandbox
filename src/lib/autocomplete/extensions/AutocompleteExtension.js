@@ -42,7 +42,7 @@ class AutocompleteExtension extends React.Component {
    * Lifecycle
    */
   componentDidMount() {
-    if (!_.isUndefined(window)) {
+    if (typeof window !== 'undefined') {
       window.addEventListener('blur', this.windowBlurHandler);
     }
 
@@ -116,7 +116,7 @@ class AutocompleteExtension extends React.Component {
   }
 
   componentWillUnmount() {
-    if (!_.isUndefined(window)) {
+    if (typeof window !== 'undefined') {
       window.removeEventListener('blur', this.windowBlurHandler);
     }
 

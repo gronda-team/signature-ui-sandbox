@@ -8,7 +8,7 @@ let supportsPassiveEvents = null;
  * See: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
  */
 export function supportsPassiveEventListeners() {
-  if (supportsPassiveEvents === null && !_.isUndefined(window)) {
+  if (supportsPassiveEvents === null && typeof window !== 'undefined') {
     try {
       window.addEventListener('test', null, Object.defineProperty(
         {},
