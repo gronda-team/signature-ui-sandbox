@@ -17,7 +17,7 @@ export const themeThunk = (components) => {
     border-color: ${BORDER};
   }
   
-  &[data-disabled=true] { background-color: ${DISABLED_BACKGROUND}; }
+  &[data-disabled=true] ${OuterCircle} { background-color: ${DISABLED_BACKGROUND}; }
   
   &[data-checked=true] {
     &[data-disabled=false] ${InnerCircle} { background-color: ${ACTIVE}; }
