@@ -39,49 +39,49 @@ export default class Overview extends React.Component {
         >
           Toggle pangrams
         </Checkbox>
-        <Text is="h1" level="display1">
+        <Text as="h1" level="display1">
           { this.state.usePangrams ?
             this.PANGRAMS[0] :
             'Heading 1 / display1'
           }
         </Text>
-        <Text is="p" level="body3">
+        <Text as="p" level="body3">
           Bacon ipsum dolor amet burgdoggen sirloin ball tip ham hock, corned beef kevin cupim capicola turkey chicken. Corned beef tenderloin burgdoggen kevin sausage pork chop pancetta porchetta pork loin ham andouille brisket biltong doner. Jerky venison biltong flank. Pork chop corned beef pancetta chicken fatback short ribs ham, beef ribs turkey jerky sirloin ground round. Flank tail prosciutto buffalo.
         </Text>
-        <Text is="h2" level="display2">
+        <Text as="h2" level="display2">
           { this.state.usePangrams ?
             this.PANGRAMS[1] :
             'Heading 2 / display2'
           }
         </Text>
-        <Text is="p" level="body3">
+        <Text as="p" level="body3">
           Pork chop porchetta pastrami, doner kevin biltong flank landjaeger meatball beef ribs venison turducken filet mignon ball tip spare ribs. Pancetta ground round jowl, capicola short ribs flank ham. Burgdoggen bresaola ground round, turkey tongue ham hock ball tip kevin hamburger andouille boudin swine ham doner. T-bone spare ribs sirloin kielbasa short loin jowl venison turducken meatloaf. Pastrami fatback tenderloin jowl landjaeger rump prosciutto cupim tongue jerky turducken pork chop tri-tip. Brisket frankfurter biltong flank tri-tip venison. Ribeye bresaola filet mignon kielbasa venison turducken porchetta.
         </Text>
-        <Text is="h3" level="display3">
+        <Text as="h3" level="display3">
           { this.state.usePangrams ?
             this.PANGRAMS[2] :
             'Heading 3 / display3'
           }
         </Text>
-        <Text is="p" level="body3">
+        <Text as="p" level="body3">
           Burgdoggen spare ribs shoulder cow. Flank prosciutto drumstick, corned beef tri-tip capicola hamburger meatball kielbasa rump short ribs andouille ham meatloaf salami. Hamburger doner beef capicola tri-tip landjaeger kevin shank prosciutto. Prosciutto buffalo beef ball tip, brisket kevin t-bone doner cow.
         </Text>
-        <Text is="h4" level="display4">
+        <Text as="h4" level="display4">
           { this.state.usePangrams ?
             this.PANGRAMS[3] :
             'Heading 4 / display4'
           }
         </Text>
-        <Text is="p" level="body3">
+        <Text as="p" level="body3">
           Kielbasa jerky doner biltong, turducken tail capicola alcatra shoulder sausage pork belly sirloin corned beef strip steak. Spare ribs meatloaf sausage, landjaeger doner shank ham tenderloin drumstick picanha strip steak filet mignon. Cupim meatloaf pork chop venison spare ribs turkey sausage tri-tip chuck chicken ball tip tail. Tail salami ribeye jerky. Alcatra bacon pancetta, short ribs short loin hamburger cupim landjaeger tongue pastrami boudin doner buffalo pork belly. Ribeye pork fatback kevin tongue sirloin. Drumstick buffalo burgdoggen, leberkas t-bone beef ribs corned beef pork chop doner flank tri-tip sausage prosciutto bresaola pork belly.
         </Text>
-        <Text is="h5" level="display5">
+        <Text as="h5" level="display5">
           { this.state.usePangrams ?
             this.PANGRAMS[4] :
             'Heading 5 / display5'
           }
         </Text>
-        <Text is="p" level="body3">
+        <Text as="p" level="body3">
           Short ribs bresaola filet mignon, jerky porchetta chuck short loin. Strip steak porchetta picanha ground round short ribs turducken fatback alcatra meatball pig. Fatback bresaola doner meatloaf, cupim beef biltong ribeye capicola pork kevin beef ribs frankfurter. Tenderloin andouille turkey shankle, biltong buffalo turducken pastrami ham hock spare ribs kevin.
         </Text>
       </div>
