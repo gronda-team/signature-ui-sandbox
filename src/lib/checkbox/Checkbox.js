@@ -123,7 +123,7 @@ class Checkbox extends React.Component {
     return (
       <CheckboxRoot
         {...restProps}
-        innerRef={this.getCheckboxRoot}
+        ref={this.getCheckboxRoot}
         id={this.getId()}
         tabIndex={null}
         data-focused={!!this.state.focusOrigin}
@@ -152,7 +152,7 @@ class Checkbox extends React.Component {
               aria-checked={this.getAriaChecked()}
               onChange={this.onInteractionEvent}
               onClick={this.onInputClick}
-              innerRef={this.getCheckboxInput}
+              ref={this.getCheckboxInput}
             />
             <CheckboxFrame />
             <CheckboxBackground>

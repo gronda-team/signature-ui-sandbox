@@ -101,7 +101,7 @@ export class ExpansionPanelHeader extends React.Component {
       <ExpansionPanelHeaderRoot
         id={this.props.__suiAccordionItem.labelId}
         role="button"
-        innerRef={this.getPanelHeaderRef}
+        ref={this.getPanelHeaderRef}
         tabIndex={accordion.disabled ? -1 : 0}
         aria-controls={accordion.id}
         aria-expanded={accordion.expanded.toString()}

@@ -393,7 +393,7 @@ class TagList extends React.Component {
           onFocus={this.focus}
           onBlur={this.blur}
           onKeyDown={this.keyDown}
-          innerRef={this.getTagListRoot}
+          ref={this.getTagListRoot}
         >
           <TagListProvider value={{
             disabled,

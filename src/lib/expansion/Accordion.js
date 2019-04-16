@@ -110,7 +110,7 @@ class Accordion extends React.Component {
     return (
       <BaseAccordion multi={multi} expanded={expanded} onSelect={onSelect}>
         <AccordionRoot
-          innerRef={this.getAccordionRootRef}
+          ref={this.getAccordionRootRef}
           {...restProps}
           onClickCapture={this.onClickCapture}
           onKeyDown={this.onKeyDown}

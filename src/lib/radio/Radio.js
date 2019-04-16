@@ -157,7 +157,7 @@ class RadioButton extends React.Component {
         data-disabled={disabled}
         data-checked={checked}
         onFocus={this.onFocus}
-        innerRef={this.getRadioRootRef}
+        ref={this.getRadioRootRef}
       >
         <RadioLabel
           htmlFor={this.getInputId()}
@@ -180,7 +180,7 @@ class RadioButton extends React.Component {
               aria-describedby={ariaDescribedBy}
               onChange={this.onChange}
               onClick={this.onClick}
-              innerRef={this.getRadioInputRef}
+              ref={this.getRadioInputRef}
             />
           </RadioContainer>
           {/* The label content for radio control */}

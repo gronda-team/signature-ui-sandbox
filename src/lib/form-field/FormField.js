@@ -223,14 +223,14 @@ export default class FormField extends React.Component {
         data-focused={this.isFocused()}
         data-value={this.isFilled() ? 'filled' : 'empty'}
         data-field-type={this.state.type}
-        innerRef={this.getRoot}
+        ref={this.getRoot}
       >
         <Extensions controlType={this.state.type}>
           <FormFieldWrapper>
             <FormFieldControlProvider value={this.state}>
               <FormFieldFlex
                 onClick={this.state.containerClick}
-                innerRef={this.connectionContainer}
+                ref={this.connectionContainer}
               >
                 <FormFieldBar>
                   { prefix ? <FormFieldPrefix>{ prefix }</FormFieldPrefix> : null }

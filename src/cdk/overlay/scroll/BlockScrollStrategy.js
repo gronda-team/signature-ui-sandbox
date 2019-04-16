@@ -105,7 +105,7 @@ class BlockScrollStrategy extends React.Component {
     this.state.renderDummyBlock ? (
       <GlobalScrollBlock
         style={{ display: 'none' }}
-        innerRef={this.getDummyBlock}
+        ref={this.getDummyBlock}
       />
     ) : null
   );

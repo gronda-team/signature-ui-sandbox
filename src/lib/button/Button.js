@@ -85,7 +85,7 @@ class Button extends React.Component {
         data-size={size}
         data-color={color}
         data-focus-origin={this.state.focusOrigin}
-        innerRef={this.getButtonRef}
+        ref={this.getButtonRef}
         onClick={this.onClick}
       >
         <ButtonWrapper>{ this.props.children }</ButtonWrapper>

@@ -247,7 +247,7 @@ class Autocomplete extends React.Component {
             <AutocompletePanel
               role="listbox"
               id={this.getId()}
-              innerRef={this.PANEL}
+              ref={this.PANEL}
             >
               <OptionParentProvider value={this.providerValue()}>
                 { children }
