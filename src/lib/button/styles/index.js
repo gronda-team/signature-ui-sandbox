@@ -31,7 +31,7 @@ transition: ${BUTTON_FOCUS_TRANSITION};
  * is being changed as well. (It would look weird going from not disabled
  * to disabled).
  */
-export const ButtonDisabledOverlay = ButtonFocusOverlay.extend``;
+export const ButtonDisabledOverlay = styled(ButtonFocusOverlay)``;
 
 const components = {
   FocusOverlay: ButtonFocusOverlay,
