@@ -25,7 +25,7 @@ class Text extends React.Component {
 Text.propTypes = {
   is: PropTypes.string,
   level: PropTypes.oneOf([
-    'fontFamily', 'display1', 'display2', 'display3', 'display4', 'display5',
+    'display1', 'display2', 'display3', 'display4', 'display5',
     'body1', 'body2', 'body3', 'micro', 'button', 'input'
   ]),
 };
