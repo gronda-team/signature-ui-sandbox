@@ -121,7 +121,7 @@ class TestApp extends React.Component {
           tabIndex={this.state.tabIndex}
           disabled={this.state.isDisabled}
           color={this.state.color}
-          is="a"
+          as="a"
           href="http://google.com"
         >Link</Button>
         <Button size="icon">Icon button</Button>
