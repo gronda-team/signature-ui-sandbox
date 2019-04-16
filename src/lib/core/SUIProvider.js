@@ -5,7 +5,7 @@ import {OverlayContainer} from '../../cdk/overlay';
 import {FocusMonitor, InteractivityChecker} from '../../cdk/a11y';
 import {AutofillMonitor} from '../../cdk/text-area';
 import {Platform} from '../../cdk/platform';
-import { DialogManager } from '../dialog';
+import DialogManager from '../dialog/DialogManager';
 
 /**
  * This component represents a way to consolidate all of the
