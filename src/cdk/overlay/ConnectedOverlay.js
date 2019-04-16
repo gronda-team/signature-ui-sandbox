@@ -160,7 +160,7 @@ export const ConnectedPositionPropType = PropTypes.shape({
 
 const ConnectedOverlayPropTypes = {
   /** Origin for the connected overlay. */
-  origin: PropTypes.instanceOf(HTMLElement),
+  origin: PropTypes.node,
   /** Registered connected position pairs. */
   positions: PropTypes.arrayOf(ConnectedPositionPropType),
   /** The offset in pixels for the overlay connection point on the x-axis */

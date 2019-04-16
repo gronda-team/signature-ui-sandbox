@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 export const ListKeyManagerPropTypes = PropTypes.shape({
   activeItemIndex: PropTypes.number,
-  activeItem: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.instanceOf(HTMLElement)]),
+  activeItem: PropTypes.oneOfType([PropTypes.node, PropTypes.element]),
   setTabOutFn: PropTypes.func,
   setConfig: PropTypes.func,
   setSkipPredicateFn: PropTypes.func,

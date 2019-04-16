@@ -310,7 +310,7 @@ const FCPSPropTypes = {
   /** The actual overlay to which this strategy is attached */
   overlay: PropTypes.object,
   /** The origin element against which the overlay will be positioned. */
-  origin: PropTypes.instanceOf(HTMLElement),
+  origin: PropTypes.node,
   /** Whether the overlay can be pushed on-screen on the initial open. */
   canPush: PropTypes.bool,
   /** Whether the overlay can grow via flexible width/height after the initial open. */
