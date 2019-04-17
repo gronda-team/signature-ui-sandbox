@@ -1,5 +1,6 @@
 import { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
+import { getFontFamily, getFontSize, getFontWeight, TYPOGRAPHY_DEFAULTS } from '../../text';
 
 // border colors
 const ACTIVE_BACKGROUND = GREEN[500];
@@ -11,6 +12,12 @@ const BORDER = GREY[500];
 const DISABLED_FOREGROUND = GREY[700];
 const DISABLED_BACKGROUND = GREY[100];
 const DISABLED_ACTIVE_BACKGROUND = GREEN[400];
+
+const buttonTypography = css`
+font-size: ${getFontSize(TYPOGRAPHY_DEFAULTS, 'button')};
+font-weight: ${getFontWeight(TYPOGRAPHY_DEFAULTS, 'button')};
+font-family: ${getFontFamily(TYPOGRAPHY_DEFAULTS)}
+`;
 
 export const themeThunk = (components) => {
   // root context is ButtonToggleGroupRoot, not ButtonToggleRoot
@@ -58,6 +65,7 @@ export const themeThunk = (components) => {
   }
   
   &, ${ButtonToggle}[data-standalone=true] { border: solid 1px ${BORDER}; }
+  ${buttonTypography}
   `;
 };
 
