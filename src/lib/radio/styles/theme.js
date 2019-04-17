@@ -1,5 +1,6 @@
 import { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
+import { getFontFamily, TYPOGRAPHY_DEFAULTS } from '../../text';
 
 // border colors
 const ACTIVE = GREEN[500];
@@ -32,3 +33,9 @@ export const themeThunk = (components) => {
   }
   `;
 };
+
+export const typographyThunk = () => css`
+  & {
+    font-family: ${getFontFamily(TYPOGRAPHY_DEFAULTS)};
+  }
+`;

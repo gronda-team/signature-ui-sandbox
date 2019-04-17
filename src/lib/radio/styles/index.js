@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { TOGGLE_SIZE, TOGGLE_PADDING } from '../../core/styles/variables';
-import { themeThunk } from './theme';
+import { themeThunk, typographyThunk } from './theme';
 import VISUALLY_HIDDEN from '../../core/styles/a11y';
 
 const RADIO_SIZE = TOGGLE_SIZE; // px
@@ -104,6 +104,7 @@ display: inline-block;
 -webkit-tap-highlight-color: transparent;
 &[data-disabled=true] { cursor: default; }
 ${themeThunk(components)}
+${typographyThunk()}
 `;
 
 export const RadioGroupRoot = styled.div``;
