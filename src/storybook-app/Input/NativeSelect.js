@@ -22,6 +22,7 @@ class NativeSelect extends React.Component {
           value={this.state.value}
           onChange={this.updateCarType}
         >
+          <option value="">Select</option>
           <option value="volvo">Volvo</option>
           <option value="saab">Saab</option>
           <option value="mercedes">Mercedes</option>
