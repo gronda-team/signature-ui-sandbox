@@ -174,10 +174,10 @@ ${typographyThunk(TYPOGRAPHY_DEFAULTS)}
  * Styles for the SUI arrow
  */
 
-export const NativeSelectArrow = SelectArrow.extend`
+export const NativeSelectArrow = styled(SelectArrow)`
 `;
 
-export const NativeSelectArrowWrapper = SelectArrowWrapper.extend`
+export const NativeSelectArrowWrapper = styled(SelectArrowWrapper)`
   display: inline-block;
   white-space: nowrap;
   flex: 0 0 auto;
