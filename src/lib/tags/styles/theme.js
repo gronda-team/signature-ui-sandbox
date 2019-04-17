@@ -1,6 +1,6 @@
 import { css } from 'styled-components';
 import { GREEN, GREY } from '../../../cdk/theme/colors';
-import { getFontSize, getFontWeight } from '../../text';
+import { getFontFamily, getFontSize, getFontWeight } from '../../text';
 
 // font
 const fontSize = '13px';
@@ -53,6 +53,7 @@ export const themeThunk = (components) => {
 export const tagTypography = (components, config) => {
   const { Close } = components;
   return css`
+  font-family: ${getFontFamily(config)};
   font-weight: ${getFontWeight(config, 'body2')};
   font-size: ${getFontSize(config, 'body2')};
   
