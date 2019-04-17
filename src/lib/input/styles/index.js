@@ -161,7 +161,7 @@ ${typographyThunk(TYPOGRAPHY_DEFAULTS)}
 
 [data-field-type=native-select] &, [data-field-type=native-select-multiple] & {
   padding-right: ${SELECT_ARROW_SIZE * 3}px;
-  max-width: calc(100% - ${SELECT_ARROW_SIZE * 3}px);
+  text-overflow: ellipsis;
   
   [dir=rtl] & {
     padding-right: 0;
@@ -181,8 +181,10 @@ export const NativeSelectArrowWrapper = SelectArrowWrapper.extend`
   display: inline-block;
   white-space: nowrap;
   flex: 0 0 auto;
-  position: relative;
+  position: absolute;
   bottom: 1px;
+  right: 0;
+  pointer-events: none;
 
   ${NativeSelectArrow} {
     height: 10px;
