@@ -18,6 +18,10 @@ export const UIMachine = Machine({
             'focused': {
               on: { BLUR: 'idle' },
             },
+            '$history': {
+              type: 'history',
+              history: 'shallow',
+            },
           },
           on: { DISABLE: 'disabled' },
         },

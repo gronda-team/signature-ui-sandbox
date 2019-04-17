@@ -133,7 +133,7 @@ const components = {
 export const CheckboxRoot = styled.div`
 cursor: pointer;
 -webkit-tap-highlight-color: transparent;
-[data-disabled=true] { cursor: default; }
+&[data-disabled=true] { cursor: default; }
 ${themeThunk(components)}
 ${typographyThunk(components, TYPOGRAPHY_DEFAULTS)}
 `;
