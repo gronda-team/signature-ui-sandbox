@@ -16,6 +16,10 @@ export const outlineThemeThunk = (components) => {
     border-color: ${UNFILLED_BORDER};
   }
   
+  &[data-field-type=native-select][data-value=empty] select {
+    color: ${DEFAULT_BORDER};
+  }
+  
   // Lowest priority of enabled states
   &[data-value=filled] {
     ${FormFieldBar} {

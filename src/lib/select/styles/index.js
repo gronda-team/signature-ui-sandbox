@@ -6,8 +6,8 @@ import { EASE_OUT } from '../../core/styles/animation';
 import {ChevronIcon} from '../../core/icons';
 import {selectPanelThemeThunk, selectRootThemeThunk} from './theme';
 
-const SELECT_ARROW_MARGIN = 4; // px
-const SELECT_ARROW_SIZE = 8; // px
+export const SELECT_ARROW_MARGIN = 4; // px
+export const SELECT_ARROW_SIZE = 8; // px
 
 // For use in FormField
 export const SELECT_PLACEHOLDER_ARROW_SPACE = 2 * (

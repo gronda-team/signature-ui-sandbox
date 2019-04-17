@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field';
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../../cdk/platform';
-import { BaseInput, BaseTextArea } from './styles/index';
+import { BaseInput, BaseSelect, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
@@ -13,6 +13,8 @@ import {
   ExtensionPropTypes,
   withExtensionManager
 } from '../form-field/context/ExtensionsContext';
+import { SelectArrow, SelectArrowWrapper, SelectTrigger, SelectValue } from '../select/styles';
+import { NativeSelectArrow, NativeSelectArrowWrapper } from './styles';
 
 /**
  * The input and text area components contain very similar behavior
@@ -29,9 +31,18 @@ class Input extends React.Component {
     };
 
     // Determine the type to show. this is NOT reactive
-    this.INPUT_TYPE = _.toLower(props.as) === 'input' ?
-      BaseInput :
-      BaseTextArea;
+    switch (_.toLower(props.as)) {
+      case 'select':
+        this.INPUT_TYPE = BaseSelect;
+        break;
+      case 'textarea':
+        this.INPUT_TYPE = BaseTextArea;
+        break;
+      case 'input':
+      default:
+        this.INPUT_TYPE = BaseInput;
+        break;
+    }
 
     this.DEFAULT_ID = _.uniqueId('sui-input:');
 
@@ -61,7 +72,13 @@ class Input extends React.Component {
 
     // set the onContainerClick
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    this.props.__formFieldControl.setControlType(this.props.as);
+
+    /** Check to see which type of underlying control we are, and then make modifications */
+    let as = this.props.as;
+    if (as === 'select') {
+      as = this.props.multiple ? 'native-select-multiple' : 'native-select';
+    }
+    this.props.__formFieldControl.setControlType(as);
 
     // handle the iOS bug
     handleIOSQuirk.call(this);
@@ -98,6 +115,9 @@ class Input extends React.Component {
   /**
    * Derived data
    */
+  /** If the underlying DOM element is a select */
+  isNativeSelect = () => this.props.as === 'select';
+
   /** Get the root input element */
   getInputRef = (input) => {
     this.EL = input;
@@ -252,7 +272,7 @@ class Input extends React.Component {
           type={as === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
-          readOnly={readOnly}
+          readOnly={readOnly && !this.isNativeSelect() || null}
           required={required}
           aria-describedby={this.getAriaDescribedBy()}
           aria-invalid={false}
@@ -264,6 +284,11 @@ class Input extends React.Component {
           onBlur={this.handleFocusChange(false)}
           innerRef={this.getInputRef}
         />
+        { this.props.as === 'select' ? (
+          <NativeSelectArrowWrapper>
+            <NativeSelectArrow />
+          </NativeSelectArrowWrapper>
+        ) : null }
       </React.Fragment>
     );
   }
@@ -272,8 +297,8 @@ class Input extends React.Component {
 const InputPropTypes = {
   /** The id associated with the input field */
   id: PROP_TYPE_STRING_OR_NUMBER,
-  /** The DOM node type, either a textarea or an input */
-  as: PropTypes.oneOf(['textarea', 'input']),
+  /** The DOM node type, either a textarea or an input, OR native select */
+  as: PropTypes.oneOf(['textarea', 'input', 'select']),
   /** Placeholder -- required for FormFieldControl */
   placeholder: PROP_TYPE_STRING_OR_NUMBER,
   /** Whether or not the field is disabled -- FormFieldControl */
@@ -355,6 +380,7 @@ function handleIOSQuirk() {
   if (this.props.__platform.is('ios') && this.EL) {
     this.EL.addEventListener('keyup', (event) => {
       const el = event.target;
+      /** Checking these properties already detects if it's input-like or a native select */
       if (!el.value && !el.selectionStart && !el.selectionEnd) {
         // Note: Just setting `0, 0` doesn't fix the issue. Setting
         // `1, 1` fixes it for the first time that you type text and
