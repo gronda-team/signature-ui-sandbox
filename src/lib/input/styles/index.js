@@ -4,6 +4,8 @@ import { EASE_OUT } from '../../core/styles/animation';
 import { PLACEHOLDER } from '../../core/styles/vendor';
 import {TEXT_FIELD_AUTOFILL_MONITOR} from '../../../cdk/text-area/styles';
 import { TYPOGRAPHY_DEFAULTS } from '../../text';
+import { SELECT_ARROW_SIZE, SelectArrowWrapper, SelectArrow } from '../../select/styles';
+import { nativeSelectThemeThunk } from '../../form-field/styles/theme-base';
 
 const baseInput = css`
 // Font needs to be inherited, because by default <input> has a system font.
@@ -105,10 +107,91 @@ ${PLACEHOLDER(`
 ${TEXT_FIELD_AUTOFILL_MONITOR}
 `;
 
+/**
+ * Base styling for native select elements. Must replace default arrow with Signature UI chevron.
+ */
+const baseSelect = css`
+  ${baseInput}
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  background-color: transparent;
+  display: inline-flex;
+  box-sizing: border-box;
+  padding-top: 1em;
+  top: -1em;
+  margin-bottom: -1em;
+
+  &::-ms-expand {
+    display: none;
+  }
+
+  // The \`outline: none\` from \`.mat-input-element\` works on all browsers, however Firefox also
+  // adds a special \`focus-inner\` which we have to disable explicitly. See:
+  // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#Firefox
+  &::-moz-focus-inner {
+    border: 0;
+  }
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+
+  // As a part of its user agent styling, IE11 has a blue box inside each focused
+  // \`select\` element which we have to reset. Note that this needs to be in its own
+  // selector, because having it together with another one will cause other browsers
+  // to ignore it.
+  &::-ms-value {
+    // We need to reset the \`color\` as well, because IE sets it to white.
+    color: inherit;
+    background: none;
+  }
+`;
+
 export const BaseInput = styled.input`
 ${baseInput}
 ${themeThunk()}
 ${typographyThunk(TYPOGRAPHY_DEFAULTS)}
+`;
+
+export const BaseSelect = styled.select`
+${baseSelect}
+${themeThunk()}
+${typographyThunk(TYPOGRAPHY_DEFAULTS)}
+
+[data-field-type=native-select] &, [data-field-type=native-select-multiple] & {
+  padding-right: ${SELECT_ARROW_SIZE * 3}px;
+  text-overflow: ellipsis;
+  
+  [dir=rtl] & {
+    padding-right: 0;
+    padding-left: ${SELECT_ARROW_SIZE * 3}px;
+  }
+}
+`;
+
+/**
+ * Styles for the SUI arrow
+ */
+
+export const NativeSelectArrow = SelectArrow.extend`
+`;
+
+export const NativeSelectArrowWrapper = SelectArrowWrapper.extend`
+  display: inline-block;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  position: absolute;
+  bottom: 1px;
+  right: 0;
+  pointer-events: none;
+
+  ${NativeSelectArrow} {
+    height: 10px;
+    width: 16px;
+  }
+  
+  ${nativeSelectThemeThunk({ Arrow: NativeSelectArrow })}
 `;
 
 export const BaseTextArea = styled.textarea`
