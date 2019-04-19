@@ -16,6 +16,10 @@ const BackgroundFormField = styled(FormField)`
   }
 `;
 
+const BackgroundInput = styled(Input)`
+  && { color: green; }
+`;
+
 class StyledBackground extends React.Component {
   constructor() {
     super();
@@ -39,8 +43,8 @@ class StyledBackground extends React.Component {
       }}>
         <BackgroundFormField>
           <Label>Superhero</Label>
-          <Input
-            as="select"
+          <BackgroundInput
+            is="select"
             value={this.state.value}
             onChange={this.updateText}
             placeholder="Favorite Marvel superhero"
@@ -51,7 +55,7 @@ class StyledBackground extends React.Component {
             <option value="thor">Thor</option>
             <option value="black-widow">Black Widow</option>
             <option value="cap">Captain America</option>
-          </Input>
+          </BackgroundInput>
         </BackgroundFormField>
       </div>
     );
