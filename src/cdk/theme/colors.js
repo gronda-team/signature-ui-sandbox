@@ -60,6 +60,26 @@ export const CYAN = {
   700: '#1098AA',
 };
 
+/** New theme color */
+export const TEAL = {
+  300: '#00CEC3',
+  500: '#00ACA3',
+  700: '#008982',
+};
+
+export const ROYAL_BLUE = {
+  300: '#3A909C',
+  500: '#307882',
+  700: '#266068',
+};
+
+export const CHERRY = {
+  700: '#BA3A31',
+  500: '#E8493D',
+  300: '#FF5849',
+};
+// End new theme colors
+
 export const ORANGE = {
   300: '#F8CA89',
   500: '#FFA300',
