@@ -4,7 +4,6 @@ import { EASE_IN_OUT } from '../../core/styles/animation';
 import Close from '../../core/icons/Close';
 import { themeThunk, tagTypography } from './theme';
 import {BaseInput} from '../../input/styles';
-import { TYPOGRAPHY_DEFAULTS } from '../../text';
 
 const TAG_MIN_HEIGHT = 28;
 const TAG_BORDER_RADIUS = 3;
@@ -102,7 +101,7 @@ ${TagClose} {
   }
 }
 ${themeThunk(components)}
-${tagTypography(components, TYPOGRAPHY_DEFAULTS)}
+${tagTypography(components)}
 `;
 
 export const TagListRoot = styled.div`
