@@ -202,7 +202,7 @@ text-align: left;
 }
 
 ${formFieldBaseThemeMixin(components)}
-${typographyThunk(components, TYPOGRAPHY_DEFAULTS)}
+${typographyThunk(components)}
 
 &[data-appearance=outline] {${outlineStyle} ${outlineTheme} ${outlineTypography} }
 &[data-appearance=fill] { ${fillStyle} ${fillTheme} ${fillTypography} }
