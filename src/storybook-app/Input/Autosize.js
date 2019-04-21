@@ -18,7 +18,7 @@ class Autosize extends React.Component {
       <FormField style={{ width: '300px' }}>
         <Label>Autosize textarea</Label>
         <Input
-          as="textarea"
+          is="textarea"
           autosizeEnabled
           autosizeMinRows={2}
           autosizeMaxRows={5}

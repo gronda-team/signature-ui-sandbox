@@ -18,7 +18,7 @@ class NativeSelect extends React.Component {
       <FormField>
         <Label>Favorite car brand</Label>
         <Input
-          as="select"
+          is="select"
           value={this.state.value}
           onChange={this.updateCarType}
         >
