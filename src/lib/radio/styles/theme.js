@@ -18,7 +18,7 @@ export function themeThunk(components) {
     const { OuterCircle, InnerCircle } = components;
     const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
     const ACTIVE = colors.primary.default;
-    const ACTIVE_BACKGROUND = getColor(colors.primary, 0.2); // used for CDK focus
+    const ACTIVE_BACKGROUND = getColor(colors.primary, 0.8); // used for CDK focus
 
     return css`
     ${OuterCircle} {
