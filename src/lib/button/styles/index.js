@@ -67,7 +67,7 @@ ${ButtonDisabledOverlay} {
   }
 }
 
-&[data-appearance=fill][data-color=primary] {
+&[data-appearance=fill][data-color=primary]:not([disabled]) {
   &:hover {
     ${ButtonFocusOverlay} { opacity: 0.2; }
   }
@@ -77,7 +77,7 @@ ${ButtonDisabledOverlay} {
 // enhancement and not all desktop browsers support this kind of media query, we can't
 // use something like @media (hover).
 @media (hover: none) {
-  &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
+  &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill] {
     &:hover {
       ${ButtonFocusOverlay} { opacity: 0; }
     }
