@@ -62,10 +62,10 @@ margin: 0;
 
 export const TYPOGRAPHY_DEFAULTS = generateTypographyConfig();
 
-function getTypographyFromScTheme(props) {
+const getTypographyFromScTheme = (props) => {
   const typography = _.get(props, 'theme.typography', TYPOGRAPHY_DEFAULTS);
   return suiBaseTypography(typography);
-}
+};
 
 export const BaseText = styled.span.attrs(props => ({
   'data-text-level': props.level
