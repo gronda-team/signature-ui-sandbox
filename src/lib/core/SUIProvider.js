@@ -53,7 +53,7 @@ SUIProvider.propTypes = {
     typography: PropTypes.shape({
 
     }),
-    color: PropTypes.shape({
+    colors: PropTypes.shape({
       primary: PaletteShape,
       secondary: PaletteShape,
       warn: PaletteShape,
@@ -65,7 +65,7 @@ SUIProvider.propTypes = {
 SUIProvider.defaultProps = {
   theme: {
     typography: DEFAULT_TYPOGRAPHY_CONFIG,
-    color: DEFAULT_THEME_CONFIG,
+    colors: DEFAULT_THEME_CONFIG,
   },
 };
 
