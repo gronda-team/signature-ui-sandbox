@@ -232,7 +232,7 @@ export default class FormField extends React.Component {
                 onClick={this.state.containerClick}
                 ref={this.connectionContainer}
               >
-                <FormFieldBar>
+                <FormFieldBar data-hook="form-field-bar">
                   { prefix ? <FormFieldPrefix>{ prefix }</FormFieldPrefix> : null }
                   <FormFieldInfix>
                     { // don't pass through the hints, otherwise it'll show up twice

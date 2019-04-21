@@ -13,7 +13,6 @@ import {
   ExtensionPropTypes,
   withExtensionManager
 } from '../form-field/context/ExtensionsContext';
-import { SelectArrow, SelectArrowWrapper, SelectTrigger, SelectValue } from '../select/styles';
 import { NativeSelectArrow, NativeSelectArrowWrapper } from './styles';
 
 /**
@@ -31,7 +30,7 @@ class Input extends React.Component {
     };
 
     // Determine the type to show. this is NOT reactive
-    switch (_.toLower(props.as)) {
+    switch (_.toLower(props.is)) {
       case 'select':
         this.INPUT_TYPE = BaseSelect;
         break;
@@ -74,7 +73,7 @@ class Input extends React.Component {
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
 
     /** Check to see which type of underlying control we are, and then make modifications */
-    let as = this.props.as;
+    let as = this.props.is;
     if (as === 'select') {
       as = this.props.multiple ? 'native-select-multiple' : 'native-select';
     }
@@ -116,7 +115,7 @@ class Input extends React.Component {
    * Derived data
    */
   /** If the underlying DOM element is a select */
-  isNativeSelect = () => this.props.as === 'select';
+  isNativeSelect = () => this.props.is === 'select';
 
   /** Get the root input element */
   getInputRef = (input) => {
@@ -247,7 +246,7 @@ class Input extends React.Component {
 
   render() {
     const {
-      as, id, placeholder, disabled, required, type,
+      is, id, placeholder, disabled, required, type,
       __extensionManager,
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
@@ -269,7 +268,7 @@ class Input extends React.Component {
           disabled={disabled}
           {...restProps}
           {...extendedAttributes}
-          type={as === 'input' ? type : undefined}
+          type={is === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
           readOnly={readOnly && !this.isNativeSelect() || null}
@@ -284,7 +283,7 @@ class Input extends React.Component {
           onBlur={this.handleFocusChange(false)}
           ref={this.getInputRef}
         />
-        { this.props.as === 'select' ? (
+        { this.props.is === 'select' ? (
           <NativeSelectArrowWrapper>
             <NativeSelectArrow />
           </NativeSelectArrowWrapper>
@@ -298,7 +297,7 @@ const InputPropTypes = {
   /** The id associated with the input field */
   id: PROP_TYPE_STRING_OR_NUMBER,
   /** The DOM node type, either a textarea or an input, OR native select */
-  as: PropTypes.oneOf(['textarea', 'input', 'select']),
+  is: PropTypes.oneOf(['textarea', 'input', 'select']),
   /** Placeholder -- required for FormFieldControl */
   placeholder: PROP_TYPE_STRING_OR_NUMBER,
   /** Whether or not the field is disabled -- FormFieldControl */
@@ -310,7 +309,7 @@ const InputPropTypes = {
   /** Associated only with as="input" fields */
   type: function(props, propName, componentName) {
     // Don't bother if it's a textarea
-    if (_.toLower(props.as) === 'textarea') return null;
+    if (_.toLower(props.is) === 'textarea') return null;
 
     const type = props[propName];
     if (!type || !_.isString(type)) {
@@ -331,7 +330,7 @@ const InputPropTypes = {
 
 const InputDefaultProps = {
   id: '',
-  as: 'input',
+  is: 'input',
   placeholder: '',
   disabled: false,
   required: false,
