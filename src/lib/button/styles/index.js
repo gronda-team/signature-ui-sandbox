@@ -63,7 +63,13 @@ ${ButtonDisabledOverlay} {
 // Use the same visual treatment for hover as for focus.
 &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
   &:hover {
-    ${ButtonFocusOverlay} { opacity: 0.04; }
+    ${ButtonFocusOverlay} { opacity: 0.08; }
+  }
+}
+
+&[data-appearance=fill][data-color=primary] {
+  &:hover {
+    ${ButtonFocusOverlay} { opacity: 0.2; }
   }
 }
 
