@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import _ from 'lodash';
-import { convertLevelToStyles } from './utils';
+import { convertLevelToStyles } from '../../core/theming/typographic-utils';
 import { generateTypographyConfig } from '../../core/theming/typography';
 
 /**

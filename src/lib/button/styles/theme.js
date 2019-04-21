@@ -1,8 +1,9 @@
 import { css } from 'styled-components';
 import _ from 'lodash';
 import { GREY } from '../../../cdk/theme/colors';
-import { getFontFamily, getFontSize, getFontWeight, TYPOGRAPHY_DEFAULTS } from '../../text';
+import { getFontFamily, getFontSize, getFontWeight } from '../../core/theming/typographic-utils';
 import { DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
+import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
 
 const strokedBorder = 'rgba(0, 0, 0, 0.18);';
 
@@ -31,7 +32,7 @@ const strokedColor = foreground => (
 
 /** Get button typography from the theming levels */
 function buttonTypography(props) {
-  const config = _.get(props, 'theme.typography', TYPOGRAPHY_DEFAULTS);
+  const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
   return css`
   font-size: ${getFontSize(config, 'button')};
   font-weight: ${getFontWeight(config, 'button')};

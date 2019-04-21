@@ -8,7 +8,6 @@ import fillAppearanceThunk from './fill-style';
 import { fillThemeThunk, fillTypographyThunk} from './fill-theme';
 import {SELECT_PLACEHOLDER_ARROW_SPACE, SELECT_ARROW_MARGIN, SELECT_ARROW_SIZE} from '../../select/styles';
 import {formFieldBaseThemeMixin, typographyThunk } from './theme-base';
-import { TYPOGRAPHY_DEFAULTS } from '../../text';
 
 // Min amount of space between start and end hint.
 const HINT_MIN_SPACE = 1; // em

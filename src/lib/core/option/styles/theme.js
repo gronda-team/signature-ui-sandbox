@@ -1,7 +1,7 @@
 import { css } from 'styled-components';
 import _ from 'lodash';
 import { GREY } from '../../../../cdk/theme/colors';
-import { getFontFamily, getFontSize } from '../../../text';
+import { getFontFamily, getFontSize } from '../../theming/typographic-utils';
 import { DEFAULT_THEME_CONFIG, getColor } from '../../theming/colors';
 import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../theming/typography';
 

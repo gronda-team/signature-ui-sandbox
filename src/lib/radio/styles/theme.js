@@ -1,10 +1,9 @@
 import { css } from 'styled-components';
 import _ from 'lodash';
 import { GREY } from '../../../cdk/theme/colors';
-import { getFontFamily } from '../../text';
-import { DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
-import { getColor } from '../../core';
+import { getColor, DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
 import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
+import { getFontFamily } from '../../core/theming/typographic-utils';
 
 // border colors
 const BORDER = GREY[500];

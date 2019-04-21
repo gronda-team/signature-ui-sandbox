@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { optionThemeThunk, optionTypographyThunk } from './theme';
 import { MENU_ITEM_BASE, MENU_SIDE_PADDING } from '../../styles/menu-common';
 import { USER_SELECT } from '../../styles/vendor';
-import { TYPOGRAPHY_DEFAULTS } from '../../../text';
 
 export const OptionGroupRoot = styled.div`
 `;
@@ -34,7 +33,7 @@ ${OptionGroupRoot} &:not([data-multiple=true]) {
 }
 // theme
 ${optionThemeThunk()}
-${optionTypographyThunk(TYPOGRAPHY_DEFAULTS)}
+${optionTypographyThunk()}
 `;
 
 // Collapses unwanted whitespace created by newlines in code like the following:

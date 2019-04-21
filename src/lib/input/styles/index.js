@@ -3,7 +3,6 @@ import { themeThunk, typographyThunk } from './theme';
 import { EASE_OUT } from '../../core/styles/animation';
 import { PLACEHOLDER } from '../../core/styles/vendor';
 import {TEXT_FIELD_AUTOFILL_MONITOR} from '../../../cdk/text-area/styles';
-import { TYPOGRAPHY_DEFAULTS } from '../../text';
 import { SELECT_ARROW_SIZE, SelectArrowWrapper, SelectArrow } from '../../select/styles';
 import { nativeSelectThemeThunk } from '../../form-field/styles/theme-base';
 
@@ -151,13 +150,13 @@ const baseSelect = css`
 export const BaseInput = styled.input`
 ${baseInput}
 ${themeThunk()}
-${typographyThunk(TYPOGRAPHY_DEFAULTS)}
+${typographyThunk()}
 `;
 
 export const BaseSelect = styled.select`
 ${baseSelect}
 ${themeThunk()}
-${typographyThunk(TYPOGRAPHY_DEFAULTS)}
+${typographyThunk()}
 
 [data-field-type=native-select] &, [data-field-type=native-select-multiple] & {
   padding-right: ${SELECT_ARROW_SIZE * 3}px;

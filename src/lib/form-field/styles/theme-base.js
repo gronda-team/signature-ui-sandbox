@@ -2,8 +2,8 @@ import { css } from 'styled-components';
 import _ from 'lodash';
 import { GREY } from '../../../cdk/theme/colors';
 import {SelectArrowWrapper} from '../../select/styles';
-import { getLineHeight } from '../../text';
-import { convertLevelToStyles } from '../../text/styles/utils';
+import { getLineHeight } from '../../core/theming/typographic-utils';
+import { convertLevelToStyles } from '../../core/theming/typographic-utils';
 import { DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
 import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
 

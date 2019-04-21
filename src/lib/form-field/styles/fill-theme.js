@@ -1,7 +1,7 @@
 import { css } from 'styled-components';
 import _ from 'lodash';
 import {formFieldLabelPositioning} from './theme-base';
-import { getLineHeight } from '../../text';
+import { getLineHeight } from '../../core/theming/typographic-utils';
 import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
 
 /**
