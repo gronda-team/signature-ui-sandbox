@@ -5,7 +5,6 @@ import { TOGGLE_PADDING } from '../../core/styles/variables';
 import { themeThunk, typographyThunk } from './theme';
 import VISUALLY_HIDDEN from '../../core/styles/a11y';
 import { CheckIcon } from '../../core/icons';
-import { TYPOGRAPHY_DEFAULTS } from '../../text';
 
 // Manual SVG calculation
 const MARK_PATH_LENGTH = 13.462;
@@ -135,5 +134,5 @@ cursor: pointer;
 -webkit-tap-highlight-color: transparent;
 &[data-disabled=true] { cursor: default; }
 ${themeThunk(components)}
-${typographyThunk(components, TYPOGRAPHY_DEFAULTS)}
+${typographyThunk(components)}
 `;
