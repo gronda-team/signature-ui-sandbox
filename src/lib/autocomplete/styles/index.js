@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import {MENU_BASE} from '../../core/styles/menu-common';
 import DividerRoot from '../../divider/styles';
+import themeThunk from './theme';
 
 const AUTOCOMPLETE_PANEL_MAX_HEIGHT = 256; // px
 const AUTOCOMPLETE_PANEL_BORDER_RADIUS = 3; // px
@@ -36,4 +37,6 @@ ${DividerRoot}[aria-orientation=horizontal] {
 
 AutocompletePanel.displayName = 'AutocompletePanel';
 
-export const AutocompletePanelRoot = styled.div``;
+export const AutocompletePanelRoot = styled.div`
+${themeThunk()}
+`;
