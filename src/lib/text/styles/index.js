@@ -1,58 +1,7 @@
 import styled, { css } from 'styled-components';
 import _ from 'lodash';
-import { convertLevelToStyles, convertPropertiesToShorthand } from './utils';
-
-/**
- * Create basic typography level as a CSS value.
- * @param fontSize
- * @param lineHeight
- * @param fontWeight
- * @param fontFamily
- * @param letterSpacing
- * @return object The typography object with its own properties.
- */
-export const createTypographyLevel = ({
-  fontSize,
-  lineHeight = fontSize,
-  fontWeight = 400,
-  fontFamily = null,
-  letterSpacing = null,
-}) => ({
-  fontSize, lineHeight, fontWeight, fontFamily, letterSpacing,
-});
-
-/**
- * Create default configuration
- */
-const DEFAULT_TYPOGRAPHY_CONFIG = {
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
-  display1: createTypographyLevel({ fontSize: '30px', lineHeight: '41px', fontWeight: '700' }),
-  display2: createTypographyLevel({ fontSize: '24px', lineHeight: '33px', fontWeight: '700' }),
-  display3: createTypographyLevel({ fontSize: '20px', lineHeight: '27px', fontWeight: '700' }),
-  display4: createTypographyLevel({ fontSize: '16px', lineHeight: '28px', fontWeight: '700' }),
-  display5: createTypographyLevel({ fontSize: '14px', lineHeight: '24px', fontWeight: '700' }),
-  body1: createTypographyLevel({ fontSize: '19px', lineHeight: '30px' }),
-  body2: createTypographyLevel({ fontSize: '16px', lineHeight: '27px' }),
-  body3: createTypographyLevel({ fontSize: '14px', lineHeight: '22px' }),
-  micro: createTypographyLevel({ fontSize: '12px', lineHeight: '22px' }),
-  button: createTypographyLevel({ fontSize: '14px', lineHeight: '14px' }),
-  input: createTypographyLevel({ fontSize: 'inherit', lineHeight: '1.125' }),
-};
-
-export const createTypographyConfig = (typographyConfig = DEFAULT_TYPOGRAPHY_CONFIG) => {
-  /**
-   * Iterate through all the levels in the config (above, accessed via arguments[0]) and add the
-   * font-family property (fontFamily) for any levels that don't currently have it.
-   */
-  const { fontFamily, ...levels } = typographyConfig;
-  _.each(levels, (value, key) => {
-    if (!value.fontFamily) {
-      levels[key] = { ...value, fontFamily };
-    }
-  });
-
-  return { ...levels, fontFamily };
-};
+import { convertLevelToStyles } from './utils';
+import { generateTypographyConfig } from '../../core/theming/typography';
 
 /**
  * Create the base typography to be injected into the Text component.
@@ -111,10 +60,15 @@ margin: 0;
 }
 `;
 
-export const TYPOGRAPHY_DEFAULTS = createTypographyConfig();
+export const TYPOGRAPHY_DEFAULTS = generateTypographyConfig();
+
+function getTypographyFromScTheme(props) {
+  const typography = _.get(props, 'theme.typography', TYPOGRAPHY_DEFAULTS);
+  return suiBaseTypography(typography);
+}
 
 export const BaseText = styled.span.attrs(props => ({
   'data-text-level': props.level
 }))`
-${suiBaseTypography(TYPOGRAPHY_DEFAULTS)}
+${getTypographyFromScTheme}
 `;
