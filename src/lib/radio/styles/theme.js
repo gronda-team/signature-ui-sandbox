@@ -1,41 +1,54 @@
 import { css } from 'styled-components';
-import { GREEN, GREY } from '../../../cdk/theme/colors';
-import { getFontFamily, TYPOGRAPHY_DEFAULTS } from '../../text';
+import _ from 'lodash';
+import { GREY } from '../../../cdk/theme/colors';
+import { getFontFamily } from '../../text';
+import { DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
+import { getColor } from '../../core';
+import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
 
 // border colors
-const ACTIVE = GREEN[500];
 const BORDER = GREY[500];
 
-const ACTIVE_BACKGROUND = GREEN[100]; // used for CDK focus
 
 const DISABLED_FOREGROUND = GREY[700];
 const DISABLED_BACKGROUND = GREY[100];
 
-export const themeThunk = (components) => {
-  const { OuterCircle, InnerCircle } = components;
-  return css`
-  ${OuterCircle} {
-    border-color: ${BORDER};
-  }
-  
-  &[data-disabled=true] ${OuterCircle} { background-color: ${DISABLED_BACKGROUND}; }
-  
-  &[data-checked=true] {
-    &[data-disabled=false] ${InnerCircle} { background-color: ${ACTIVE}; }
-    &[data-disabled=true] ${InnerCircle} { background-color: ${DISABLED_FOREGROUND}; }
-  }
-  
-  &[data-focused=true][data-focus-origin=keyboard] {
-    ${OuterCircle} {
-      border-color: ${ACTIVE};
-      background-color: ${ACTIVE_BACKGROUND};
-    }
-  }
-  `;
-};
+export function themeThunk(components) {
+  return function themeThunkFromScProps(props) {
+    const { OuterCircle, InnerCircle } = components;
+    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const ACTIVE = colors.primary.default;
+    const ACTIVE_BACKGROUND = getColor(colors.primary, 0.2); // used for CDK focus
 
-export const typographyThunk = () => css`
-  & {
-    font-family: ${getFontFamily(TYPOGRAPHY_DEFAULTS)};
+    return css`
+    ${OuterCircle} {
+      border-color: ${BORDER};
+    }
+    
+    &[data-disabled=true] ${OuterCircle} { background-color: ${DISABLED_BACKGROUND}; }
+    
+    &[data-checked=true] {
+      &[data-disabled=false] ${InnerCircle} { background-color: ${ACTIVE}; }
+      &[data-disabled=true] ${InnerCircle} { background-color: ${DISABLED_FOREGROUND}; }
+    }
+    
+    &[data-focused=true][data-focus-origin=keyboard] {
+      ${OuterCircle} {
+        border-color: ${ACTIVE};
+        background-color: ${ACTIVE_BACKGROUND};
+      }
+    }
+    `;
   }
-`;
+}
+
+export function typographyThunk() {
+  return function typographyThunkFromScProps(props) {
+    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    return css`
+      & {
+        font-family: ${getFontFamily(config)};
+      }
+    `;
+  }
+}
