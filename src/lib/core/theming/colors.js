@@ -1,4 +1,6 @@
 import Color from 'color';
+import _ from 'lodash';
+
 import { CHERRY, ROYAL_BLUE, TEAL } from '../../../cdk/theme/colors';
 
 /**
@@ -49,10 +51,10 @@ export function getColor(palette, hue, opacity) {
   }
 
   if (_.isNil(opacity)) {
-    return color.rgba().fade(color.alpha());
+    return color.rgb().fade(color.alpha()).string();
   }
 
-  return color.rgba().fade(opacity);
+  return color.rgb().fade(opacity).string();
 }
 
 /**
