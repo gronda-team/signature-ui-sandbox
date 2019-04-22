@@ -138,7 +138,7 @@ line-height: ${ICON_BUTTON_SIZE}px;
 border-radius: ${ICON_BUTTON_BORDER_RADIUS}px;
 
 i {
-  line-height: ${ICON_BUTTON_LINE_HEIGHT};
+  line-height: ${ICON_BUTTON_LINE_HEIGHT}px;
 }
 `;
 
