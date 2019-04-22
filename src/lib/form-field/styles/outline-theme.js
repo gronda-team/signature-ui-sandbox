@@ -13,7 +13,7 @@ const DISABLED_BACKGROUND = GREY[100];
 export function outlineThemeThunk(components) {
   return function outlineThemeThunkFromScProps(props) {
     const { FormFieldBar } = components;
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
     const INVALID_BORDER = colors.warn.default;
     const ACTIVE_BORDER = colors.primary.default;
 
@@ -64,7 +64,7 @@ export function outlineTypographyThunk(components) {
       FormFieldLabelWrapper,
       FormFieldLabel,
     } = components;
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
 
     const LINE_HEIGHT = Number.parseFloat(getLineHeight(config, 'input')); // em
     // The amount to scale the label.

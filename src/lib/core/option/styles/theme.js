@@ -7,7 +7,7 @@ import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../theming/typography';
 
 export function optionThemeThunk() {
   return function optionThemeThunkFromScProps(props) {
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
     const background = getColor(colors.primary, 0.76);
     return css`
     color: ${GREY[900]};
@@ -24,7 +24,7 @@ export function optionThemeThunk() {
 
 export function optionTypographyThunk() {
   return function optionTypographyThunkFromScProps(props) {
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     return css`
     font-family: ${getFontFamily(config)};
     font-size: ${getFontSize(config, 'body2')};

@@ -6,7 +6,7 @@ import { DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
 import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
 
 function buttonTypography(props) {
-  const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+  const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
   return css`
   font-size: ${getFontSize(config, 'button')};
   font-weight: ${getFontWeight(config, 'button')};
@@ -16,7 +16,7 @@ function buttonTypography(props) {
 
 export function themeThunk(components) {
   return function themeThunkFromScProps(props) {
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
 
     // border colors
     const ACTIVE_BACKGROUND = colors.primary.default;

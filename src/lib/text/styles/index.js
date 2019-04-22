@@ -63,7 +63,7 @@ margin: 0;
 export const TYPOGRAPHY_DEFAULTS = generateTypographyConfig();
 
 const getTypographyFromScTheme = (props) => {
-  const typography = _.get(props, 'theme.typography', TYPOGRAPHY_DEFAULTS);
+  const typography = _.get(props, 'theme.TYPOGRAPHY', TYPOGRAPHY_DEFAULTS);
   return suiBaseTypography(typography);
 };
 

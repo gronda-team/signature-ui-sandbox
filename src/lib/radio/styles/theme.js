@@ -15,7 +15,7 @@ const DISABLED_BACKGROUND = GREY[100];
 export function themeThunk(components) {
   return function themeThunkFromScProps(props) {
     const { OuterCircle, InnerCircle } = components;
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
     const ACTIVE = colors.primary.default;
     const ACTIVE_BACKGROUND = getColor(colors.primary, 0.8); // used for CDK focus
 
@@ -43,7 +43,7 @@ export function themeThunk(components) {
 
 export function typographyThunk() {
   return function typographyThunkFromScProps(props) {
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     return css`
       & {
         font-family: ${getFontFamily(config)};

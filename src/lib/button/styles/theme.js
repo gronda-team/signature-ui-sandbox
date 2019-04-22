@@ -32,7 +32,7 @@ const strokedColor = foreground => (
 
 /** Get button typography from the theming levels */
 function buttonTypography(props) {
-  const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+  const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
   return css`
   font-size: ${getFontSize(config, 'button')};
   font-weight: ${getFontWeight(config, 'button')};
@@ -43,7 +43,7 @@ function buttonTypography(props) {
 function themeThunk(components) {
   return function themeThunkFromScProps(props) {
     const { FocusOverlay, DisabledOverlay } = components;
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
 
     const primary = colors.primary.default;
     const darkPrimaryText = GREY[900];

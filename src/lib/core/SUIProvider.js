@@ -50,10 +50,10 @@ const PaletteShape = PropTypes.shape({
 SUIProvider.displayName = 'SUIProvider';
 SUIProvider.propTypes = {
   theme: PropTypes.shape({
-    typography: PropTypes.shape({
+    TYPOGRAPHY: PropTypes.shape({
 
     }),
-    colors: PropTypes.shape({
+    COLORS: PropTypes.shape({
       primary: PaletteShape,
       secondary: PaletteShape,
       warn: PaletteShape,
@@ -64,8 +64,8 @@ SUIProvider.propTypes = {
 
 SUIProvider.defaultProps = {
   theme: {
-    typography: DEFAULT_TYPOGRAPHY_CONFIG,
-    colors: DEFAULT_THEME_CONFIG,
+    TYPOGRAPHY: DEFAULT_TYPOGRAPHY_CONFIG,
+    COLORS: DEFAULT_THEME_CONFIG,
   },
 };
 

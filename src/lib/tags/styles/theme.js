@@ -15,7 +15,7 @@ const disabledBackground = 'transparent';
 export function themeThunk(components) {
   return function themeThunkFromScProps(props) {
     const { Close } = components;
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
     const border = colors.primary.default;
     const inactiveForeground = border;
     const activeBackground = border;
@@ -57,7 +57,7 @@ export function themeThunk(components) {
 export function tagTypography(components) {
   return function tagTypographyFromScProps(props) {
     const { Close } = components;
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     return css`
     font-family: ${getFontFamily(config)};
     font-weight: ${getFontWeight(config, 'body2')};

@@ -14,7 +14,7 @@ const placeholderText = GREY[500];
  */
 export function themeThunk() {
   return function themeThunkFromScProps(props) {
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
     const active = colors.primary.default;
     return css`
     &:disabled {
@@ -29,7 +29,7 @@ export function themeThunk() {
 
 export function typographyThunk() {
   return function typographyThunkFromScProps(props) {
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     const lineHeight = Number.parseFloat(getLineHeight(config, 'input'));
     const lineSpacing = (lineHeight - 1) / 2;
     return css`

@@ -13,7 +13,7 @@ const ARROW_STROKE = GREY[700];
 // Required mixin theming for all appearances
 export function formFieldBaseThemeMixin(components) {
   return function formFieldBaseThemeFromScProps(props) {
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
     const PRIMARY = colors.primary.default;
     const REQUIRED_LABEL_COLOR = colors.warn.default;
 
@@ -75,7 +75,7 @@ export function typographyThunk(components) {
       FormFieldWrapper,
     } = components;
 
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     /**
      * Typographic styles
      */

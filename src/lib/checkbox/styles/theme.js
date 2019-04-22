@@ -11,7 +11,7 @@ const disabledCheck = GREY[700];
 
 export function themeThunk (components) {
   return function themeThunkFromScProps(props) {
-    const colors = _.get(props, 'theme.colors', DEFAULT_THEME_CONFIG);
+    const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
 
     // border colors
     const inactiveBackground = 'transparent';
@@ -56,7 +56,7 @@ export function themeThunk (components) {
 
 export function typographyThunk(components) {
   return function typographyThunkFromScProps(props) {
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     const { CheckboxLayout, CheckboxLabel } = components;
     return css`
     & {

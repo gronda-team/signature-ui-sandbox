@@ -30,7 +30,7 @@ export const fillThemeThunk = (components) => {
 export function fillTypographyThunk (components) {
   return function fillTypographyThunkFromScProps(props) {
     const { FormFieldInfix, FormFieldLabel } = components;
-    const config = _.get(props, 'theme.typography', DEFAULT_TYPOGRAPHY_CONFIG);
+    const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
 
     const LINE_HEIGHT = Number.parseFloat(getLineHeight(config, 'input')); // em
     // The amount to scale the font for the floating label and subscript.
