@@ -1,7 +1,7 @@
 import Color from 'color';
 import _ from 'lodash';
 
-import { CHERRY, ROYAL_BLUE, TEAL } from '../../../cdk/theme/colors';
+import { CHERRY, GREY, ROYAL_BLUE, TEAL } from '../../../cdk/theme/colors';
 
 /**
  * Generate a color map, i.e., one that has a base color, and lighter/darker versions of
@@ -65,6 +65,7 @@ export function generateThemeColors(primary, accent, warn = generatePalette(CHER
     primary,
     accent,
     warn,
+    grey: GREY,
   };
 }
 

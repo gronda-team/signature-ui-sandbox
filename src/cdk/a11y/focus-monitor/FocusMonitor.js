@@ -11,16 +11,22 @@ class FocusMonitor extends React.Component {
     super();
     
     this.state = {
-      origin: null,
-      lastFocusOrigin: null,
-      windowFocused: false,
-      lastTouchTarget: null,
-      touchTimeoutId: null,
-      windowFocusTimeoutId: null,
-      originTimeoutId: null,
       // where we key the monitoring information
       elementInfo: [],
+      provide: {
+        monitor: this.monitor,
+        stopMonitoring: this.stopMonitoring,
+        focusVia: this.focusVia,
+      },
     };
+
+    this.ORIGIN = null;
+    this.LAST_FOCUS_ORIGIN = null;
+    this.WINDOW_FOCUSED = false;
+    this.LAST_TOUCH_TARGET = null;
+    this.TOUCH_TIMEOUT_ID = null;
+    this.WINDOW_FOCUS_TIMEOUT_ID = null;
+    this.ORIGIN_TIMEOUT_ID = null;
   }
   
   /**
@@ -46,12 +52,6 @@ class FocusMonitor extends React.Component {
   /**
    * Derived data
    */
-  providerValue = () => ({
-    monitor: this.monitor,
-    stopMonitoring: this.stopMonitoring,
-    focusVia: this.focusVia,
-  });
-  
   /**
    * Monitors focus on an element and applies appropriate CSS classes.
    * @param element The element to monitor
@@ -122,14 +122,14 @@ class FocusMonitor extends React.Component {
   focusVia(element, origin, options) {
     setOriginForCurrentEventQueue.call(this, origin);
     
-    if (_.isFunction(element.focus)) {
+    if (typeof element.focus === 'function') {
       element.focus(options);
     }
   }
   
   render() {
     return (
-      <FocusMonitorProvider value={this.providerValue()}>
+      <FocusMonitorProvider value={this.state.provide}>
         { this.props.children }
       </FocusMonitorProvider>
     )
@@ -156,9 +156,8 @@ function registerGlobalListeners() {
   
   // On keydown record the origin and clear any touch event that may be in progress.
   let documentKeydownListener = () => {
-    this.setState({
-      lastTouchTarget: null,
-    }, () => {
+    this.LAST_TOUCH_TARGET = null;
+    window.setTimeout(() => {
       setOriginForCurrentEventQueue.call(this, 'keyboard');
     });
   };
@@ -166,7 +165,7 @@ function registerGlobalListeners() {
   // On mousedown record the origin only if there is not touch target, since a mousedown can
   // happen as a result of a touch event.
   let documentMousedownListener = () => {
-    if (!this.state.lastTouchTarget) {
+    if (!this.LAST_TOUCH_TARGET) {
       setOriginForCurrentEventQueue.call(this, 'mouse');
     }
   };
@@ -175,26 +174,22 @@ function registerGlobalListeners() {
   // we can't rely on the trick used above (setting timeout of 1ms). Instead we wait 650ms to
   // see if a focus happens.
   let documentTouchstartListener = (event) => {
-    if (!_.isNil(this.state.touchTimeoutId)) {
-      window.clearTimeout(this.state.touchTimeoutId);
+    if (this.TOUCH_TIMEOUT_ID !== null) {
+      window.clearTimeout(this.TOUCH_TIMEOUT_ID);
     }
-    
-    this.setState({
-      lastTouchTarget: event.target,
-      touchTimeoutId: window.setTimeout(() => {
-        this.setState({ lastTouchTarget: null });
-      }, TOUCH_BUFFER_MS),
-    });
+
+    this.LAST_TOUCH_TARGET = event.target;
+    this.TOUCH_TIMEOUT_ID = window.setTimeout(() => {
+      this.LAST_TOUCH_TARGET = null;
+    }, TOUCH_BUFFER_MS);
   };
   
   // Make a note of when the window regains focus, so we can restore the origin info for the
   // focused element.
   let windowFocusListener = () => {
-    this.setState({
-      windowFocused: true,
-      windowFocusTimeoutId: window.setTimeout(() => {
-        this.setState({ windowFocused: false });
-      }),
+    this.WINDOW_FOCUSED = true;
+    this.WINDOW_FOCUS_TIMEOUT_ID = window.setTimeout(() => {
+      this.WINDOW_FOCUSED = false;
     });
   };
   
@@ -218,9 +213,9 @@ function registerGlobalListeners() {
     window.removeEventListener('focus', windowFocusListener);
   
     // Clear timeouts for all potentially pending timeouts to prevent the leaks.
-    window.clearTimeout(this.state.windowFocusTimeoutId);
-    window.clearTimeout(this.state.touchTimeoutId);
-    window.clearTimeout(this.state.originTimeoutId);
+    window.clearTimeout(this.WINDOW_FOCUS_TIMEOUT_ID);
+    window.clearTimeout(this.TOUCH_TIMEOUT_ID);
+    window.clearTimeout(this.ORIGIN_TIMEOUT_ID);
   };
 }
 
@@ -229,15 +224,13 @@ function registerGlobalListeners() {
  * @param origin The origin to set.
  */
 function setOriginForCurrentEventQueue(origin) {
-  this.setState({
-    origin,
+  this.ORIGIN = origin;
+  this.ORIGIN_TIMEOUT_ID = window.setTimeout(() => {
     // Sometimes the focus origin won't be valid in Firefox because Firefox seems to focus *one*
     // tick after the interaction event fired. To ensure the focus origin is always correct,
     // the focus origin will be determined at the beginning of the next tick.
-    originTimeoutId: window.setTimeout(() => {
-      this.setState({ origin: null })
-    }, 1),
-  });
+    this.ORIGIN = null;
+  }, 1);
 }
 
 /**
@@ -264,8 +257,8 @@ function wasCausedByTouch(event) {
   // focus event. When that blur event fires we know that whatever follows is not a result of the
   // touchstart.
   let focusTarget = event.target;
-  return this.state.lastTouchTarget instanceof Node && focusTarget instanceof Node &&
-    (focusTarget === this.state.lastTouchTarget || focusTarget.contains(this.state.lastTouchTarget));
+  return this.LAST_TOUCH_TARGET instanceof Node && focusTarget instanceof Node &&
+    (focusTarget === this.LAST_TOUCH_TARGET || focusTarget.contains(this.LAST_TOUCH_TARGET));
 }
 
 /**
@@ -292,10 +285,10 @@ function onFocus(event, element) {
   // 2) It was caused by a touch event, in which case we mark the origin as 'touch'.
   // 3) The element was programmatically focused, in which case we should mark the origin as
   //    'program'.
-  let origin = this.state.origin;
+  let origin = this.ORIGIN;
   if (!origin) {
-    if (this.state.windowFocused && this.state.lastFocusOrigin) {
-      origin = this.state.lastFocusOrigin;
+    if (this.WINDOW_FOCUSED && this.LAST_FOCUS_ORIGIN) {
+      origin = this.LAST_FOCUS_ORIGIN;
     } else if (wasCausedByTouch.call(this, event)) {
       origin = 'touch';
     } else {
@@ -305,7 +298,7 @@ function onFocus(event, element) {
 
   // call the callback
   elementInfo.callback(origin);
-  this.setState({ lastFocusOrigin: origin });
+  this.LAST_FOCUS_ORIGIN = origin;
 }
 
 /**
