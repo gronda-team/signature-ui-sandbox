@@ -38,7 +38,8 @@ export function generateTypographyConfig(typographyConfig = BASE_TYPOGRAPHY_LEVE
    * Iterate through all the levels in the config (above, accessed via arguments[0]) and add the
    * font-family property (fontFamily) for any levels that don't currently have it.
    */
-  const { fontFamily, ...levels } = typographyConfig;
+  const config = { ...BASE_TYPOGRAPHY_LEVELS, ...typographyConfig };
+  const { fontFamily, ...levels } = config;
   _.each(levels, (value, key) => {
     if (!value.fontFamily) {
       levels[key] = { ...value, fontFamily };
