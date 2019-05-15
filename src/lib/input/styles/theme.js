@@ -33,7 +33,13 @@ export function typographyThunk() {
     const lineHeight = Number.parseFloat(getLineHeight(config, 'input'));
     const lineSpacing = (lineHeight - 1) / 2;
     return css`
-    margin-top: ${-lineSpacing}em;
+    input& {
+      margin-top: ${-lineSpacing}em;
+    }
+    
+    select& {
+      line-height: ${lineHeight * 0.9};
+    }
     `;
   }
 }

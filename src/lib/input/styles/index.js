@@ -5,6 +5,7 @@ import { PLACEHOLDER } from '../../core/styles/vendor';
 import {TEXT_FIELD_AUTOFILL_MONITOR} from '../../../cdk/text-area/styles';
 import { SELECT_ARROW_SIZE, SelectArrowWrapper, SelectArrow } from '../../select/styles';
 import { nativeSelectThemeThunk } from '../../form-field/styles/theme-base';
+import { getLineHeight } from '../../core/theming/typographic-utils';
 
 const baseInput = css`
 // Font needs to be inherited, because by default <input> has a system font.
@@ -183,6 +184,7 @@ export const NativeSelectArrowWrapper = styled(SelectArrowWrapper)`
   position: absolute;
   bottom: 1px;
   right: 0;
+  line-height: ${props => getLineHeight(props.theme.TYPOGRAPHY, 'input')};
   pointer-events: none;
 
   ${NativeSelectArrow} {
