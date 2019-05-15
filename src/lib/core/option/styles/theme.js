@@ -27,7 +27,7 @@ export function optionTypographyThunk() {
     const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     return css`
     font-family: ${getFontFamily(config)};
-    font-size: ${getFontSize(config, 'body2')};
+    font-size: ${getFontSize(config, 'body3')};
     `;
   }
 }

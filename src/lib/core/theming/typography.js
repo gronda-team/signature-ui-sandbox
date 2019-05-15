@@ -30,7 +30,7 @@ const BASE_TYPOGRAPHY_LEVELS = {
   body3: generateTypographyLevel({ fontSize: '14px', lineHeight: '22px' }),
   micro: generateTypographyLevel({ fontSize: '12px', lineHeight: '22px' }),
   button: generateTypographyLevel({ fontSize: '14px', lineHeight: '14px' }),
-  input: generateTypographyLevel({ fontSize: 'inherit', lineHeight: '1.125' }),
+  input: generateTypographyLevel({ fontSize: 'inherit', lineHeight: '1.4285' }),
 };
 
 export function generateTypographyConfig(typographyConfig = BASE_TYPOGRAPHY_LEVELS) {
