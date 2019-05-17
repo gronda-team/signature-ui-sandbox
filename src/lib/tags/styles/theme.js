@@ -60,8 +60,8 @@ export function tagTypography(components) {
     const config = _.get(props, 'theme.TYPOGRAPHY', DEFAULT_TYPOGRAPHY_CONFIG);
     return css`
     font-family: ${getFontFamily(config)};
-    font-weight: ${getFontWeight(config, 'body2')};
-    font-size: ${getFontSize(config, 'body2')};
+    font-weight: ${getFontWeight(config, 'body3')};
+    font-size: ${getFontSize(config, 'body3')};
     
     ${Close} {
       font-size: 18px;
