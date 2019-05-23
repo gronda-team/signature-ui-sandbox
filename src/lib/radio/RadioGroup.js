@@ -39,10 +39,11 @@ class RadioGroup extends React.Component {
   };
   
   render() {
+    const { children, labelPosition, onTouched, disabled, required, ...restProps } = this.props;
     return (
-      <RadioGroupRoot role="radiogroup">
+      <RadioGroupRoot {...restProps} role="radiogroup">
         <RadioGroupProvider value={this.providerValue()}>
-          { this.props.children }
+          { children }
         </RadioGroupProvider>
       </RadioGroupRoot>
     )
