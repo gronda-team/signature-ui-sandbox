@@ -83,7 +83,8 @@ function themeThunk(components) {
     ${DisabledOverlay} { background-color: white; }
     
     &[data-appearance=stroked]:not([disabled=true]) {
-      border-color: ${strokedBorder};
+      &[data-color=primary] { border-color: ${primary}; }
+      &[data-color=secondary] { border-color: ${darkPrimaryText}; }
     }
     
     ${buttonTypography}
