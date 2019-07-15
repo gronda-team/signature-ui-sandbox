@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import {buttonBaseThunk, fullThunk, iconThunk, strokedButtonThunk} from './button-base';
 import FILL from '../../core/styles/layout-common';
 import { EASE_IN_OUT } from '../../core/styles/animation';
@@ -64,9 +64,11 @@ ${ButtonDisabledOverlay} {
 
 // Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
-&[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
-  &:hover {
-    ${ButtonFocusOverlay} { opacity: 0.08; }
+&[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill] {
+  &:not([disabled]) {
+    &:hover {
+      ${ButtonFocusOverlay} { opacity: 0.08; }
+    }
   }
 }
 
@@ -81,8 +83,10 @@ ${ButtonDisabledOverlay} {
 // use something like @media (hover).
 @media (hover: none) {
   &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill] {
-    &:hover {
-      ${ButtonFocusOverlay} { opacity: 0; }
+    &:not([disabled]) {
+      &:hover {
+        ${ButtonFocusOverlay} { opacity: 0; }
+      }
     }
   }
 }
