@@ -35,7 +35,7 @@ function buttonTypography(props) {
   return css`
   font-size: ${getFontSize(config, 'button')};
   font-weight: ${getFontWeight(config, 'button')};
-  font-family: ${getFontFamily(config)}
+  font-family: ${getFontFamily(config)};
   `;
 }
 
