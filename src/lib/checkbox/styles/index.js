@@ -33,7 +33,7 @@ cursor: inherit;
 align-items: baseline;
 vertical-align: middle;
 display: inline-flex;
-white-space: nowrap;
+white-space: normal;
 `;
 
 export const CheckboxInnerContainer = styled.div`
@@ -41,7 +41,7 @@ display: inline-block;
 height: ${CHECKBOX_SIZE}px;
 width: ${CHECKBOX_SIZE}px;
 line-height: 0;
-margin: auto ${TOGGLE_PADDING}px auto auto;
+margin: ${TOGGLE_PADDING / 4}px ${TOGGLE_PADDING}px auto auto;
 order: 0;
 position: relative;
 vertical-align: middle;
