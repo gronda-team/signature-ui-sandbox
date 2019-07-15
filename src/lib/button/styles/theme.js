@@ -25,8 +25,8 @@ const fillColor = background => (
   buttonColors('white', background)
 );
 
-const strokedColor = foreground => (
-  buttonColors(foreground, 'transparent', strokedBorder)
+const strokedColor = (foreground, border = strokedBorder) => (
+  buttonColors(foreground, 'transparent', border)
 );
 
 /** Get button typography from the theming levels */
@@ -57,8 +57,7 @@ function themeThunk(components) {
       background: transparent;
       
       &[data-color=primary] > ${FocusOverlay} { background-color: ${primary}; }
-      &[data-color=secondary] > 
-      &[disabled=true] > ${FocusOverlay} { background-color: transparent; }
+      &[disabled] > ${FocusOverlay} { background-color: transparent; }
     }
     
     &[data-appearance=standard] {
@@ -73,17 +72,17 @@ function themeThunk(components) {
       }
     }
     
-    &[data-appearance=stroked] {
-      &[data-color=primary] { ${strokedColor(primary)} }
-      &[data-color=secondary] { ${strokedColor(darkPrimaryText)} }
+    &[data-appearance=stroked]:not([disabled]) {
+      &[data-color=primary] { ${strokedColor(primary, primary)} }
+      &[data-color=secondary] { ${strokedColor(darkPrimaryText, darkPrimaryText)} }
     }
     
     ${FocusOverlay} { background-color: black; }
     ${DisabledOverlay} { background-color: white; }
     
-    &[data-appearance=stroked]:not([disabled=true]) {
-      &[data-color=primary] { border-color: ${primary}; }
-      &[data-color=secondary] { border-color: ${darkPrimaryText}; }
+    &[data-appearance=stroked][disabled] {
+      &[data-color=primary] { ${strokedColor(primary, colors.primary.lighter)} }
+      &[data-color=secondary] { ${strokedColor(darkPrimaryText, colors.grey['700'])} }
     }
     
     ${buttonTypography}
