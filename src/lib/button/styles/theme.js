@@ -1,6 +1,5 @@
 import { css } from 'styled-components';
 import _ from 'lodash';
-import { GREY } from '../../../cdk/theme/colors';
 import { getFontFamily, getFontSize, getFontWeight } from '../../core/theming/typographic-utils';
 import { DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
 import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
@@ -46,7 +45,7 @@ function themeThunk(components) {
     const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
 
     const primary = colors.primary.default;
-    const darkPrimaryText = GREY[900];
+    const darkPrimaryText = colors.grey[900];
 
     return css`
     // Buttons without a background color should inherit the font color. This is necessary to
