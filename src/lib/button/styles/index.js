@@ -7,7 +7,8 @@ import themeThunk from './theme';
 const BUTTON_FOCUS_TRANSITION = `opacity 200MS ${EASE_IN_OUT.CURVE}, background-color 200ms ${EASE_IN_OUT.CURVE}`;
 
 export const ButtonWrapper = styled.span``;
-export const ButtonFocusOverlay = styled.div`
+
+const focusOverlay = css`
 ${FILL}
 
 // Disable pointer events for the ripple container and focus overlay because the container
@@ -24,6 +25,8 @@ opacity: 0;
 transition: ${BUTTON_FOCUS_TRANSITION};
 `;
 
+export const ButtonFocusOverlay = styled.div`${focusOverlay}`;
+
 /**
  * To be shown if the button is disabled. Note that we can't just change
  * the color of the background in ButtonFocusOverlay because going between
@@ -31,7 +34,7 @@ transition: ${BUTTON_FOCUS_TRANSITION};
  * is being changed as well. (It would look weird going from not disabled
  * to disabled).
  */
-export const ButtonDisabledOverlay = styled(ButtonFocusOverlay)``;
+export const ButtonDisabledOverlay = styled.div`${focusOverlay}`;
 
 const components = {
   FocusOverlay: ButtonFocusOverlay,
