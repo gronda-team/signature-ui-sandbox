@@ -191,9 +191,7 @@ class Input extends React.Component {
 
   /** Handle onChange with extensions */
   onChange = (event) => {
-    if (this.autocomplete.current) {
-      this.autocomplete.current.handleInput(event);
-    }
+    this.props.__extensionManager.extendedOnChange(event);
 
     _.invoke(this.props, 'onChange', event);
   };
