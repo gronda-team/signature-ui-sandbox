@@ -1,6 +1,5 @@
 import { css } from 'styled-components';
 import _ from 'lodash';
-import { GREY } from '../../../cdk/theme/colors';
 import { getFontFamily, getFontSize, getFontWeight } from '../../core/theming/typographic-utils';
 import { DEFAULT_THEME_CONFIG } from '../../core/theming/colors';
 import { DEFAULT_TYPOGRAPHY_CONFIG } from '../../core/theming/typography';
@@ -26,8 +25,8 @@ const fillColor = background => (
   buttonColors('white', background)
 );
 
-const strokedColor = foreground => (
-  buttonColors(foreground, 'transparent', strokedBorder)
+const strokedColor = (foreground, border = strokedBorder) => (
+  buttonColors(foreground, 'transparent', border)
 );
 
 /** Get button typography from the theming levels */
@@ -36,7 +35,7 @@ function buttonTypography(props) {
   return css`
   font-size: ${getFontSize(config, 'button')};
   font-weight: ${getFontWeight(config, 'button')};
-  font-family: ${getFontFamily(config)}
+  font-family: ${getFontFamily(config)};
   `;
 }
 
@@ -46,7 +45,7 @@ function themeThunk(components) {
     const colors = _.get(props, 'theme.COLORS', DEFAULT_THEME_CONFIG);
 
     const primary = colors.primary.default;
-    const darkPrimaryText = GREY[900];
+    const darkPrimaryText = colors.grey[900];
 
     return css`
     // Buttons without a background color should inherit the font color. This is necessary to
@@ -58,8 +57,7 @@ function themeThunk(components) {
       background: transparent;
       
       &[data-color=primary] > ${FocusOverlay} { background-color: ${primary}; }
-      &[data-color=secondary] > 
-      &[disabled=true] > ${FocusOverlay} { background-color: transparent; }
+      &[disabled] > ${FocusOverlay} { background-color: transparent; }
     }
     
     &[data-appearance=standard] {
@@ -74,16 +72,17 @@ function themeThunk(components) {
       }
     }
     
-    &[data-appearance=stroked] {
-      &[data-color=primary] { ${strokedColor(primary)} }
-      &[data-color=secondary] { ${strokedColor(darkPrimaryText)} }
+    &[data-appearance=stroked]:not([disabled]) {
+      &[data-color=primary] { ${strokedColor(primary, primary)} }
+      &[data-color=secondary] { ${strokedColor(darkPrimaryText, darkPrimaryText)} }
     }
     
     ${FocusOverlay} { background-color: black; }
     ${DisabledOverlay} { background-color: white; }
     
-    &[data-appearance=stroked]:not([disabled=true]) {
-      border-color: ${strokedBorder};
+    &[data-appearance=stroked][disabled] {
+      &[data-color=primary] { ${strokedColor(primary, colors.primary.lighter)} }
+      &[data-color=secondary] { ${strokedColor(darkPrimaryText, colors.grey['700'])} }
     }
     
     ${buttonTypography}

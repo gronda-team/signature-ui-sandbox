@@ -269,7 +269,7 @@ class AutocompleteExtension extends React.Component {
   };
 
   /** Callback onInput for this.props.input */
-  onInput = (event) => {
+  onChange = (event) => {
     const target = event.target;
     let value = target.value;
 

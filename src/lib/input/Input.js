@@ -191,9 +191,7 @@ class Input extends React.Component {
 
   /** Handle onChange with extensions */
   onChange = (event) => {
-    if (this.autocomplete.current) {
-      this.autocomplete.current.handleInput(event);
-    }
+    this.props.__extensionManager.extendedOnChange(event);
 
     _.invoke(this.props, 'onChange', event);
   };
@@ -235,12 +233,18 @@ class Input extends React.Component {
     if (isFocused) {
       // Focus
       this.props.__extensionManager.extendedOnFocus(event);
+      if (typeof this.props.onFocus === 'function') {
+        this.props.onFocus(event);
+      }
     } else {
       // Blur
       if (this.autocomplete.current) {
         this.autocomplete.current.onTouched();
       }
       this.props.__extensionManager.extendedOnBlur(event);
+      if (typeof this.props.onBlur === 'function') {
+        this.props.onBlur(event);
+      }
     }
   };
 

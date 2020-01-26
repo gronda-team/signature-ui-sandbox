@@ -4,6 +4,8 @@ import { FormField, Label, Hint } from '../../lib/form-field';
 import { Input } from '../../lib/input';
 import { TagList, Tag } from '../../lib/tags';
 import {COMMA, ENTER} from '../../cdk/keycodes/keys';
+import { Autocomplete } from '../../lib/autocomplete';
+import Option from '../../lib/core/option/Option';
 
 class WithAutocomplete extends React.Component {
   constructor() {
@@ -13,6 +15,12 @@ class WithAutocomplete extends React.Component {
       value: '',
       list: ['Bananas', 'Lettuce'],
     };
+
+    this.FRUITS = [
+      { name: 'Papaya' },
+      { name: 'Strawberry' },
+      { name: 'Melon' },
+    ];
   }
 
   updateText = (event) => {
@@ -23,6 +31,14 @@ class WithAutocomplete extends React.Component {
     this.setState(state => ({
       list: _.without(state.list, value),
     }));
+  };
+
+  handleSelect = ({ option }) => {
+    this.setState((state) => {
+      if (state.list.indexOf(option.props.value) > -1) return null;
+
+      return { list: [...state.list, option.props.value], value: '' };
+    });
   };
 
   addItem = ({ value }) => {
@@ -47,7 +63,7 @@ class WithAutocomplete extends React.Component {
             </Tag>
           ))}
           <Input
-            extensions={['tag-list']}
+            extensions={['tag-list', 'autocomplete']}
             tagListSeparatorKeyCodes={[ENTER, COMMA]}
             onTagEnd={this.addItem}
             value={this.state.value}
@@ -58,6 +74,13 @@ class WithAutocomplete extends React.Component {
         <Hint>
           Press <kbd>,</kbd> or <kbd>Enter</kbd> to automatically create a list item.
         </Hint>
+        <Autocomplete onSelect={this.handleSelect}>
+          { this.FRUITS.map(state => (
+            <Option value={state.name} key={state.name}>
+              { state.name }
+            </Option>
+          ))}
+        </Autocomplete>
       </FormField>
     );
   }
