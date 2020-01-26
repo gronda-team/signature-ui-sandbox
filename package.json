@@ -12,7 +12,7 @@
     "test:e2e:start-app": "cd e2e && npm start",
     "test:e2e": "start-server-and-test test:e2e:start-app http://localhost:3000 cy:run",
     "test:e2e:gui": "start-server-and-test test:e2e:start-app http://localhost:3000 cy:open",
-    "deploy-storybook": "storybook-to-ghpages --source-branch=3.0.x"
+    "deploy-storybook": "storybook-to-ghpages --source-branch=3.0.x --branch=gh-pages"
   },
   "keywords": [],
   "author": "",
