@@ -1,41 +1,22 @@
-import * as React from 'react';
+import React from 'react';
 import { configure, addDecorator } from '@storybook/react';
-import { withNotes } from '@storybook/addon-notes';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft,
-  faEye, faEyeSlash, faTimesCircle, faTrash, faPencilAlt, faBold, faItalic, faUnderline,
-  faStrikethrough,
-} from '@fortawesome/free-solid-svg-icons'
-import SUIProvider from '../src/lib/core/SUIProvider';
+import '../assets/base.css';
+import { Provider } from '../src/lib/core/Provider';
 
-/**
- * Add the global provider so that FocusMonitor works, OverlayContainer exists, etc.
- */
-addDecorator(story => (
-  <SUIProvider>
-    { story() }
-  </SUIProvider>
-));
+// automatically import all files ending in *.stories.js
+configure(require.context('../stories', true, /\.stories\.js$/), module);
 
-/**
- * Add markdown notes
- */
-addDecorator(withNotes);
+const SUI_THEME = {
+  PRIMARY: '#00ACA3',
+  CARIBBEAN: '#00ACA3',
+  ACCENT: '#307882',
+  PETROL: '#307882',
+  WARN: '#E9473D',
+  FIRE: '#E9473D',
+  PEACH: '#F2A654',
+  MICHELIN: '#CE281E',
+  FACEBOOK: '#3B5998',
+};
 
-/**
- * Add any FontAwesome icons we want
- */
-library.add(faExclamationCircle, faDollarSign, faHandPointRight, faHandPointLeft, faEye, faEyeSlash, faTimesCircle, faTrash, faBold, faItalic, faUnderline, faStrikethrough, faPencilAlt);
-
-/**
- * Dynamically load the stories from src/storybook-app folder,
- * and target files that have .stories.js in the filename.
- */
-const req = require.context('../src/storybook-app', true, /\.stories\.js$/);
-
-function loadStories() {
-  req.keys().forEach(filename => req(filename));
-}
-
-configure(loadStories, module);
+const ProviderDecorator = storyFn => <Provider colors={SUI_THEME}>{ storyFn() }</Provider>;
+addDecorator(ProviderDecorator);

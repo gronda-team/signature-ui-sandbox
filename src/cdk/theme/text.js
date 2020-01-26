@@ -1,1 +1,0 @@
-export const TRUNCATE_LINE = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
