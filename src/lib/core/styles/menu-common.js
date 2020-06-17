@@ -6,7 +6,7 @@ export const OVERLAY_MIN_WIDTH = 112; // px 56 * 2
 export const OVERLAY_MAX_WIDTH = 280; // px 56 * 5
 export const OVERLAY_MAX_HEIGHT = 180;
 
-export const MENU_ITEM_HEIGHT = 32; // px
+export const MENU_ITEM_HEIGHT = 48; // px
 export const MENU_SIDE_PADDING = 24; // px
 export const MENU_ICON_MARGIN = 24; // px
 
