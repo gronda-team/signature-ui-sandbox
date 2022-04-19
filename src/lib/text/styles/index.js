@@ -11,32 +11,28 @@ padding: 0;
 margin: 0;
 
 &[data-text-level=display1] {
-  ${convertLevelToStyles(config, 'display1')}
   margin: 0 0 16px;
+  ${convertLevelToStyles(config, 'display1')}
 }
 
 &[data-text-level=display2] {
-  ${convertLevelToStyles(config, 'display2')}
-  letter-spacing: -0.005em;
   margin: 0 0 16px;
+  ${convertLevelToStyles(config, 'display2')}
 }
 
 &[data-text-level=display3] {
-  ${convertLevelToStyles(config, 'display3')}
-  letter-spacing: -0.02em;
   margin: 0 0 16px;
+  ${convertLevelToStyles(config, 'display3')}
 }
 
 &[data-text-level=display4] {
-  ${convertLevelToStyles(config, 'display4')}
-  letter-spacing: -0.05em;
   margin: 0 0 16px;
+  ${convertLevelToStyles(config, 'display4')}
 }
 
 &[data-text-level=display5] {
-  ${convertLevelToStyles(config, 'display5')}
-  letter-spacing: -0.05em;
   margin: 0 0 12px;
+  ${convertLevelToStyles(config, 'display5')}
 }
 
 &[data-text-level=body1] {

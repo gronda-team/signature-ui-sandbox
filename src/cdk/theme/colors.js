@@ -1,5 +1,5 @@
 export const TEXT_SHADES = {
-  DARK: '#404040',
+  DARK: '#333333',
   NORMAL: '#747474',
   LIGHT: '#B2B2B2',
   WHITE: '#F0F0F0',

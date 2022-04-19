@@ -1,6 +1,6 @@
-import resolve from 'rollup-plugin-node-resolve';
-import cjs from 'rollup-plugin-commonjs';
-import babel from 'rollup-plugin-babel';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import cjs from '@rollup/plugin-commonjs';
+import { babel } from '@rollup/plugin-babel';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 export default {
@@ -11,7 +11,7 @@ export default {
   },
   plugins: [
     peerDepsExternal(),
-    resolve(),
+    nodeResolve(),
     babel({
       exclude: 'node_modules/**',
     }),

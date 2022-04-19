@@ -11,9 +11,13 @@ import _ from 'lodash';
  */
 export const generateTypographyLevel = ({
   fontSize, lineHeight = fontSize, fontWeight = 400, fontFamily = null, letterSpacing = null,
-}) => ({
-  fontSize, lineHeight, fontWeight, fontFamily, letterSpacing,
-});
+}) => {
+  const DEFAULTS = { lineHeight: fontSize, fontWeight: 400, fontFamily: null, letterSpacing: null };
+  return {
+    ...DEFAULTS,
+    fontSize, lineHeight, fontWeight, fontFamily, letterSpacing,
+  };
+};
 
 /**
  * Create default configuration
