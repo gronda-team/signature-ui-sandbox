@@ -1,7 +1,6 @@
 {
-  "name": "signature-ui-sandbox",
+  "name": "@gronda-team/signature-ui-sandbox",
   "version": "0.1.0",
-  "private": true,
   "main": "dist/index.js",
   "dependencies": {
     "@babel/core": "^7.2.2",
@@ -54,5 +53,8 @@
   },
   "peerDependencies": {
     "styled-components": ">=4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
