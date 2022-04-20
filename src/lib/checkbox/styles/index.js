@@ -2,8 +2,9 @@ import styled, { css, keyframes } from 'styled-components';
 import FILL from '../../core/styles/layout-common';
 import { CHECKBOX_BORDER_WIDTH, CHECKBOX_SIZE } from '../../core/styles/checkbox-common';
 import { TOGGLE_PADDING } from '../../core/styles/variables';
-import { themeThunk } from './theme';
+import { themeThunk, typographyThunk } from './theme';
 import VISUALLY_HIDDEN from '../../core/styles/a11y';
+import { CheckIcon } from '../../core/icons';
 
 // Manual SVG calculation
 const MARK_PATH_LENGTH = 13.462;
@@ -17,11 +18,13 @@ pointer-events: none;
 `;
 
 // "Draws" in the checkmark when the checkbox goes from unchecked -> checked.
-const checkedUncheckedAnimation = keyframes`
+const baseCheckedUncheckedAnimation = keyframes`
 0%, 50% { stroke-dashoffset: ${MARK_PATH_LENGTH}; }
 50% { animation-timing-function: cubic-bezier(0, 0, 0.2, 0.1); }
 100% { stroke-dashoffset: 0; }
 `;
+/** SC v4 syntax */
+const checkedUncheckedAnimation = css`${baseCheckedUncheckedAnimation}`;
 
 export const CheckboxLayout = styled.label`
 // "cursor: inherit" ensures that the wrapper element gets the same cursor as the checkbox
@@ -30,7 +33,7 @@ cursor: inherit;
 align-items: baseline;
 vertical-align: middle;
 display: inline-flex;
-white-space: nowrap;
+white-space: normal;
 `;
 
 export const CheckboxInnerContainer = styled.div`
@@ -38,7 +41,7 @@ display: inline-block;
 height: ${CHECKBOX_SIZE}px;
 width: ${CHECKBOX_SIZE}px;
 line-height: 0;
-margin: auto ${TOGGLE_PADDING}px auto auto;
+margin: ${TOGGLE_PADDING / 4}px ${TOGGLE_PADDING}px auto auto;
 order: 0;
 position: relative;
 vertical-align: middle;
@@ -114,17 +117,22 @@ left: 50%;
 ${VISUALLY_HIDDEN}
 `;
 
+export const CheckboxCheckmark = styled(CheckIcon)``;
+
 export const CheckboxLabel = styled.div``;
 
 const components = {
   Frame: CheckboxFrame,
   Checkmark: CheckboxCheckmark,
-  CheckmarkPath: CheckboxCheckmarkPath,
+  IndeterminatePath: CheckboxIndeterminateMark,
+  CheckboxLabel,
+  CheckboxLayout,
 };
 
 export const CheckboxRoot = styled.div`
 cursor: pointer;
 -webkit-tap-highlight-color: transparent;
-[data-disabled=true] { cursor: default; }
+&[data-disabled=true] { cursor: default; }
 ${themeThunk(components)}
+${typographyThunk(components)}
 `;

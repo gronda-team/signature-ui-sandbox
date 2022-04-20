@@ -5,6 +5,7 @@ import { FormField, Suffix, Label, Hint } from '../lib/form-field';
 import { Input } from '../lib/input';
 import PrefixSuffix from './FormField/PrefixSuffix';
 import AutofillExample from './FormField/AutofillExample';
+import StyledBackground from './FormField/StyledBackground';
 
 storiesOf('FormField', module)
   .add('Available styles', () => (
@@ -34,4 +35,5 @@ storiesOf('FormField', module)
   .add('Prefixes and suffixes', () => (
     <PrefixSuffix />
   ))
-  .add('Autofill monitor example', () => <AutofillExample />);
+  .add('Autofill monitor example', () => <AutofillExample />)
+  .add('with styled background', () => <StyledBackground />);

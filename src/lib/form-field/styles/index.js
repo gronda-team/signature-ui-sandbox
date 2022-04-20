@@ -6,7 +6,7 @@ import outlineAppearanceThunk from './outline-style';
 import { outlineThemeThunk, outlineTypographyThunk } from './outline-theme';
 import fillAppearanceThunk from './fill-style';
 import { fillThemeThunk, fillTypographyThunk} from './fill-theme';
-import {SELECT_PLACEHOLDER_ARROW_SPACE} from '../../select/styles';
+import {SELECT_PLACEHOLDER_ARROW_SPACE, SELECT_ARROW_MARGIN, SELECT_ARROW_SIZE} from '../../select/styles';
 import {formFieldBaseThemeMixin, typographyThunk } from './theme-base';
 
 // Min amount of space between start and end hint.
@@ -49,9 +49,9 @@ flex: none;
 position: relative;
 `;
 
-export const FormFieldPrefix = FormFieldFix.withComponent('div');
+export const FormFieldPrefix = styled(FormFieldFix)``;
 FormFieldPrefix.defaultProps = { '__sui-internal-type': 'Prefix' };
-export const FormFieldSuffix = FormFieldFix.withComponent('div');
+export const FormFieldSuffix = styled(FormFieldFix)``;
 FormFieldSuffix.defaultProps = { '__sui-internal-type': 'Suffix' };
 
 export const FormFieldInfix = styled.div`
@@ -187,6 +187,16 @@ text-align: left;
   
   ${FormFieldLabel} {
     width: calc(100% - ${SELECT_PLACEHOLDER_ARROW_SPACE}px);
+  }
+}
+
+&[data-field-type=native-select], &[data-field-type=native-select-multiple] {
+  ${FormFieldLabelWrapper} {
+    max-width: calc(100% - ${SELECT_ARROW_SIZE * 2}px);
+  }
+  
+  ${FormFieldInfix} {
+    line-height: 1em;
   }
 }
 

@@ -149,7 +149,7 @@ class GlobalPositionStrategy extends React.Component {
     this.state.renderDummyDiv ? (
       <GlobalOverlayWrapper
         style={{ display: 'none' }}
-        innerRef={this.getDummyPositionDiv}
+        ref={this.getDummyPositionDiv}
       />
     ) : null
   );

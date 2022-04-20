@@ -16,21 +16,21 @@ import {ButtonToggleRoot} from '../button-toggle/styles';
 class RadioButton extends React.Component {
   constructor() {
     super();
-    
+
     this.DEFAULT_ID = _.uniqueId('sui-radio:');
 
     this.state = {
       focusOrigin: null,
     };
   }
-  
+
   /**
    * Lifecycle
    */
   componentWillUnmount() {
     this.props.__focusMonitor.stopMonitoring(this.RADIO_ROOT);
   }
-  
+
   /**
    * Refs
    */
@@ -45,51 +45,54 @@ class RadioButton extends React.Component {
       });
     }
   };
-  
+
   getRadioInputRef = (radioInput) => {
     this.RADIO_INPUT = radioInput;
   };
-  
+
   /**
    * Derived data
    */
+  /** Whether there is an actual radio group */
+  hasRadioGroup = () => this.props.__radioGroup && this.props.__radioGroup.name != null;
+
   /** Get the final ID */
   getId = () => this.props.id || this.DEFAULT_ID;
-  
+
   /** ID of the native input element inside `<mat-radio-button>` */
   getInputId = () => `${this.getId()}-input`;
-  
+
   /** Get the native input's name value */
   getName = () => this.props.name || this.props.__radioGroup.name;
-  
+
   /** Whether this radio is checked. */
   getChecked = () => {
-    if (this.props.__radioGroup) {
+    if (this.hasRadioGroup()) {
       return _.get(this.props.__radioGroup, 'value') === this.props.value;
     }
-    
+
     return this.props.checked;
   };
-  
+
   /** Whether the label should appear after or before the radio button. Defaults to 'after' */
   getLabelPosition = () => {
     if (this.props.labelPosition) return this.props.labelPosition;
-    if (this.props.__radioGroup) return _.get(this.props.__radioGroup, 'labelPosition');
+    if (this.hasRadioGroup()) return _.get(this.props.__radioGroup, 'labelPosition');
     return 'after';
   };
-  
+
   /** Whether the radio button is disabled. */
   getDisabled = () => {
     const radioGroupDisabled = _.get(this.props.__radioGroup, 'disabled', false);
     return this.props.disabled || radioGroupDisabled;
   };
-  
+
   /** Whether the radio button is required. */
   getRequired = () => {
     const radioGroupRequired = _.get(this.props.__radioGroup, 'required', false);
     return this.props.required || radioGroupRequired;
   };
-  
+
   /**
    * Actions
    */
@@ -104,7 +107,7 @@ class RadioButton extends React.Component {
       this.props.onClick(event);
     }
   };
-  
+
   // Note: under normal conditions focus shouldn't land on this element, however it may be
   // programmatically set, for example inside of a focus trap, in this case we want to forward
   // the focus to the native element.
@@ -113,7 +116,7 @@ class RadioButton extends React.Component {
       this.RADIO_INPUT.focus();
     }
   };
-  
+
   /**
    * Triggered when the radio button received a click or the input recognized any change.
    * Clicking on a label element will trigger a change event on the associated input.
@@ -123,29 +126,29 @@ class RadioButton extends React.Component {
     // Otherwise the change event, from the input element, will bubble up and
     // emit its event object to the `change` output.
     event.stopPropagation();
-    if (this.props.__radioGroup) {
+    if (this.hasRadioGroup()) {
       _.invoke(this.props.__radioGroup, 'onChange', event);
-      
+
       this.props.__radioGroup.touch();
     }
-    
+
     if (_.isFunction(this.props.onChange)) {
       this.props.onChange(event);
     }
   };
-  
+
   render() {
     const { // keep className and style on root component
       id, style, className, tabIndex, labelBefore,
-      __focusMonitor, __radioGroup,
+      __focusMonitor, __radioGroup, children,
       ['aria-label']: ariaLabel, ['aria-describedby']: ariaDescribedBy,
       ['aria-labelledby']: ariaLabelledBy,
-      ...restProps,
+      ...restProps
     } = this.props;
-    
+
     const checked = this.getChecked();
     const disabled = this.getDisabled();
-    
+
     return (
       <RadioButtonRoot
         style={style}
@@ -157,15 +160,15 @@ class RadioButton extends React.Component {
         data-disabled={disabled}
         data-checked={checked}
         onFocus={this.onFocus}
-        innerRef={this.getRadioRootRef}
+        ref={this.getRadioRootRef}
       >
         <RadioLabel
           htmlFor={this.getInputId()}
         >
           {/* The actual radio part of the control */}
           <RadioContainer>
-            <RadioInnerCircle />
             <RadioOuterCircle />
+            <RadioInnerCircle />
             <RadioInput
               {...restProps}
               type="radio"
@@ -180,7 +183,7 @@ class RadioButton extends React.Component {
               aria-describedby={ariaDescribedBy}
               onChange={this.onChange}
               onClick={this.onClick}
-              innerRef={this.getRadioInputRef}
+              ref={this.getRadioInputRef}
             />
           </RadioContainer>
           {/* The label content for radio control */}
@@ -236,7 +239,7 @@ RadioButton.propTypes = {
   __focusMonitor: FocusMonitorPropTypes,
 };
 
-RadioButton.propTypes = {
+RadioButton.defaultProps = {
   ...RadioButtonDefaultProps,
   /** Radio groups are OPTIONAL */
   __radioGroup: null,
@@ -250,6 +253,8 @@ const StackedRadioButton = stack(
 
 StackedRadioButton.propTypes = RadioButtonPropTypes;
 StackedRadioButton.defaultProps = RadioButtonDefaultProps;
+
+export default StackedRadioButton;
 
 /**
  * Private methods

@@ -5,14 +5,13 @@ import {
   FocusMonitorDefaultProps, FocusMonitorPropTypes,
   withFocusMonitor,
 } from '../../cdk/a11y';
-import { CheckIcon } from '../core/icons';
 import {
   CheckboxBackground, CheckboxFrame, CheckboxInnerContainer, CheckboxInput,
   CheckboxLabel,
   CheckboxLayout,
   CheckboxRoot,
 } from './styles/index';
-import {CheckboxIndeterminateMark} from './styles';
+import { CheckboxCheckmark, CheckboxIndeterminateMark } from './styles';
 
 class Checkbox extends React.Component {
   constructor() {
@@ -118,13 +117,13 @@ class Checkbox extends React.Component {
     const {
       id, required, labelPosition, name, value, checked, disabled, tabIndex,
       'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledBy,
-      __focusMonitor, onTouched, ...restProps,
+      __focusMonitor, onTouched, ...restProps
     } = this.props;
 
     return (
       <CheckboxRoot
         {...restProps}
-        innerRef={this.getCheckboxRoot}
+        ref={this.getCheckboxRoot}
         id={this.getId()}
         tabIndex={null}
         data-focused={!!this.state.focusOrigin}
@@ -153,11 +152,11 @@ class Checkbox extends React.Component {
               aria-checked={this.getAriaChecked()}
               onChange={this.onInteractionEvent}
               onClick={this.onInputClick}
-              innerRef={this.getCheckboxInput}
+              ref={this.getCheckboxInput}
             />
             <CheckboxFrame />
             <CheckboxBackground>
-              <CheckIcon />
+              <CheckboxCheckmark />
               <CheckboxIndeterminateMark />
             </CheckboxBackground>
           </CheckboxInnerContainer>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button } from '../../lib/button';
 import { Dialog } from '../../lib/dialog';
-import {DialogContent, DialogTitle} from '../../lib/dialog/styles';
+import { DialogActions, DialogContent, DialogTitle } from '../../lib/dialog/styles';
 
 export default class Overview extends React.Component {
   constructor() {
@@ -55,6 +55,14 @@ export default class Overview extends React.Component {
               brisket pork belly pig.
             </p>
           </DialogContent>
+          <DialogActions>
+            <Button color="secondary">
+              Cancel
+            </Button>
+            <Button>
+              Agree
+            </Button>
+          </DialogActions>
         </Dialog>
       </div>
     )

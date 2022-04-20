@@ -78,7 +78,7 @@ class BlockScrollStrategy extends React.Component {
         htmlStyle.left = this.state.previousHTMLStyles.left;
         htmlStyle.top = this.state.previousHTMLStyles.top;
         this.BLOCK_CLASS_LIST.forEach((className) => {
-          root.classList.remove(className);
+          html.classList.remove(className);
         });
 
         // Disable user-defined smooth scrolling temporarily while we restore the scroll position.
@@ -105,7 +105,7 @@ class BlockScrollStrategy extends React.Component {
     this.state.renderDummyBlock ? (
       <GlobalScrollBlock
         style={{ display: 'none' }}
-        innerRef={this.getDummyBlock}
+        ref={this.getDummyBlock}
       />
     ) : null
   );

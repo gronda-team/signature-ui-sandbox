@@ -8,7 +8,7 @@ function AnchorTag() {
     <div>
       { AVAILABLE_BUTTON_APPEARANCES.map(appearance => (
         <Button
-          is="a"
+          as="a"
           appearance={appearance}
           href="https://www.google.com"
         >

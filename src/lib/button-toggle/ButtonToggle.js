@@ -157,7 +157,7 @@ class ButtonToggle extends React.Component {
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy}
           onClick={this.onButtonClick}
-          innerRef={this.getButtonToggleButton}
+          ref={this.getButtonToggleButton}
         >
           <ButtonToggleLabelContent>
             { this.props.children }

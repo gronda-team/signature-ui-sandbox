@@ -42,6 +42,8 @@ describe('FocusMonitor', () => {
   });
 
   beforeEach(() => {
+    // Simulate focus via touch event on mobile
+    jest.useFakeTimers();
     wrapper.mount();
     // Must use name because <FocusMonitor /> is a HOC
     focusMonitor = wrapper.find('FocusMonitor');
@@ -56,6 +58,7 @@ describe('FocusMonitor', () => {
   afterEach(() => {
     wrapper.unmount();
     jest.resetAllMocks();
+    jest.useRealTimers();
   });
 
   it('should handle focus for monitored elements', () => {
@@ -73,6 +76,8 @@ describe('FocusMonitor', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', {
       key: TAB,
     }));
+    /** The next tick is when the focus will be queued, so we have to add a fast forward timer */
+    jest.runOnlyPendingTimers();
     buttonElementNode.focus();
 
     expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
@@ -92,9 +97,6 @@ describe('FocusMonitor', () => {
   });
 
   it('should detect focus via touch', () => {
-    // Simulate focus via touch event on mobile
-    jest.useFakeTimers();
-
     // calling new TouchEvent() will throw "Illegal constructor" error
     const touchEvent = document.createEvent('TouchEvent');
 
@@ -102,11 +104,11 @@ describe('FocusMonitor', () => {
 
     buttonElementNode.dispatchEvent(touchEvent);
     buttonElementNode.focus();
+    /** Touch start is also buffered. */
     jest.runTimersToTime(TOUCH_BUFFER_MS);
 
     expect(buttonElementNode.getAttribute('data-focused')).toBe('true');
     expect(buttonElementNode.getAttribute('data-focus-origin')).toBe('touch');
-    jest.useRealTimers();
   });
 
   it('should detect programmatic focus', () => {

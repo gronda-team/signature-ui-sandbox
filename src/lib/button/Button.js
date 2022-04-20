@@ -5,14 +5,9 @@ import { ButtonRoot, ButtonFocusOverlay, ButtonWrapper } from './styles/index';
 import { FocusMonitorPropTypes, FocusMonitorDefaultProps, withFocusMonitor } from '../../cdk/a11y';
 import { ButtonDisabledOverlay } from './styles';
 
-/** Default color palette for round buttons (mat-fab and mat-mini-fab) */
-const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
-
 class Button extends React.Component {
   constructor(props) {
     super(props);
-    
-    this.BUTTON_ROOT = ButtonRoot.withComponent(props.is);
 
     this.state = {
       focusOrigin: null,
@@ -78,21 +73,22 @@ class Button extends React.Component {
   render() {
     const { appearance, size, is, color, __focusMonitor, ...restProps } = this.props;
     return (
-      <this.BUTTON_ROOT
+      <ButtonRoot
         {...restProps}
         {...this.getNodeAttrs()}
+        as={is}
         data-sui-type={'button'}
         data-appearance={appearance}
         data-size={size}
         data-color={color}
         data-focus-origin={this.state.focusOrigin}
-        innerRef={this.getButtonRef}
+        ref={this.getButtonRef}
         onClick={this.onClick}
       >
         <ButtonWrapper>{ this.props.children }</ButtonWrapper>
         <ButtonFocusOverlay />
         <ButtonDisabledOverlay />
-      </this.BUTTON_ROOT>
+      </ButtonRoot>
     )
   }
 }

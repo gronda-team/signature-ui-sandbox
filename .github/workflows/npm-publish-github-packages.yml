@@ -1,0 +1,40 @@
+name: Release NPM Package
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          registry-url: https://npm.pkg.github.com/
+          scope: "@gronda-team"
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PACKAGE_WRITER_GITHUB_TOKEN}}
+      - run: npm test
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          registry-url: https://npm.pkg.github.com/
+          scope: "@gronda-team"
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PACKAGE_WRITER_GITHUB_TOKEN}}
+      - run: npm --no-git-tag-version version $RELEASE_TAG_NAME
+        env:
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PACKAGE_WRITER_GITHUB_TOKEN}}

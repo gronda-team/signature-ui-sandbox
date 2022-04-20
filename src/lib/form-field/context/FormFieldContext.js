@@ -5,40 +5,49 @@ import {getDisplayName} from '../../../cdk/util';
 
 export const FormFieldPropTypes = PropTypes.shape({
   ui: PropTypes.shape({}),
-  transitionUi: PropTypes.func,
   id: PropTypes.string,
+  type: PropTypes.string,
+  extensions: PropTypes.objectOf(PropTypes.shape({})),
+  el: PropTypes.object,
   placeholder: PropTypes.string,
+  describedByIds: PropTypes.arrayOf(PropTypes.string),
+  transitionUi: PropTypes.func,
   containerClick: PropTypes.func,
   setId: PropTypes.func,
   setPlaceholder: PropTypes.func,
   setContainerClick: PropTypes.func,
   setControlType: PropTypes.func,
-  describedByIds: PropTypes.arrayOf(PropTypes.string),
   changeDescribedByIds: PropTypes.func,
 });
 
 export const FormFieldDefaultProps = {
-  // ui interfacing
+  /** ui interfacing */
   ui: {},
-  // transitioning the UI
-  transitionUi: _.noop,
-  // element ID for the control
+  /** element ID for the control */
   id: '',
-  // placeholder for the control
+  /** Control type (select, input, textarea, etc.) -- used for styling */
+  type: null,
+  /** Extensions */
+  extensions: {},
+  /** Form field element (useful for autocomplete) */
+  el: null,
+  /** placeholder for the control */
   placeholder: '',
-  // callback for container click
-  containerClick: _.noop,
-  // updating ID
-  setId: _.noop,
-  // updating the placeholder
-  setPlaceholder: _.noop,
-  // set container click
-  setContainerClick: _.noop,
-  // set what the control type is (required for styling)
-  setControlType: _.noop,
-  // described by IDs
+  /** described by IDs */
   describedByIds: [],
-  // change described by IDs
+  /** transitioning the UI */
+  transitionUi: _.noop,
+  /** callback for container click */
+  containerClick: _.noop,
+  /** updating ID */
+  setId: _.noop,
+  /** updating the placeholder */
+  setPlaceholder: _.noop,
+  /** set container click */
+  setContainerClick: _.noop,
+  /** set what the control type is (required for styling) */
+  setControlType: _.noop,
+  /** change described by IDs */
   changeDescribedByIds: _.noop,
 };
 

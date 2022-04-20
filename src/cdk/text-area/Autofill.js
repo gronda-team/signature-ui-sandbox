@@ -4,11 +4,10 @@ import {
   withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes,
   normalizePassiveListenerOptions,
 } from '../platform';
-import { AUTOFILL_ANIMATION_END, AUTOFILL_ANIMATION_START } from './styles/index';
+import { autofillEnd, autofillStart } from './styles/index';
 import { AutofillProvider } from './context/AutofillContext';
 
 const LISTENER_OPTIONS = normalizePassiveListenerOptions({ passive: true });
-
 /**
  * A context that can be used to monitor the autofill state of an input.
  * Based on the following blog post:
@@ -66,13 +65,13 @@ class AutofillMonitor extends React.Component {
       // debug: unsure if this returns `true` or `"true"`
       const elementAutofillStatus = element.getAttribute('data-autofilled');
       if (
-        event.animationName.indexOf(AUTOFILL_ANIMATION_START) > -1
+        event.animationName.indexOf(autofillStart.name) > -1
         && elementAutofillStatus !== 'true'
       ) {
         // If we're animating, then the callback should be called with true
         callback({ target: event.target, isAutofilled: true });
       } else if (
-        event.animationName.indexOf(AUTOFILL_ANIMATION_END) > -1
+        event.animationName.indexOf(autofillEnd.name) > -1
         && elementAutofillStatus === 'true'
       ) {
         // Otherwise, call the callback with false

@@ -60,8 +60,11 @@ ${ButtonRoot} + ${ButtonRoot} {
  * going between entering or exiting.
  */
 
-export const ANIMATION_ENTER = keyframes`/*!*/`;
-export const ANIMATION_EXIT = keyframes`/*!!*/`;
+export const animationEnter = keyframes`/*!*/`;
+export const animationExit = keyframes`/*!!*/`;
+
+export const ANIMATION_ENTER = css`${animationEnter}`;
+export const ANIMATION_EXIT = css`${animationExit}`;
 
 const dialogTheme = dialogThemeThunk({
   DialogTitle,

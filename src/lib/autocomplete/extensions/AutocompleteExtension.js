@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {ARROW_DOWN, ARROW_UP, DOWN, ENTER, ESC, ESCAPE, TAB, UP} from '../../../cdk/keycodes/keys';
 import {countGroupLabelsBeforeOption, getOptionScrollPosition} from '../../core/option/util';
 import {MENU_ITEM_HEIGHT, OVERLAY_MAX_HEIGHT} from '../../core/styles/menu-common';
-import {FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer} from '../../form-field';
+import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../../form-field/context/FormFieldContext';
 import {ViewportRulerDefaultProps, ViewportRulerPropTypes, withViewportRuler} from '../../../cdk/scrolling';
 import {stack} from '../../core/components/util';
 
@@ -42,13 +42,13 @@ class AutocompleteExtension extends React.Component {
    * Lifecycle
    */
   componentDidMount() {
-    if (!_.isUndefined(window)) {
+    if (typeof window !== 'undefined') {
       window.addEventListener('blur', this.windowBlurHandler);
     }
 
     /** Set the form field control attributes upon instantiation */
     const disabled = this.props.autocompleteDisabled;
-    this.props.__formFieldControl.setControlAttrs({
+    this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
       role: disabled ? null : 'combobox',
       'aria-autocomplete': disabled ? null : 'list',
       autoComplete: this.props.autocompleteAttribute,
@@ -76,6 +76,7 @@ class AutocompleteExtension extends React.Component {
 
     /** Install the tabOut listener on the key manager when it's created */
     if (prevState.overlayAttached !== this.state.overlayAttached) {
+      this.updatePanelDependentAttributes(this.props.autocompleteDisabled, this.state.overlayAttached);
       if (this.state.overlayAttached) {
         this.getAutocomplete().setState(state => ({
           service: {
@@ -89,25 +90,33 @@ class AutocompleteExtension extends React.Component {
     /** Apply the correct attribute for aria-autocomplete */
     if (prevProps.autocompleteDisabled !== this.props.autocompleteDisabled) {
       const disabled = this.props.autocompleteDisabled;
-      this.props.__formFieldControl.setControlAttrs({
+      this.updatePanelDependentAttributes(disabled, this.state.overlayAttached);
+      this.props.__extensionManager.updateExtensionAttributes({
         role: disabled ? null : 'combobox',
         'aria-autocomplete': disabled ? null : 'list',
-        'aria-expanded': disabled ? null : this.getPanelOpen(),
-        'aria-owns': (disabled || !this.getPanelOpen()) ?
-          null : this.getAutocomplete().getId(),
       });
     }
 
     /** Apply the correct attribute for input autoComplete */
     if (prevProps.autocompleteAttribute !== this.props.autocompleteAttribute) {
-      this.props.__formFieldControl.setControlAttrs({
+      this.props.__extensionManager.updateExtensionAttributes({
         autoComplete: this.props.autocompleteAttribute,
       });
+    }
+
+    /** Count the options and then mark the change if we go from 0 -> >0 or >0 -> 0 */
+    if (_.size(this.getChildRefs(prevProps)) !== _.size(this.getChildRefs())) {
+      if (
+        _.size(this.getChildRefs(prevProps)) === 0
+        || _.size(this.getChildRefs()) === 0
+      ) {
+        this.updatePanelDependentAttributes(this.props.autocompleteDisabled, this.state.overlayAttached);
+      }
     }
   }
 
   componentWillUnmount() {
-    if (!_.isUndefined(window)) {
+    if (typeof window !== 'undefined') {
       window.removeEventListener('blur', this.windowBlurHandler);
     }
 
@@ -121,7 +130,15 @@ class AutocompleteExtension extends React.Component {
    * Derived data
    */
   /** Get the autocomplete */
-  getAutocomplete = () => this.props.autocomplete;
+  getAutocomplete = (props = this.props) => _.get(
+    props.__extensionManager,
+    ['extendedData', '##autocomplete', 'data', 'autocomplete'],
+  );
+
+  getChildRefs = (props = this.props) => _.get(
+    props.__extensionManager,
+    ['extendedData', '##autocomplete', 'data', 'childRefs'],
+  );
 
   /** Get whether te panel is open or not */
   getPanelOpen = () => {
@@ -146,7 +163,7 @@ class AutocompleteExtension extends React.Component {
     if (!this.getActiveOption()) return '';
     const activeOption = this.getActiveOption();
     const activeOptionValue = _.get(activeOption, 'props.value');
-    const options = this.getAutocomplete().state.childRefs;
+    const options = this.getChildRefs();
     // Return the value that corresponds to props.value in options
     const optionRef = _.find(options, { props: { value: activeOptionValue } });
     return optionRef || null;
@@ -160,14 +177,6 @@ class AutocompleteExtension extends React.Component {
     && !_.get(input, 'props.disabled')
     && !this.props.autocompleteDisabled;
   };
-
-  /** Get the attributes that are associated with the autocomplete */
-  getExtendedAttributes = () => ({
-    'aria-expanded': this.props.autocompleteDisabled ?
-      null : this.getPanelOpen(),
-    'aria-owns': (this.props.autocompleteDisabled || !this.getPanelOpen()) ?
-      null : this.getAutocomplete().getId(),
-  });
 
   /**
    * Actions
@@ -216,6 +225,15 @@ class AutocompleteExtension extends React.Component {
     }
   };
 
+  updatePanelDependentAttributes = (disabled, attached) => {
+    const valid = this.getAutocomplete() && this.getAutocomplete().getOptions().length > 0;
+    this.props.__extensionManager.updateExtensionAttributes('##autocomplete', {
+      'aria-expanded': disabled ? null : (attached && valid),
+      'aria-owns': (disabled || !(attached && valid)) ?
+        null : this.getAutocomplete().getId(),
+    });
+  };
+
   updatePosition = () => {
     if (this.state.overlayAttached) {
       this.getAutocomplete().getOverlay().updatePosition();
@@ -234,7 +252,7 @@ class AutocompleteExtension extends React.Component {
   };
 
   /** Event to be called when this.props.input is focused */
-  handleFocus = () => {
+  onFocus = () => {
     if (!this.state.canOpenOnNextFocus) {
       this.setState({ canOpenOnNextFocus: true });
     } else if (this.canOpen() && !this.state.overlayAttached) {
@@ -251,7 +269,7 @@ class AutocompleteExtension extends React.Component {
   };
 
   /** Callback onInput for this.props.input */
-  handleInput = (event) => {
+  onChange = (event) => {
     const target = event.target;
     let value = target.value;
 
@@ -274,7 +292,7 @@ class AutocompleteExtension extends React.Component {
   };
 
   /** Called when keydown events are triggered on this.props.input */
-  handleKeyDown = (event) => {
+  onKeyDown = (event) => {
     const key = event.key;
 
     // Prevent the default action on all escape key presses. This is here primarily to bring IE
@@ -288,7 +306,7 @@ class AutocompleteExtension extends React.Component {
     if (this.getActiveOptionRef() && key === ENTER && this.getPanelOpen()) {
       const value = _.get(this.getActiveOptionRef(), 'props.value');
       /** Find the Option whose values in childRefs matches this value */
-      const refs = _.get(this.getAutocomplete(), ['state', 'childRefs']);
+      const refs = this.getChildRefs();
       const option = _.find(refs, optionObj => (
         _.isEqual(_.get(optionObj, 'props.value'), value)
       ));
@@ -314,7 +332,9 @@ class AutocompleteExtension extends React.Component {
          * so we must wait until the next tick before we can properly
          * query the new activeItem in keyManager.
          */
-        scrollToOption.call(this);
+        window.requestAnimationFrame(() => {
+          scrollToOption.call(this);
+        });
       }
     }
   };

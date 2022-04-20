@@ -3,13 +3,17 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { FormFieldDefaultProps, FormFieldPropTypes, withFormFieldConsumer } from '../form-field';
 import { withPlatformConsumer, PlatformDefaultProps, PlatformPropTypes } from '../../cdk/platform';
-import { BaseInput, BaseTextArea } from './styles/index';
+import { BaseInput, BaseSelect, BaseTextArea } from './styles/index';
 import { INVALID_INPUT_TYPES } from './constants';
 import { PROP_TYPE_STRING_OR_NUMBER } from '../../cdk/util/props';
 import { stack } from '../core/components/util';
-import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor, TextAreaAutosize } from '../../cdk/text-area';
-import AutocompleteTrigger from './extensions/Autocomplete';
-import TagBehavior from './extensions/TagBehavior';
+import {AutofillMonitorDefaultProps, AutofillMonitorPropTypes, withAutofillMonitor } from '../../cdk/text-area';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+  withExtensionManager
+} from '../form-field/context/ExtensionsContext';
+import { NativeSelectArrow, NativeSelectArrowWrapper } from './styles';
 
 /**
  * The input and text area components contain very similar behavior
@@ -26,15 +30,23 @@ class Input extends React.Component {
     };
 
     // Determine the type to show. this is NOT reactive
-    this.INPUT_TYPE = _.toLower(props.as) === 'input' ?
-      BaseInput :
-      BaseTextArea;
+    switch (_.toLower(props.is)) {
+      case 'select':
+        this.INPUT_TYPE = BaseSelect;
+        break;
+      case 'textarea':
+        this.INPUT_TYPE = BaseTextArea;
+        break;
+      case 'input':
+      default:
+        this.INPUT_TYPE = BaseInput;
+        break;
+    }
 
     this.DEFAULT_ID = _.uniqueId('sui-input:');
 
     // Get the extension refs
     this.autocomplete = React.createRef();
-    this.tagList = React.createRef();
   }
 
   /**
@@ -48,9 +60,24 @@ class Input extends React.Component {
     this.updateRequired(this.props.required);
     this.updateValue();
 
+    // Set the extensions that are provided (not reactive)
+    this.props.__extensionManager.setExtensions(
+      this.props.extensions.map((extension) => {
+        if (['autosize', 'tag-list', 'autocomplete'].indexOf(extension) === -1) return extension;
+        // Return the namespaced version of the default ones we have
+        return `##${extension}`;
+      }),
+    );
+
     // set the onContainerClick
     this.props.__formFieldControl.setContainerClick(this.onContainerClick);
-    this.props.__formFieldControl.setControlType(this.props.as);
+
+    /** Check to see which type of underlying control we are, and then make modifications */
+    let as = this.props.is;
+    if (as === 'select') {
+      as = this.props.multiple ? 'native-select-multiple' : 'native-select';
+    }
+    this.props.__formFieldControl.setControlType(as);
 
     // handle the iOS bug
     handleIOSQuirk.call(this);
@@ -87,11 +114,16 @@ class Input extends React.Component {
   /**
    * Derived data
    */
+  /** If the underlying DOM element is a select */
+  isNativeSelect = () => this.props.is === 'select';
+
   /** Get the root input element */
   getInputRef = (input) => {
     this.EL = input;
     this.setState({ mounted: !!input });
     if (this.EL) {
+      // Set the input ref for the extension bus
+      this.props.__extensionManager.setControl(this);
       // Set the autofill status for the global autofill monitor
       this.props.__autofillMonitor.monitor({
         id: this.DEFAULT_ID,
@@ -159,22 +191,14 @@ class Input extends React.Component {
 
   /** Handle onChange with extensions */
   onChange = (event) => {
-    if (this.autocomplete.current) {
-      this.autocomplete.current.handleInput(event);
-    }
+    this.props.__extensionManager.extendedOnChange(event);
 
     _.invoke(this.props, 'onChange', event);
   };
 
   /** Handle keydown events for extensions */
   onKeyDown = (event) => {
-    if (this.autocomplete.current) {
-      this.autocomplete.current.handleKeyDown(event);
-    }
-
-    if (this.tagList.current) {
-      this.tagList.current.onKeyDown(event);
-    }
+    this.props.__extensionManager.extendedOnKeyDown(event);
 
     _.invoke(this.props, 'onKeyDown', event);
   };
@@ -197,7 +221,7 @@ class Input extends React.Component {
   };
 
   /** Handle the UI focus change for the form field */
-  handleFocusChange = isFocused => () => {
+  handleFocusChange = isFocused => (event) => {
     if (this.EL && !this.props.readOnly && isFocused !== this.state.focused) {
       this.setState({ focused: isFocused });
       this.props.__formFieldControl.transitionUi(
@@ -208,80 +232,34 @@ class Input extends React.Component {
     // Handle extensions
     if (isFocused) {
       // Focus
-      if (this.autocomplete.current) {
-        this.autocomplete.current.handleFocus();
-      }
-
-      if (this.tagList.current) {
-        this.tagList.current.onFocus();
+      this.props.__extensionManager.extendedOnFocus(event);
+      if (typeof this.props.onFocus === 'function') {
+        this.props.onFocus(event);
       }
     } else {
       // Blur
       if (this.autocomplete.current) {
         this.autocomplete.current.onTouched();
       }
-
-      if (this.tagList.current) {
-        this.tagList.current.onBlur();
+      this.props.__extensionManager.extendedOnBlur(event);
+      if (typeof this.props.onBlur === 'function') {
+        this.props.onBlur(event);
       }
     }
   };
 
   render() {
     const {
-      as, id, placeholder, disabled, required, type,
-      autocomplete, autocompleteDisabled, // autocomplete props
-      tagListSeparatorKeyCodes, onTagEnd, tagListAddOnBlur, // tag list props
-      autosizeMinRows, autosizeMaxRows, autosizeEnabled,
+      is, id, placeholder, disabled, required, type,
+      __extensionManager,
       extensions, readOnly, __formFieldControl, ...restProps
     } = this.props;
     // todo: aria-invalid
 
-    const hasAutosize = as === 'textarea' && extensions.indexOf('autosize') > -1;
-
-    const autocompleteAttributes = this.autocomplete.current ?
-      this.autocomplete.current.getExtendedAttributes() :
-      {};
-
-    const tagListAttributes = this.tagList.current ?
-      this.tagList.current.getExtendedAttributes() :
-      {};
-
-    const controlAttrs = _.get(__formFieldControl, 'controlAttrs', {});
+    const extendedAttributes = _.get(__extensionManager, 'extendedAttributes', {});
 
     return (
       <React.Fragment>
-        { hasAutosize ? (
-          <TextAreaAutosize
-            input={this.EL}
-            minRows={autosizeMinRows}
-            maxRows={autosizeMaxRows}
-            enabled={_.isUndefined(autosizeEnabled) ? true : autosizeEnabled}
-          />
-        ) : null }
-        { extensions.indexOf('autocomplete') > -1 ? (
-          <AutocompleteTrigger
-            input={this}
-            autocomplete={
-              _.get(this.props.__formFieldControl, 'extensions.autocomplete')
-            }
-            autocompleteAttribute={autocomplete}
-            autocompleteDisabled={autocompleteDisabled}
-            ref={this.autocomplete}
-          />
-        ) : null }
-        { extensions.indexOf('tag-list') > -1 ? (
-          <TagBehavior
-            input={this}
-            tagListSeparatorKeyCodes={tagListSeparatorKeyCodes}
-            onTagEnd={onTagEnd}
-            tagListAddOnBlur={tagListAddOnBlur}
-            tagList={
-              _.get(this.props.__formFieldControl, 'extensions.tagList')
-            }
-            ref={this.tagList}
-          />
-        ) : null }
         {
           /**
            * The attributes that are before the {...} spread attributes
@@ -293,26 +271,27 @@ class Input extends React.Component {
         <this.INPUT_TYPE
           disabled={disabled}
           {...restProps}
-          {...autocompleteAttributes}
-          {...tagListAttributes}
-          {...controlAttrs}
-          type={as === 'input' ? type : undefined}
+          {...extendedAttributes}
+          type={is === 'input' ? type : undefined}
           id={this.getId()}
           placeholder={placeholder}
-          readOnly={readOnly}
+          readOnly={readOnly && !this.isNativeSelect() || null}
           required={required}
           aria-describedby={this.getAriaDescribedBy()}
           aria-invalid={false}
           aria-required={required.toString()}
-          data-autosize={as === 'textarea' && extensions.indexOf('autosize') > -1}
           data-autofilled={this.isAutofilled()}
-          {...(hasAutosize ? { rows: 1 } : {})}
           onChange={this.onChange}
           onKeyDown={this.onKeyDown}
           onFocus={this.handleFocusChange(true)}
           onBlur={this.handleFocusChange(false)}
-          innerRef={this.getInputRef}
+          ref={this.getInputRef}
         />
+        { this.props.is === 'select' ? (
+          <NativeSelectArrowWrapper>
+            <NativeSelectArrow />
+          </NativeSelectArrowWrapper>
+        ) : null }
       </React.Fragment>
     );
   }
@@ -321,8 +300,8 @@ class Input extends React.Component {
 const InputPropTypes = {
   /** The id associated with the input field */
   id: PROP_TYPE_STRING_OR_NUMBER,
-  /** The DOM node type, either a textarea or an input */
-  as: PropTypes.oneOf(['textarea', 'input']),
+  /** The DOM node type, either a textarea or an input, OR native select */
+  is: PropTypes.oneOf(['textarea', 'input', 'select']),
   /** Placeholder -- required for FormFieldControl */
   placeholder: PROP_TYPE_STRING_OR_NUMBER,
   /** Whether or not the field is disabled -- FormFieldControl */
@@ -334,7 +313,7 @@ const InputPropTypes = {
   /** Associated only with as="input" fields */
   type: function(props, propName, componentName) {
     // Don't bother if it's a textarea
-    if (_.toLower(props.as) === 'textarea') return null;
+    if (_.toLower(props.is) === 'textarea') return null;
 
     const type = props[propName];
     if (!type || !_.isString(type)) {
@@ -355,7 +334,7 @@ const InputPropTypes = {
 
 const InputDefaultProps = {
   id: '',
-  as: 'input',
+  is: 'input',
   placeholder: '',
   disabled: false,
   required: false,
@@ -372,6 +351,7 @@ Input.propTypes = {
   __autofillMonitor: AutofillMonitorPropTypes,
   __formFieldControl: FormFieldPropTypes,
   __platform: PlatformPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
 Input.defaultProps = {
@@ -379,10 +359,12 @@ Input.defaultProps = {
   __autofillMonitor: AutofillMonitorDefaultProps,
   __formFieldControl: FormFieldDefaultProps,
   __platform: PlatformDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
 const StackedInput = stack(
   withAutofillMonitor,
+  withExtensionManager,
   withFormFieldConsumer,
   withPlatformConsumer,
 )(Input);
@@ -401,6 +383,7 @@ function handleIOSQuirk() {
   if (this.props.__platform.is('ios') && this.EL) {
     this.EL.addEventListener('keyup', (event) => {
       const el = event.target;
+      /** Checking these properties already detects if it's input-like or a native select */
       if (!el.value && !el.selectionStart && !el.selectionEnd) {
         // Note: Just setting `0, 0` doesn't fix the issue. Setting
         // `1, 1` fixes it for the first time that you type text and

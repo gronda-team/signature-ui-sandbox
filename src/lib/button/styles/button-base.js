@@ -45,8 +45,6 @@ export const buttonBaseThunk = (components) => {
   line-height: ${BUTTON_LINE_HEIGHT}px;
   padding: ${BUTTON_PADDING};
   border-radius: ${BUTTON_BORDER_RADIUS}px;
-  // Offset to correct inline form heights
-  bottom: 1px;
   
   // Explicitly set the default overflow to "visible". It is already set
   // on most browsers except on IE11 where it defaults to "hidden".
@@ -126,7 +124,7 @@ export const fabThunk = components => {
 export const iconThunk = () => css`
 padding: 0;
 // Remove offset because icons don't suffer from this penalty
-bottom: 0;
+bottom: -1px;
 // Reset the min-width from the button base.
 min-width: 0;
 
@@ -138,7 +136,7 @@ line-height: ${ICON_BUTTON_SIZE}px;
 border-radius: ${ICON_BUTTON_BORDER_RADIUS}px;
 
 i {
-  line-height: ${ICON_BUTTON_LINE_HEIGHT};
+  line-height: ${ICON_BUTTON_LINE_HEIGHT}px;
 }
 `;
 

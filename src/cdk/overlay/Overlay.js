@@ -259,10 +259,10 @@ class Overlay extends React.Component {
           we must get the styled-components classes
           from a dummy PaneRoot
            */
-          <OverlayPaneRoot innerRef={this.getDummyOverlay} /> : null
+          <OverlayPaneRoot ref={this.getDummyOverlay} /> : null
         }
         { this.state.renderDummyBackdrop ?
-          <OverlayBackdrop innerRef={this.getDummyBackdrop} /> : null
+          <OverlayBackdrop ref={this.getDummyBackdrop} /> : null
         }
       </React.Fragment>
     );

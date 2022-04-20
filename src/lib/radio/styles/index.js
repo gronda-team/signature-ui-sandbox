@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { TOGGLE_SIZE, TOGGLE_PADDING } from '../../core/styles/variables';
-import { themeThunk } from './theme';
+import { themeThunk, typographyThunk } from './theme';
+import VISUALLY_HIDDEN from '../../core/styles/a11y';
 
 const RADIO_SIZE = TOGGLE_SIZE; // px
 
@@ -36,7 +37,7 @@ left: 0;
 top: 0;
 position: absolute;
 transition: border-color ease 280ms;
-border: solid 2px;
+border: solid 1px;
 border-radius: 50%;
 `;
 
@@ -85,6 +86,7 @@ padding-right: ${TOGGLE_PADDING}px;
 `;
 
 export const RadioInput = styled.input`
+${VISUALLY_HIDDEN}
 // Move the input in the middle and towards the bottom so
 // the native validation messages are aligned correctly.
 bottom: 0;
@@ -102,4 +104,7 @@ display: inline-block;
 -webkit-tap-highlight-color: transparent;
 &[data-disabled=true] { cursor: default; }
 ${themeThunk(components)}
+${typographyThunk()}
 `;
+
+export const RadioGroupRoot = styled.div``;

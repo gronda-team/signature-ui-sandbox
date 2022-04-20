@@ -2,12 +2,17 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ENTER } from '../../../cdk/keycodes/keys';
-import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../../tags/context/TagListInputContext';
+import { TagInputContextDefaultProps, TagInputContextPropTypes, withTagInputConsumer } from '../context/TagListInputContext';
+import {
+  ExtensionDefaultProps,
+  ExtensionPropTypes,
+} from '../../form-field/context/ExtensionsContext';
+import { stack } from '../../core/components/util';
 
-class TagExtension extends React.Component {
+class TagListExtension extends React.Component {
   constructor() {
     super();
-    
+
     this.DEFAULT_ID = _.uniqueId('sui-tag-input:');
 
     this.state = {
@@ -21,6 +26,12 @@ class TagExtension extends React.Component {
   /**
    * Lifecycle
    */
+  componentDidMount() {
+    this.props.__extensionManager.updateExtensionAttributes('##tag-list', {
+      disabled: this.getFinalDisabled(),
+    });
+  }
+
   componentDidUpdate() {
     /** One-time installation of context */
     if (!this.state.setInputOnTagList && this.getTagList()) {
@@ -28,7 +39,7 @@ class TagExtension extends React.Component {
       this.setState({ setInputOnTagList: true });
     }
   }
-  
+
   /**
    * Derived data
    */
@@ -36,21 +47,15 @@ class TagExtension extends React.Component {
   getInput = () => this.props.input;
 
   /** Get the tag list */
-  getTagList = () => this.props.tagList;
+  getTagList = () => _.get(this.props.__extensionManager, ['extendedData', '##tag-list', 'data', 'list']);
 
   /** Get the non-null ID */
   getId = () => this.getInput().getId();
 
-  /** Get the extended attributes to be merged into this.props.input */
-  getExtendedAttributes = () => ({
-    disabled: this.getFinalDisabled(),
-    'aria-invalid': false, // todo
-  });
-
   /** Whether the input is disabled */
   getFinalDisabled = () => (
-    _.get(this.getInput(), 'props.disabled')
-    || _.get(this.getTagList(), 'props.disabled')
+    this.props.disabled
+    || _.get(this.props.__extensionManager, ['extendedData', '##tag-list', 'data', 'list', 'props', 'disabled'], false)
   );
 
   /**
@@ -60,7 +65,7 @@ class TagExtension extends React.Component {
   onKeyDown = (event) => {
     this.emitTagEnd(event);
   };
-  
+
   /** Checks to see if the blur should emit the (chipEnd) event. */
   onBlur = () => {
     if (this.props.tagListAddOnBlur) {
@@ -73,7 +78,7 @@ class TagExtension extends React.Component {
       this.getTagList().blur();
     }
   };
-  
+
   /** focus listener */
   onFocus = () => {
     this.setState({ focused: true });
@@ -107,11 +112,9 @@ class TagExtension extends React.Component {
   }
 }
 
-const TagExtensionPropTypes = {
+const TagListExtensionPropTypes = {
   /** Input component to which this is trigger is associated */
   input: PropTypes.any.isRequired,
-  /** Parent tag list */
-  tagList: PropTypes.any.isRequired,
   /**
    * The list of key codes that will trigger a chipEnd event.
    *
@@ -124,25 +127,29 @@ const TagExtensionPropTypes = {
   tagListAddOnBlur: PropTypes.bool,
 };
 
-const TagExtensionDefaultProps = {
+const TagListExtensionDefaultProps = {
   tagListSeparatorKeyCodes: [ENTER],
   onTagEnd: _.noop,
   tagListAddOnBlur: false,
 };
 
-TagExtension.propTypes = {
-  ...TagExtensionPropTypes,
+TagListExtension.propTypes = {
+  ...TagListExtensionPropTypes,
   __tagListInput: TagInputContextPropTypes,
+  __extensionManager: ExtensionPropTypes,
 };
 
-TagExtension.defaultProps = {
-  ...TagExtensionDefaultProps,
+TagListExtension.defaultProps = {
+  ...TagListExtensionDefaultProps,
   __tagListInput: TagInputContextDefaultProps,
+  __extensionManager: ExtensionDefaultProps,
 };
 
-const StackedTagExtension = withTagInputConsumer(TagExtension);
+const StackedTagListExtension = stack(
+  withTagInputConsumer,
+)(TagListExtension);
 
-StackedTagExtension.propTypes = TagExtensionPropTypes;
-StackedTagExtension.defaultProps = TagExtensionDefaultProps;
+StackedTagListExtension.propTypes = TagListExtensionPropTypes;
+StackedTagListExtension.defaultProps = TagListExtensionDefaultProps;
 
-export default StackedTagExtension;
+export default StackedTagListExtension;

@@ -121,7 +121,7 @@ class Option extends React.Component {
   render() {
     return (
       <OptionRoot
-        innerRef={this.getOptionRootRef}
+        ref={this.getOptionRootRef}
         role="option"
         tabIndex={this.getTabIndex()}
         id={this.getId()}

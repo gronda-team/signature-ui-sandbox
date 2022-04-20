@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import {buttonBaseThunk, fullThunk, iconThunk, strokedButtonThunk} from './button-base';
 import FILL from '../../core/styles/layout-common';
 import { EASE_IN_OUT } from '../../core/styles/animation';
@@ -7,7 +7,8 @@ import themeThunk from './theme';
 const BUTTON_FOCUS_TRANSITION = `opacity 200MS ${EASE_IN_OUT.CURVE}, background-color 200ms ${EASE_IN_OUT.CURVE}`;
 
 export const ButtonWrapper = styled.span``;
-export const ButtonFocusOverlay = styled.div`
+
+const focusOverlay = css`
 ${FILL}
 
 // Disable pointer events for the ripple container and focus overlay because the container
@@ -24,6 +25,8 @@ opacity: 0;
 transition: ${BUTTON_FOCUS_TRANSITION};
 `;
 
+export const ButtonFocusOverlay = styled.div`${focusOverlay}`;
+
 /**
  * To be shown if the button is disabled. Note that we can't just change
  * the color of the background in ButtonFocusOverlay because going between
@@ -31,7 +34,7 @@ transition: ${BUTTON_FOCUS_TRANSITION};
  * is being changed as well. (It would look weird going from not disabled
  * to disabled).
  */
-export const ButtonDisabledOverlay = ButtonFocusOverlay.extend``;
+export const ButtonDisabledOverlay = styled.div`${focusOverlay}`;
 
 const components = {
   FocusOverlay: ButtonFocusOverlay,
@@ -61,9 +64,17 @@ ${ButtonDisabledOverlay} {
 
 // Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
-&[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
+&[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill] {
+  &:not([disabled]) {
+    &:hover {
+      ${ButtonFocusOverlay} { opacity: 0.08; }
+    }
+  }
+}
+
+&[data-appearance=fill][data-color=primary]:not([disabled]) {
   &:hover {
-    ${ButtonFocusOverlay} { opacity: 0.04; }
+    ${ButtonFocusOverlay} { opacity: 0.2; }
   }
 }
 
@@ -71,9 +82,11 @@ ${ButtonDisabledOverlay} {
 // enhancement and not all desktop browsers support this kind of media query, we can't
 // use something like @media (hover).
 @media (hover: none) {
-  &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill][data-color=secondary] {
-    &:hover {
-      ${ButtonFocusOverlay} { opacity: 0; }
+  &[data-appearance=standard], &[data-appearance=stroked], &[data-appearance=fill] {
+    &:not([disabled]) {
+      &:hover {
+        ${ButtonFocusOverlay} { opacity: 0; }
+      }
     }
   }
 }

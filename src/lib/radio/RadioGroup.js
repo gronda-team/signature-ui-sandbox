@@ -2,6 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { RadioGroupProvider } from './context';
+import { RadioGroupRoot } from './styles';
 
 class RadioGroup extends React.Component {
   constructor() {
@@ -21,6 +22,7 @@ class RadioGroup extends React.Component {
     required: this.props.required,
     disabled: this.props.disabled,
     labelPosition: this.props.labelPosition,
+    onChange: this.props.onChange,
   });
   
   /** Get the final name */
@@ -37,10 +39,11 @@ class RadioGroup extends React.Component {
   };
   
   render() {
+    const { children, labelPosition, onTouched, disabled, required, ...restProps } = this.props;
     return (
-      <RadioGroupRoot role="radiogroup">
+      <RadioGroupRoot {...restProps} role="radiogroup">
         <RadioGroupProvider value={this.providerValue()}>
-          { this.props.children }
+          { children }
         </RadioGroupProvider>
       </RadioGroupRoot>
     )
@@ -77,6 +80,8 @@ RadioGroup.propTypes = {
   ...RadioGroupPropTypes,
 };
 
-RadioGroup.propTypes = {
+RadioGroup.defaultProps = {
   ...RadioGroupDefaultProps,
 };
+
+export default RadioGroup;

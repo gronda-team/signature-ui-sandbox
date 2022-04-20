@@ -69,7 +69,7 @@ position: relative;
 &[data-standalone=true] { ${standaloneWrapper} }
 
 &:not([data-disabled=true]):hover ${ButtonToggleFocusOverlay} {
-  opacity: 0.04;
+  opacity: 0.08;
 }
 
 // Similar to components like the checkbox, slide-toggle and radio, we cannot show the focus
@@ -77,7 +77,7 @@ position: relative;
 // treated as programmatic focus. Note that it needs the extra ":not" in order to have more
 // specificity than the ":hover" above.
 &[data-focused=true]:not([data-disabled=true]) ${ButtonToggleFocusOverlay} {
-  opacity: 0.12;
+  opacity: 0.2;
 }
 
 // On touch devices the hover state will linger on the element after the user has tapped.

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import FILL from '../../core/styles/layout-common';
 import { EASE_IN_OUT } from '../../core/styles/animation';
 import Close from '../../core/icons/Close';
-import { themeThunk } from './theme';
+import { themeThunk, tagTypography } from './theme';
 import {BaseInput} from '../../input/styles';
 
 const TAG_MIN_HEIGHT = 28;
@@ -101,6 +101,7 @@ ${TagClose} {
   }
 }
 ${themeThunk(components)}
+${tagTypography(components)}
 `;
 
 export const TagListRoot = styled.div`
